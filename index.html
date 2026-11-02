@@ -1,0 +1,2424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Vocab spelling and Honors Math 3 practice quizzes">
+<meta name="theme-color" content="#f6f4ef" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#16181c" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Study Quiz">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>Study Quiz</title>
+<style>
+  :root{
+    --bg:#f6f4ef; --card:#ffffff; --ink:#1f2328; --muted:#6b6f76;
+    --accent:#3b5bdb; --good:#2f9e44; --bad:#e03131; --warn:#e8590c; --line:#e3e0d8;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#16181c; --card:#20232a; --ink:#e9e9ea; --muted:#9aa0a8;
+      --accent:#7c94ff; --good:#51cf66; --bad:#ff6b6b; --warn:#ffa94d; --line:#30343c; }
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  button,select,input{touch-action:manipulation}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:17px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    padding:max(20px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(48px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+    -webkit-text-size-adjust:100%;}
+  .wrap{max-width:560px;margin:0 auto}
+  h1{font-size:1.3rem;margin:0 0 2px}
+  h2{font-size:1.1rem;margin:0 0 10px}
+  .sub{color:var(--muted);font-size:.9rem;margin:0 0 16px}
+  .hidden{display:none !important}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:14px}
+  button{font:inherit;font-size:.95rem;padding:10px 14px;border-radius:10px;border:1px solid var(--line);
+    background:var(--card);color:var(--ink);cursor:pointer}
+  button.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+  button:disabled{opacity:.45;cursor:default}
+  button.link{border:none;background:none;color:var(--accent);padding:6px 4px}
+  .row{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+  .row > .grow{flex:1}
+
+  /* home */
+  .modes{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .mode{text-align:left;padding:12px;display:flex;flex-direction:column;gap:2px;min-height:96px}
+  .mode b{font-size:.98rem}
+  .mode span{font-size:.8rem;color:var(--muted);line-height:1.3}
+  .mode i{font-style:normal;font-size:.75rem;color:var(--accent);margin-top:auto;font-weight:600}
+  .settings{display:flex;flex-wrap:wrap;gap:14px;align-items:center;font-size:.92rem}
+  .settings label{display:flex;align-items:center;gap:6px}
+  .chapcard{padding:14px 16px}
+  .chaplabel{display:block;font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:6px}
+  select.chapsel{width:100%;font-weight:600;padding:10px 12px}
+  .roots{font-size:.82rem;color:var(--muted);margin-top:8px;line-height:1.4}
+  .rootline{font-size:.85rem;color:var(--muted);font-weight:400;margin-top:8px}
+  .rootline b{color:var(--ink);font-weight:600}
+  .grouphead{font-size:.8rem;text-transform:uppercase;letter-spacing:.05em;color:var(--accent);margin:16px 0 2px;font-weight:700}
+  select{font:inherit;font-size:16px;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+  input[type=checkbox]{width:18px;height:18px;accent-color:var(--accent)}
+
+  /* quiz */
+  .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+  .chip{font-size:.85rem;color:var(--muted)}
+  .hud{display:flex;gap:12px;font-weight:600;font-size:.95rem}
+  .hud .streak{color:var(--warn)}
+  .hud .timer{color:var(--bad)}
+  .bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-bottom:12px}
+  .bar > div{height:100%;background:var(--accent);width:0;transition:width .25s}
+  .pos{display:inline-block;font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;
+    color:var(--accent);border:1px solid var(--accent);border-radius:999px;padding:1px 9px;margin-bottom:10px}
+  .prompt{font-size:1.1rem;margin:0 0 14px}
+  .blank{display:inline-block;min-width:70px;border-bottom:2px solid var(--accent);margin:0 2px}
+  .play{font-size:1.05rem;padding:14px 18px;margin-bottom:12px}
+  .hint{background:var(--bg);border-radius:10px;padding:10px 12px;font-size:.92rem;color:var(--muted);
+    margin:-2px 0 14px;white-space:pre-line}
+  .hint .letters{font-family:ui-monospace,Menlo,Consolas,monospace;letter-spacing:.02em;color:var(--ink);font-size:.95rem;white-space:nowrap;display:block;overflow-x:auto}
+  input[type=text]{width:100%;font-size:max(16px,1.15rem);-webkit-appearance:none;padding:12px 14px;border-radius:10px;border:2px solid var(--line);
+    background:var(--bg);color:var(--ink);outline:none}
+  input[type=text]:focus{border-color:var(--accent)}
+  input.good{border-color:var(--good) !important} input.bad{border-color:var(--bad) !important}
+  input.retry{border-color:var(--warn) !important}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  .shake{animation:shake .25s 2}
+  .fb{margin-top:14px;font-weight:600;min-height:1.5em}
+  .fb.good{color:var(--good)} .fb.bad{color:var(--bad)} .fb.warn{color:var(--warn)}
+  .fb .norm{font-weight:400;color:var(--ink)}
+  .diff{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:1.05rem;font-weight:400;
+    background:var(--bg);border-radius:8px;padding:6px 10px;margin-top:6px;display:inline-block;color:var(--ink)}
+  .diff .x{color:var(--bad);text-decoration:line-through}
+  .diff .add{color:var(--good);text-decoration:underline;font-weight:700}
+  .legend{font-size:.75rem;color:var(--muted);font-weight:400;margin-top:4px}
+
+  /* results */
+  .big{font-size:2.4rem;font-weight:700;margin:2px 0}
+  .badge{display:inline-block;background:var(--warn);color:#fff;font-size:.75rem;font-weight:700;
+    border-radius:999px;padding:2px 10px;margin-left:6px;vertical-align:middle}
+  .statgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
+  .stat{background:var(--bg);border-radius:10px;padding:8px;text-align:center}
+  .stat b{display:block;font-size:1.15rem}
+  .stat span{font-size:.75rem;color:var(--muted)}
+  ul.res{list-style:none;padding:0;margin:8px 0 0}
+  ul.res li{padding:8px 0;border-top:1px solid var(--line);font-size:.95rem}
+  .ok{color:var(--good);font-weight:700} .no{color:var(--bad);font-weight:700}
+  .small{font-size:.8rem;color:var(--muted)}
+  textarea{width:100%;font:inherit;font-size:16px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:8px;margin-top:8px}
+
+  /* study / stats */
+  .word{padding:12px 0;border-top:1px solid var(--line)}
+  .word:first-of-type{border-top:none}
+  .word .w{font-weight:700;font-size:1.05rem}
+  .word .d{font-size:.92rem;margin:2px 0}
+  .word .s{font-size:.85rem;color:var(--muted);font-style:italic}
+  .acc{height:8px;border-radius:4px;background:var(--line);overflow:hidden;margin-top:4px}
+  .acc > div{height:100%}
+  .say{padding:2px 8px;font-size:.85rem;margin-left:6px}
+  canvas#confetti{position:fixed;inset:0;pointer-events:none;z-index:50}
+  /* subject switch */
+  .subj{display:flex;gap:8px;margin:6px 0 14px}
+  .subj button{flex:1;font-weight:600;padding:11px 8px}
+  .subj button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+  /* math typesetting */
+  .mdisplay{font-size:1.25rem;overflow-x:auto;padding:4px 2px 12px;text-align:center;line-height:1.3}
+  .mdisplay > *{vertical-align:middle}
+  .frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 .15em}
+  .fnum{border-bottom:1.5px solid currentColor;padding:0 .2em .08em}
+  .fden{padding:.08em .2em 0}
+  .frac .frac{font-size:.9em}
+  .mdisplay sup,.mprev sup,.mi sup,.msol sup,.mans sup,.mmini sup{font-size:.68em;vertical-align:.55em;line-height:0}
+  .msqrt{display:inline-flex;align-items:stretch;vertical-align:middle;position:relative;margin:0 .05em}
+  .radsvg{width:.62em;flex:none;overflow:visible}
+  .radsvg path{fill:none;stroke:currentColor;stroke-width:1.5;stroke-linejoin:round;stroke-linecap:round}
+  .radi{border-top:1.5px solid currentColor;padding:.12em .18em 0 .1em;margin-top:.02em}
+  .ridx{font-size:.5em;align-self:flex-start;margin-right:-.45em;margin-top:.1em;position:relative;z-index:1}
+  .mbox{display:inline-block;width:.75em;height:.95em;border:1.5px dashed var(--accent);border-radius:3px;vertical-align:middle;margin:0 .08em}
+  .mlim{display:inline-flex;align-items:center;gap:.3em}
+  .limw{display:inline-flex;flex-direction:column;align-items:center;line-height:1.05}
+  .limsub{font-size:.62em;white-space:nowrap}
+  .mo{margin:0 .16em} .mneg{margin-right:.05em}
+  i.mv{font-family:"Times New Roman",Georgia,serif;font-size:1.1em;padding:0 .02em}
+  .mpre{margin-right:.2em}
+  .mi{white-space:nowrap}
+  .mtext{margin:0 0 10px;font-size:1rem}
+  .srcchip{display:inline-block;font-size:.72rem;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:1px 9px;margin-bottom:8px}
+  .mfield{margin-top:12px}
+  .mfield label{display:block;font-size:.85rem;color:var(--muted);margin-bottom:4px;font-weight:600}
+  .mprev{min-height:1.5em;font-size:1.05rem;margin-top:5px;overflow-x:auto;white-space:nowrap}
+  .perr{color:var(--muted);font-size:.85rem;font-style:italic}
+  .mans{font-size:.95rem;margin-top:4px;color:var(--good);font-weight:600}
+  .keypad{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:12px}
+  .keypad button{padding:7px 0;font-size:1.15rem;display:flex;align-items:center;justify-content:center;min-height:44px}
+  .keypad .kvar{font-family:"Times New Roman",Georgia,serif;font-style:italic;font-size:1.3rem}
+  .keypad .kword{font-size:.82rem;font-weight:600}
+  .kico{width:26px;height:26px}
+  .kico rect{fill:none;stroke:currentColor;stroke-width:1.8;stroke-dasharray:3 2.2}
+  .kico .kfill{stroke:currentColor;stroke-width:2.2;stroke-linecap:round}
+  .kico .kline{fill:none;stroke:currentColor;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+  .kico .ktxt{fill:currentColor;font:italic 19px "Times New Roman",Georgia,serif}
+  .msol{background:var(--bg);border-radius:10px;padding:10px 12px;margin-top:12px;font-size:.95rem;line-height:1.7}
+  .msol ol{padding-left:20px;margin:6px 0 0}
+  .mhint{background:var(--bg);border-radius:10px;padding:10px 12px;margin:0 0 6px;font-size:.92rem;line-height:1.7}
+  .mgraph svg{width:100%;height:auto;max-width:440px;display:block;margin:6px auto 10px;background:var(--card);border:1px solid var(--line);border-radius:10px}
+  .g-grid{stroke:var(--line);stroke-width:1}
+  .g-axis{stroke:var(--muted);stroke-width:1.4}
+  .g-asy{stroke:var(--accent);stroke-width:1.5;stroke-dasharray:6 5;opacity:.75}
+  .g-curve{stroke:var(--ink);fill:none;stroke-width:2.3;stroke-linejoin:round}
+  .g-dot{fill:var(--ink)}
+  .g-hole{fill:var(--card);stroke:var(--ink);stroke-width:2}
+  .g-lab,.g-tick{fill:var(--muted);font-size:11px;font-family:system-ui,sans-serif}
+  .g-val{fill:var(--accent);font-size:11.5px;font-weight:700;font-family:system-ui,sans-serif;paint-order:stroke;stroke:var(--card);stroke-width:3px}
+  ul.mnotes{padding-left:18px;margin:6px 0 4px;line-height:1.8}
+  .mmini{font-size:.9rem;margin-top:4px;overflow-x:auto}
+  .g-user{stroke:var(--bad);fill:none;stroke-width:2.2;stroke-dasharray:5 4}
+  .g-key{fill:var(--muted);font-size:11px;font-family:system-ui,sans-serif;paint-order:stroke;stroke:var(--card);stroke-width:3px}
+  .nfig{border-top:1px solid var(--line);padding-top:10px;margin-top:10px}
+  .ncap{font-size:.92rem;line-height:1.6}
+  .nmath{font-size:1.05rem;padding:6px 0 0}
+  .mwhy{color:var(--warn);font-weight:600;font-size:.88rem}
+
+</style>
+</head>
+<body>
+<canvas id="confetti"></canvas>
+<div class="wrap">
+
+  <!-- HOME -->
+  <section id="home">
+    <h1>Study Quiz</h1>
+    <div class="subj" id="subjBar">
+      <button data-subj="vocab">📚 English Vocab</button>
+      <button data-subj="math">📐 Honors Math 3</button>
+    </div>
+    <div id="vocabHome">
+      <p class="sub">Pick a chapter, pick a mode. Exact spelling only (accents optional).</p>
+      <div class="card chapcard">
+        <label class="chaplabel" for="chapSel">Chapter</label>
+        <select id="chapSel" class="chapsel"></select>
+        <div class="roots" id="chapRoots"></div>
+      </div>
+      <div class="modes" id="modes"></div>
+    </div>
+    <div id="mathHome" class="hidden">
+      <p class="sub">Unit 4: Rational Functions & Limits. Type answers any equivalent way, e.g. (2x+1)/(x-2), 3/5, DNE, ∞, none.</p>
+      <div class="card chapcard">
+        <label class="chaplabel" for="msecSel">Section</label>
+        <select id="msecSel" class="chapsel"></select>
+      </div>
+      <div class="modes" id="mmodes"></div>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <div class="settings">
+        <label>Questions
+          <select id="countSel"><option value="5">5</option><option value="10">10</option><option value="0">All</option></select>
+        </label>
+        <label><input type="checkbox" id="secondChance"> Second chance on misses</label>
+      </div>
+      <div class="small" style="margin-top:8px">The question count applies to Definition, Fill in the Blank, Spelling Bee, Mixed, and math Practice.</div>
+    </div>
+    <div class="row">
+      <button class="grow" id="toStudy">📖 Study list</button>
+      <button class="grow" id="toStats">📊 My stats</button>
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="quiz" class="hidden">
+    <div class="topbar">
+      <button class="link" id="quit">✕ Quit</button>
+      <div class="hud">
+        <span id="hudTimer" class="timer hidden"></span>
+        <span id="hudStreak" class="streak"></span>
+        <span id="hudScore"></span>
+      </div>
+    </div>
+    <div class="bar"><div id="prog"></div></div>
+    <div class="chip" id="count" style="margin-bottom:8px"></div>
+    <div class="card">
+      <span class="pos" id="pos"></span>
+      <div id="promptWrap"></div>
+      <div class="hint hidden" id="hint"></div>
+      <form id="form" autocomplete="off">
+        <input id="answer" type="text" placeholder="Type the word…" autocapitalize="none" autocorrect="off" autocomplete="off" spellcheck="false" enterkeyhint="go">
+        <div class="row">
+          <button type="submit" class="primary grow" id="check">Check</button>
+          <button type="button" id="hintBtn">Hint</button>
+          <button type="button" id="skip">Skip</button>
+        </div>
+      </form>
+      <div class="fb" id="fb"></div>
+      <div class="row hidden" id="sayRow"><button type="button" id="sayBtn">🔊 Hear it</button></div>
+    </div>
+  </section>
+
+  <!-- RESULTS -->
+  <section id="end" class="hidden">
+    <div class="card">
+      <div class="small" id="endMode"></div>
+      <div class="big"><span id="endScore"></span><span class="small"> pts</span><span id="newBest" class="badge hidden">NEW BEST</span></div>
+      <div class="statgrid">
+        <div class="stat"><b id="endAcc"></b><span>accuracy</span></div>
+        <div class="stat"><b id="endStreak"></b><span>best streak</span></div>
+        <div class="stat"><b id="endTime"></b><span>time</span></div>
+      </div>
+      <div class="row">
+        <button class="primary grow" id="again">Play again</button>
+        <button class="grow" id="retryMissed">Retry missed</button>
+      </div>
+      <div class="row">
+        <button class="grow" id="brag">📋 Copy score to send</button>
+        <button class="grow" id="home2">Home</button>
+      </div>
+      <textarea id="bragText" rows="2" class="hidden" readonly></textarea>
+    </div>
+    <div class="card">
+      <h2>Round breakdown</h2>
+      <ul class="res" id="resList"></ul>
+    </div>
+  </section>
+
+  <!-- STUDY -->
+  <section id="study" class="hidden">
+    <div class="topbar"><button class="link" data-home>← Back</button></div>
+    <div class="card"><h2 id="studyTitle">Study list</h2><div id="studyList"></div></div>
+  </section>
+
+  <!-- STATS -->
+  <section id="stats" class="hidden">
+    <div class="topbar"><button class="link" data-home>← Back</button></div>
+    <div class="card"><h2 id="statsTitle">Best scores</h2><div id="bestList"></div></div>
+    <div class="card"><h2 id="accTitle">Word accuracy <span class="small">(weakest first)</span></h2><div id="accList"></div></div>
+    <div class="card">
+      <h2>Backup</h2>
+      <div class="small">One code holds your scores and stats for both subjects. Keep it somewhere safe (Notes app) and paste it back if you switch phones or your data gets cleared.</div>
+      <div class="row"><button class="grow" id="bkCopy">📤 Copy backup code</button><button class="grow" id="bkRestore">📥 Restore</button></div>
+      <textarea id="bkText" rows="3" class="hidden"></textarea>
+    </div>
+    <button id="resetStats">Reset stats (all chapters)</button>
+  </section>
+</div>
+
+  <!-- MATH QUIZ -->
+  <section id="mquiz" class="hidden">
+    <div class="topbar">
+      <button class="link" id="mQuit">✕ Quit</button>
+      <div class="hud"><span id="mStreak" class="streak"></span><span id="mScore"></span></div>
+    </div>
+    <div class="bar"><div id="mProg"></div></div>
+    <div class="chip" id="mCount" style="margin-bottom:8px"></div>
+    <div class="card">
+      <span class="srcchip" id="mSrc"></span>
+      <p class="mtext" id="mText"></p>
+      <div class="mdisplay" id="mMath"></div>
+      <div class="mgraph" id="mGraph"></div>
+      <div class="mhint hidden" id="mHint"></div>
+      <div id="mFields"></div>
+      <div class="keypad" id="keypad">
+        <button data-k="(" aria-label="open parenthesis">(</button><button data-k=")" aria-label="close parenthesis">)</button>
+        <button data-k="()/()" data-c="1" aria-label="fraction"><svg class="kico" viewBox="0 0 28 28" aria-hidden="true"><rect x="9" y="3" width="10" height="8" rx="1.5"/><line x1="5" y1="14" x2="23" y2="14" class="kfill"/><rect x="9" y="17" width="10" height="8" rx="1.5"/></svg></button><button data-k="^()" data-c="2" aria-label="exponent"><svg class="kico" viewBox="0 0 28 28" aria-hidden="true"><text x="3" y="23" class="ktxt">x</text><rect x="15" y="3" width="9" height="9" rx="1.5"/></svg></button>
+        <button data-k="sqrt()" data-c="5" aria-label="square root"><svg class="kico" viewBox="0 0 28 28" aria-hidden="true"><path d="M2 16 L5.5 14.5 L9.5 24 L14 4 L26 4" class="kline"/><rect x="15.5" y="8" width="9" height="12" rx="1.5"/></svg></button><button data-k="⌫" aria-label="backspace"><svg class="kico" viewBox="0 0 28 28" aria-hidden="true"><path d="M9 6 H24 a2 2 0 0 1 2 2 V20 a2 2 0 0 1 -2 2 H9 L2 14 Z" class="kline"/><path d="M13 10 L20 18 M20 10 L13 18" class="kline"/></svg></button>
+        <button data-k="x" class="kvar" aria-label="x">x</button><button data-k="-" aria-label="minus">−</button><button data-k=", " aria-label="comma">,</button>
+        <button data-k="∞" aria-label="infinity">∞</button><button data-k="DNE" class="kword">DNE</button><button data-k="none" class="kword">none</button>
+      </div>
+      <div class="row">
+        <button class="primary grow" id="mCheck">Check</button>
+        <button id="mHintBtn">Hint</button>
+        <button id="mSkip">Skip</button>
+      </div>
+      <div class="fb" id="mFb"></div>
+      <div class="msol hidden" id="mSol"></div>
+    </div>
+  </section>
+
+  <!-- MATH RESULTS -->
+  <section id="mend" class="hidden">
+    <div class="card">
+      <div class="small" id="meMode"></div>
+      <div class="big"><span id="meScore"></span><span class="small"> pts</span><span id="meBest" class="badge hidden">NEW BEST</span></div>
+      <div class="statgrid">
+        <div class="stat"><b id="meAcc"></b><span>fully right</span></div>
+        <div class="stat"><b id="meStreak"></b><span>best streak</span></div>
+        <div class="stat"><b id="meTime"></b><span>time</span></div>
+      </div>
+      <div class="row">
+        <button class="primary grow" id="meAgain">Play again</button>
+        <button class="grow" id="meRetry">Retry missed</button>
+      </div>
+      <div class="row">
+        <button class="grow" id="meBrag">📋 Copy score to send</button>
+        <button class="grow" id="meHome">Home</button>
+      </div>
+      <textarea id="meBragText" rows="2" class="hidden" readonly></textarea>
+    </div>
+    <div class="card"><h2>Round breakdown</h2><ul class="res" id="meList"></ul></div>
+  </section>
+
+  <!-- MATH NOTES -->
+  <section id="mnotes" class="hidden">
+    <div class="topbar"><button class="link" data-home>← Back</button></div>
+    <div class="card"><h2>Notes summary</h2><div id="mnotesBody"></div></div>
+  </section>
+
+<script>
+/* ---------- DATA ----------
+   Each chapter: groups of words sharing a root.
+   Word: [word, part of speech, definition, sentence with the word's form in [brackets] (or null), extra accepted spellings]
+*/
+const CHAPTERS = [
+ {n:1, title:"A Person", groups:[
+  {r:"humanus: “human being”", w:[
+   ["humane","adjective","Having the worthy qualities of human beings, such as kindness or compassion.","The Dog Relief Society ensures [humane] conditions for those canines."],
+   ["humanism","noun","A philosophy in which the interests and values of human beings are of primary importance.","The development of [humanism] in the sixteenth century changed the focus of English education from theological speculation to human achievements."],
+   ["humanities","noun","Branches of knowledge concerned with human beings and their culture (philosophy, literature, the fine arts), as distinguished from the sciences.","While most of her classes were in the [humanities], she did graduate work in math."]]},
+  {r:"anthropos: “human being,” “man”", w:[
+   ["anthropology","noun","The scientific study of the origins, cultural development, and customs of human beings.","Fragments of a human skeleton found in an Iron Age cave led to discoveries in [anthropology]."],
+   ["misanthrope","noun","A person who hates all people.","Miss Havisham becomes a bitter [misanthrope] in Dickens' Great Expectations."]]},
+  {r:"homo, hominis: “human being”", w:[
+   ["homicide","noun","The killing of one human being by another; a person who kills another.","The old man committed a [homicide] by putting poison in his daughter's milk."]]},
+  {r:"vir: “man”", w:[
+   ["virile","adjective","Having characteristics traditionally associated with masculinity, especially physical strength, vitality, and assertiveness.","The main characters in Hemingway's novels are often [virile] men who risk danger in war or sport."]]},
+  {r:"gyne: “woman”", w:[
+   ["gynecology","noun","The branch of medicine dealing with disorders and treatment of the reproductive system in women.","[Gynecology] is a promising field for medical students interested in women's health."]]},
+  {r:"femina: “woman”", w:[
+   ["feminism","noun","The belief that women should possess the same political and economic rights as men.","The union president's [feminism] led him to demand equal pay for women who performed the same jobs as men."],
+   ["feminist","noun","A supporter of women's claims to the same rights and treatment as men.","Susan B. Anthony was a [feminist] who argued women should be allowed to vote."]]},
+  {r:"autos: “self”", w:[
+   ["autocrat","noun","A ruler who has absolute or unlimited power; a despot. Also: any arrogant, dominating person.","As director, she became an [autocrat], making all decisions without taking any advice."],
+   ["automaton","noun","A person who behaves in a mechanical, routine manner; a robot.","Her job on the assembly line caused her to feel like an [automaton]."],
+   ["autonomy","noun","The condition of being self-governing; independence.","Kenyans fought for [autonomy] from British rule, and Kenya became a republic in 1964."],
+   ["autopsy","noun","The examination of a corpse to determine the cause of death.","The [autopsy] of the corpse revealed that he had died of lead poisoning."]]},
+  {r:"ego: “I,” “self”", w:[
+   ["egoism","noun","Conceit; valuing everything according to one's personal interest; excessive confidence in the rightness of one's own opinions.","Cleopatra's [egoism] may have resulted from her power, ability, and charm."]]}
+ ]},
+ {n:2, title:"A Person", groups:[
+  {r:"genos / gens / genus: “race,” “clan,” “family,” “birth”", w:[
+   ["genealogy","noun","A record of descent from one's ancestors; the study of family records.","Alex Haley's novel Roots traces the [genealogy] of an American family back to their African heritage."],
+   ["genocide","noun","The planned annihilation of a racial, political, or cultural group.","The Nazi effort to eliminate all Jews is the most extensive attempt at [genocide] in history."],
+   ["genre","noun","A type, class, or category, especially of fine art or literature.","Edna Ferber's writing encompasses several [genres]: fiction, drama, and autobiography."],
+   ["genteel","adjective","Well-mannered; refined, polite. Sometimes used to mean “falsely polite.”","Although they tried to look [genteel], their vulgar language and rude behavior betrayed their lack of refinement."],
+   ["gentile","noun","Anyone not of the Jewish faith.","Although they are [gentiles], they are familiar with Jewish tradition."],
+   ["gentry","noun","Aristocratic or well-mannered people; in Britain, the class just under the aristocracy.","Several of Jane Austen's novels describe the English [gentry] enjoying their country estates."],
+   ["heterogeneous","adjective","Having parts that are unrelated or completely different.","The US has been called a “melting pot” because of its [heterogeneous] population."],
+   ["homogeneous","adjective","Of the same kind or sort.","Thanks to modern weaving technology, thousands of yards of [homogeneous] cloth can be produced by factories in different countries."]]},
+  {r:"gigno, gignere: “to beget,” “to bear,” “to bring forth”", w:[
+   ["congenital","adjective","Existing at birth but not hereditary.","The baby is the only member of its family to have a [congenital] heart defect."],
+   ["engender","verb","To give rise to; to bring into existence.","The British Parliament's tariff on tea [engendered] violent protests like the Boston Tea Party."],
+   ["genesis","noun","A beginning or origin.","Historians trace the [genesis] of the United Nations to the League of Nations."],
+   ["indigenous","adjective","Occurring in or characterizing an area; native. Also: inborn.","Shinto, a religion [indigenous] to Japan, originated in prehistoric times."],
+   ["ingenious","adjective","Cleverly inventive and resourceful.","Harriet Tubman's [ingenious] tactics helped more than 300 slaves escape to freedom."],
+   ["progenitor","noun","A direct ancestor; an originator of a line of descent.","The Wright brothers' flying machine is the [progenitor] of the modern airplane."],
+   ["progeny","noun","Children or descendants; offspring (sometimes also the results of artistic creativity).","Charles Dickens said that of all his [progeny] (meaning his novels) he loved David Copperfield best."]]}
+ ]},
+ {n:3, title:"Personal Relationships", groups:[
+  {r:"mater, matris: “mother”", w:[
+   ["matrix","noun","The surroundings within which something begins or develops.","Researchers use a [matrix] of nutritious gelatin to grow bacteria in laboratories."],
+   ["matriarchy","noun","A society ruled or controlled by women.","Anthropological research suggests that the early society of Crete was a [matriarchy]."],
+   ["matriculate","verb","To register as a student at a college or university.","Oberlin was the first American college to allow both women and men to [matriculate]."]]},
+  {r:"pater, patris: “father”", w:[
+   ["patriarch","noun","The male head of a family or tribe; a founding father or wise man.","Americans look upon George Washington as their [patriarch]."],
+   ["patrimony","noun","A family inheritance.","Islamic law allows a woman to retain all rights to her [patrimony] when she marries."],
+   ["patronage","noun","Support or encouragement. Also: business clientele; customers.","Because of its efficiency and courtesy, the new bank has attracted the [patronage] of many business people."],
+   ["patronize","verb","To go to regularly as a customer. Also: to treat someone as an inferior.","We [patronize] the local grocery store."],
+   ["patronymic","noun","A name derived from a paternal ancestor.","Peterson is the [patronymic] of Peter's son."]]},
+  {r:"frater, fratris: “brother”", w:[
+   ["fraternal","adjective","Pertaining to brothers; brotherly.","Although separated for many years, the brothers still retained a fierce [fraternal] loyalty."],
+   ["fraternize","verb","To be friendly with. Also: to socialize with an enemy population.","The new teacher soon [fraternized] easily with her colleagues."]]},
+  {r:"avunculus: “uncle”", w:[
+   ["avuncular","adjective","Like an uncle.","We appreciated his [avuncular] gestures like trips to the ballpark and treats of ice cream."]]},
+  {r:"familia: “family”", w:[
+   ["familial","adjective","Having to do with the family.","One branch of anthropology studies [familial] structures in different cultures."]]},
+  {r:"uxor, uxoris: “wife”", w:[
+   ["uxorious","adjective","Dominated by one's wife.","The [uxorious] husband catered to his wife's every whim."]]},
+  {r:"gamos: “marriage”", w:[
+   ["bigamy","noun","Marriage to two mates at the same time.","Mr. Rochester would have committed [bigamy] if he had married Jane Eyre while his wife was still alive."],
+   ["monogamy","noun","Marriage to a single mate.","The Constitution recognized [monogamy] as the only legal form of marriage in the US."]]}
+ ]},
+ {n:4, title:"Personal Relationships", groups:[
+  {r:"puer: “a male child”", w:[
+   ["puerile","adjective","Childish; immature.","Forced to take my little sister to the party, I was humiliated by her [puerile] giggling."]]},
+  {r:"pais, paidos: “child,” “boy”", w:[
+   ["orthopedics","noun","The branch of medicine treating disorders of the skeletal system and tissues related to movement.","The specialist in [orthopedics] set my broken leg."],
+   ["pedagogue","noun","A teacher.","The Oxford Cleric in Chaucer's Canterbury Tales is a devoted [pedagogue] who would gladly learn and gladly teach."],
+   ["pedant","noun","A person who pays excessive attention to rules rather than understanding; a scholarly show-off.","A true scholar seeks to understand the causes of historical events, but a [pedant] only memorizes the dates."]]},
+  {r:"sum, esse: “to be”", w:[
+   ["entity","noun","Something that has a real or independent existence.","Each twin wanted to be treated as an [entity]."],
+   ["nonentity","noun","A person or thing of no importance. Also: something that exists only in the imagination.","How did such a [nonentity] achieve so much power?"],
+   ["essence","noun","The basic element; the identifying characteristic. Also: a concentrated substance from a plant; a perfume.","During the 1920s, Bessie Smith's singing represented the [essence] of the blues."]]},
+  {r:"morior, mori: “to die”", w:[
+   ["moribund","adjective","About to die or end.","As automobiles became popular, the speed limits set for horse-drawn vehicles became [moribund]."],
+   ["mortify","verb","To shame. Also: to discipline oneself by self-denial.","In Pride and Prejudice, Mrs. Bennet's crude efforts to marry off her five daughters [mortify] Elizabeth Bennet."],
+   ["postmortem","noun","An examination to determine the cause of death. Informally: an analysis of something that is over.","Every Monday at lunch there is a [postmortem] of Sunday's baseball game."]]},
+  {r:"thanatos: “death”", w:[
+   ["euthanasia","noun","The act of painlessly killing a suffering person or animal; mercy killing.","Controversy continues over a patient's right to [euthanasia]."]]},
+  {r:"nascor, nasci: “to be born”", w:[
+   ["innate","adjective","Possessed at birth; inborn.","Voice lessons have improved his [innate] singing talent."],
+   ["naïve","adjective","Childlike; unsophisticated. Also: gullible.","The [naïve] tourists bought “ancient coins” from dishonest street vendors."],
+   ["nascent","adjective","Emerging; coming into existence.","Good teachers encourage the [nascent] skills of young writers."],
+   ["renaissance","noun","A rebirth; a renewal. Also: the revival of humanism in 14th–16th century Europe.","The twentieth century has witnessed a [renaissance] of interest in indigenous American art."]]}
+ ]},
+ {n:5, title:"Feelings", groups:[
+  {r:"amo, amare: “to love”; amicus: “friend”", w:[
+   ["amicable","adjective","Friendly; peaceable.","An [amicable] settlement of the dispute prevented ill feelings."],
+   ["amity","noun","Friendship; friendly relations.","[Amity] has long existed between the US and Canada."],
+   ["enamored","adjective","In love with; charmed by.","They were so [enamored] of Islamic art that they extended their stay in Turkey."],
+   ["inimical","adjective","Harmful. Also: hostile; unfriendly.","Too much coffee is [inimical] to your health."]]},
+  {r:"odium: “hate”", w:[
+   ["odious","adjective","Hateful; distasteful.","Charlotte Brontë's description of the [odious] Lowood School in Jane Eyre was drawn from her own experience at boarding school."]]},
+  {r:"philos: “friend”; phileo, philein: “to love”", w:[
+   ["bibliophile","noun","A lover of books.","A visit to the Library of Congress was the highlight of the trip for the [bibliophile]."],
+   ["philanthropy","noun","Goodwill to fellow human beings. Also: a charitable gift, act, or organization.","Andrew Carnegie's [philanthropy] provided for public libraries throughout the US."]]},
+  {r:"phobos: “fear,” “flight”", w:[
+   ["phobia","noun","A strong, irrational fear.","Her [phobia] of enclosed spaces prevents her from riding in elevators or automobiles."],
+   ["acrophobia","noun","Fear of heights.","[Acrophobia] prevented my climbing to the top of the tower."],
+   ["hydrophobia","noun","Fear of water. Also: rabies.","Despite his [hydrophobia], he finally learned to swim."],
+   ["xenophobia","noun","Fear or hatred of what is strange or foreign, or of foreigners.","In 2001, the UN's Conference against Racism and [Xenophobia] was held in South Africa."]]},
+  {r:"pax, pacis: “peace”", w:[
+   ["appease","verb","To calm; to satisfy or relieve.","The Prime Minister [appeased] the angry crowd with promises of early elections."],
+   ["pacific","adjective","Peaceful; serene.","Because the newly discovered ocean seemed so peaceful, Magellan called it the [Pacific]."],
+   ["pacify","verb","To calm; to make quiet. Also: to end war or violence.","Finding the lost doll was the only way to [pacify] the sobbing child."]]}
+ ]},
+ {n:6, title:"Feelings", groups:[
+  {r:"pathos: “suffering,” “feeling”", w:[
+   ["antipathy","noun","A hatred or dislike.","Henry David Thoreau's [antipathy] toward slavery led him to deliver speeches supporting the abolitionist movement."],
+   ["apathy","noun","Lack of feeling, energy, or interest; indifference.","That only ten percent of citizens voted reflects widespread [apathy] toward politics."],
+   ["empathy","noun","The ability to identify with someone else and understand that person's situation or feelings.","Her [empathy] for the loneliness of the elderly made her an ideal counselor for the nursing home."],
+   ["pathological","adjective","Referring to pathology, the study of disease. Also: caused by disease.","The child's lack of energy was not due to laziness but had [pathological] causes."],
+   ["pathos","noun","A quality that arouses pity or tenderness; a feeling of sympathy.","In a scene of great [pathos], King Lear laments the death of his faithful daughter, Cordelia."]]},
+  {r:"miso, misein: “to hate”", w:[
+   ["misogamy","noun","Hatred of marriage.","Her [misogamy] may have its origins in her parents' unhappy marriage."],
+   ["misogyny","noun","Hatred of women.","Eliza Doolittle's innate charm and intelligence help overcome Professor Higgins' [misogyny] in My Fair Lady."]]},
+  {r:"dys: “diseased,” “difficult,” “faulty,” “bad”", w:[
+   ["dysentery","noun","Severe diarrhea.","After drinking from the village well, the travelers suffered [dysentery]."],
+   ["dyslexia","noun","A serious difficulty learning to read in the usual way.","[Dyslexia] seems to affect only a small percentage of adults who have difficulty reading."]]},
+  {r:"cupio, cupere: “to desire”", w:[
+   ["covet","verb","To crave or desire, especially something belonging to someone else.","Because he [coveted] the throne of England, Richard of Gloucester may have murdered his nephews, the rightful heirs."],
+   ["cupidity","noun","Greed; avarice.","A father in Balzac's Père Goriot sacrifices himself to satisfy his daughters' [cupidity] for money and power."]]},
+  {r:"placeo: “to please”; placo: “to soothe”", w:[
+   ["complacent","adjective","Self-satisfied; smug.","[Complacent] in their wealth, the eighteenth-century French aristocracy remained unaware of the plight of the poor."],
+   ["implacable","adjective","Impossible to calm or appease.","Although often imprisoned, Emmeline Pankhurst was an [implacable] crusader for women's right to vote in England."],
+   ["placate","verb","To calm; to pacify; to appease.","Galileo tried to [placate] the Catholic Church in Rome by retracting his theory that the earth revolved around the sun."],
+   ["placid","adjective","Showing calmness, peacefulness, or composure.","The usually [placid] bay churned as the hurricane approached."]]}
+ ]},
+ {n:7, title:"Creature Comforts", groups:[
+  {r:"domus: “house”", w:[
+   ["domicile","noun","A home; residence.","A condominium complex may contain many separate [domiciles], often of different sizes and designs."],
+   ["domestic","adjective","Related to the family or household. Also: tame; trained to live with humans.","In India, elephants are [domestic] animals used for lifting heavy loads."]]},
+  {r:"dominus: “head of household,” “lord,” “master”", w:[
+   ["domain","noun","Range of one's control; territory.","The sandbox and slides on our playground are the [domain] of the kindergartners."],
+   ["domineer","verb","To dominate; to be bossy.","David Copperfield's stepfather, Mr. Murdstone, [domineers] both David and his gentle mother."],
+   ["dominion","noun","Control; rule; area of influence.","The Danes struggled to free their country from the [dominion] of Germany during World War II."]]},
+  {r:"dormio, dormire: “to sleep”", w:[
+   ["dormant","adjective","Asleep; not in an active state.","Grandma Moses' artistic talent lay [dormant] until she began to paint at age 70."]]},
+  {r:"somnus: “sleep”", w:[
+   ["somnambulate","verb","To walk around while sleeping.","Although many children [somnambulate], most outgrow this involuntary activity by adulthood."],
+   ["somnolent","adjective","Drowsy; sleepy. Also: causing sleep.","We grew [somnolent] after our long hike in the snow."]]},
+  {r:"lavo, lavare: “to wash”", w:[
+   ["ablution","noun","Washing of the body, especially as a ritual purification.","Most mosques have a central fountain where worshipers perform [ablutions] before entering to pray."],
+   ["deluge","noun","A downpour; a great flood. (As a verb: to flood.)","When the dam broke, an entire village downstream was destroyed in the [deluge]."]]},
+  {r:"vestis: “garment”", w:[
+   ["divest","verb","To take away something belonging to someone, especially a right, title, or property. Also: to strip away, especially clothes.","After the Russian Revolution of 1917, members of the nobility were [divested] of all titles."],
+   ["investiture","noun","A ceremony in which a person formally receives the authority and symbols of an office.","At her [investiture] as a Girl Scout, the Brownie received a pin and membership card."],
+   ["travesty","noun","An absurd or inferior imitation.","The senior skit was a hilarious [travesty] of a faculty meeting."],
+   ["vestment","noun","A garment that indicates position or authority, especially the robes worn by clergy.","The simple woolen [vestment] and sandals of Franciscan friars reflect their vow of poverty."],
+   ["vested","adjective","Having a personal stake (used with “interest”). Also: dressed in ceremonial robes; absolute, without question.","The judge disqualified herself because, as the defendant's mother, she had a [vested] interest in the case."]]}
+ ]},
+ {n:8, title:"Creature Comforts", groups:[
+  {r:"coquo, coquere: “to cook”", w:[
+   ["concoct","verb","To mix ingredients, as in cooking. Also: to invent or devise.","We [concocted] a salad of exotic fruits."],
+   ["cuisine","noun","A characteristic style of cooking.","Mexican [cuisine] relies on corn, beans, chicken, beef, and chiles."],
+   ["precocious","adjective","Showing unusually early development, especially mentally.","Some [precocious] children can read at age three."]]},
+  {r:"voro, vorare: “to devour”", w:[
+   ["carnivorous","adjective","Meat-eating.","Lions and other [carnivorous] animals have diets primarily of meat."],
+   ["herbivorous","adjective","Plant-eating.","Horses and cows are [herbivorous] animals."],
+   ["voracious","adjective","Extremely hungry; greedy. Also: eager for some activity or interest.","A [voracious] reader of science fiction, she had read the library's entire collection."]]},
+  {r:"mel, mellis: “honey”", w:[
+   ["mellifluous","adjective","Sweet as honey (referring to voice or words).","The aria ended with a [mellifluous] blend of soprano and flute."]]},
+  {r:"sal: “salt”", w:[
+   ["saline","adjective","Having to do with salt.","Freshwater animals cannot survive in a [saline] environment."]]},
+  {r:"bibo, bibere: “to drink”", w:[
+   ["imbibe","verb","To drink. Also: to absorb; to take in.","The Olympian gods of Greek mythology eat ambrosia and [imbibe] nectar."]]},
+  {r:"poto, potare: “to drink”", w:[
+   ["potable","adjective","Fit to drink.","Because a chemical spill had contaminated local wells, the water was not [potable] for several weeks."],
+   ["potion","noun","A liquid for drinking, especially a medicinal, magic, or poisonous drink.","Once Tristan and Isolde drank the magic [potion], they fell deeply in love."]]},
+  {r:"ludo, ludere: “to play”", w:[
+   ["allude","verb","To make an indirect reference to.","We sometimes [allude] to Shakespeare as the Bard of Stratford-upon-Avon."],
+   ["collusion","noun","A secret agreement for a deceitful purpose; conspiracy.","Auditors discovered [collusion] by the managers in an attempt to defraud the company."],
+   ["delusion","noun","A false belief held in spite of contradictory evidence. Also: a deception.","Even after she played three years in the WNBA, her parents maintained their [delusion] that she would be a surgeon."],
+   ["elude","verb","To avoid or escape from by cunning; to evade. Also: to baffle.","The bandits [eluded] their pursuers."]]}
+ ]},
+ {n:9, title:"The Head", groups:[
+  {r:"caput, capitis: “head”", w:[
+   ["capitalist","noun","A person who has invested personal wealth in business. Also: a very wealthy person.","Having completed his first automobile, Henry Ford went on to become a [capitalist] in the Ford Motor Company."],
+   ["capitulation","noun","Surrender; ending resistance.","Famine forced the besieged city's [capitulation]."],
+   ["decapitate","verb","To cut off the head of; to behead.","In 1793, the French revolutionaries [decapitated] Louis XVI."],
+   ["precipice","noun","A very steep or vertical face of a cliff or rock. Also: the edge of a dangerous situation.","The nation stood on the [precipice] of war."],
+   ["precipitate","verb","To throw down from a great height. Also: to make happen suddenly or quickly.","In 1955, Rosa Parks [precipitated] civil rights demonstrations by asserting the right of Black passengers to sit in the front seats of buses."],
+   ["recapitulation","noun","The restatement of a main idea; a summary or concise review.","The instructor's [recapitulation] during the lecture helped the students understand the complex mathematical theory."]]},
+  {r:"cerebrum: “brain”", w:[
+   ["cerebral","adjective","Pertaining to the brain. Also: intellectual.","She prefers [cerebral] conversations to aimless chatter."],
+   ["cerebration","noun","The action of thinking; thought.","Philosopher Hannah Arendt provoked scholarly [cerebration] and controversy on subjects such as justice, morality, and the nature of evil."]]},
+  {r:"facies: “face,” “form,” “shape”", w:[
+   ["deface","verb","To mar or spoil the appearance or surface of something.","Air pollution from tourist buses has begun to [deface] the monoliths of Stonehenge."],
+   ["efface","verb","To wipe out; to obliterate. Also: to make oneself inconspicuous.","Time has not [effaced] the horror of the Holocaust."],
+   ["façade","noun","The face of a building. Also: the front of anything, especially an artificial or false front.","Her [façade] of poverty concealed a life of fortune."],
+   ["facet","noun","One of the many sides of a cut stone or jewel. Also: one aspect of a situation.","Gems with a “brilliant” cut have fifty-eight [facets]."]]},
+  {r:"frons, frontis: “front,” “forehead,” “face”", w:[
+   ["affront","verb / noun","To insult intentionally; to offend or embarrass. (As a noun: an insult or offensive act.)","People sometimes mistake constructive criticism for a personal [affront]."],
+   ["confront","verb","To stand or come directly in front of. Also: to face with defiance or hostility.","It is usually more productive to [confront] obstacles than to pretend they don't exist."],
+   ["effrontery","noun","Flippant or insulting boldness; audacity.","They had the [effrontery] to push ahead of me in line and then buy the last tickets."]]}
+ ]},
+ {n:10, title:"The Head", groups:[
+  {r:"supercilium: “eyebrow”", w:[
+   ["supercilious","adjective","Disdainful; haughty and aloof.","The casually dressed newcomers received [supercilious] looks from the other guests at the formal party."]]},
+  {r:"os, oris: “mouth”; oro, orare: “to speak”", w:[
+   ["inexorable","adjective","Relentless; unyielding.","Arctic explorers respect the [inexorable] force of winter storms."],
+   ["oracle","noun","A shrine where ancient Greeks consulted a god for advice or prophecy; the prophecy itself; a person who delivers it.","The [oracle] of Apollo at Delphi was a succession of young women known as Pythia."],
+   ["oration","noun","An address or formal speech given on a special occasion.","In 1963, Martin Luther King, Jr. stirred civil rights supporters with his “I Have a Dream” [oration] at the Lincoln Memorial."],
+   ["orifice","noun","A mouth or vent; an opening.","Flames erupted from the [orifice] of the great volcano."],
+   ["osculate","verb","To kiss (usually used playfully).","The newlyweds [osculated] under the mistletoe."]]},
+  {r:"dens, dentis: “tooth”", w:[
+   ["indentation","noun","A cut or notch.","Fjords are narrow waterways formed by deep [indentations] of land along the Norwegian coast."],
+   ["indenture","noun","A written contract between two parties. Also (usually plural): an agreement binding an apprentice to work for a master.","The [indenture] established each partner's responsibilities."],
+   ["trident","noun","A long three-pronged fork or weapon.","The Roman god Neptune, known to the Greeks as Poseidon, is often pictured with his [trident]."]]},
+  {r:"odon, odontos: “tooth”", w:[
+   ["orthodontist","noun","A specialist who corrects irregularly positioned teeth.","The [orthodontist] expertly fitted braces on my teeth."]]},
+  {r:"gurges, gurgitis: “throat,” “whirlpool”", w:[
+   ["gorge","noun","A deep, narrow passage with rocky sides between mountains. Also: gluttonous eating; (verb) to stuff full.","Negotiating both [gorges] and precipices, Gertrude Benham became the first woman to climb Mount Kilimanjaro."],
+   ["disgorge","verb","To expel from the throat or stomach; to vomit. Also: to discharge violently.","The baby [disgorged] the marble it had swallowed."],
+   ["gargantuan","adjective","Of immense size; gigantic.","According to legend, Paul Bunyan created the Great Lakes so his [gargantuan] blue ox Babe would have enough drinking water."],
+   ["gargoyle","noun","A grotesque carved human or animal figure, especially one used as a rainspout carrying water clear of a wall.","Look up high for [gargoyles] on the Cathedral of Notre-Dame in Paris."],
+   ["regurgitate","verb","To cast up partially digested food; to vomit. Also: to rush or surge back.","Some birds [regurgitate] semi-digested food to feed their young."]]}
+ ]},
+ {n:11, title:"The Body", groups:[
+  {r:"caro, carnis: “flesh”", w:[
+   ["carnage","noun","The killing of many people; massacre.","Civil War photographs reveal the [carnage] that took place on many battlefields in both North and South."],
+   ["carrion","noun","Dead and decaying flesh.","Vultures feed on [carrion]."],
+   ["incarnate","adjective","Embodied in human form.","Babe Didrikson Zaharias, who won more tournaments and medals in more sports than anyone in the twentieth century, is athleticism [incarnate]."]]},
+  {r:"collum: “neck”", w:[
+   ["accolade","noun","Any honor, award, or expression of approval. Also: a ceremonial tap on the shoulder with the flat of a sword.","Her opera received critical [accolades]."],
+   ["décolletage","noun","A low neckline on a garment, or a garment with a low neckline.","The drafty medieval castle discouraged [décolletage] on court dresses."]]},
+  {r:"corpus, corporis: “body”", w:[
+   ["corporal","adjective","Relating to or having an effect on the human body.","In the nineteenth century, [corporal] punishment usually meant flogging with a whip or stick."],
+   ["corporeal","adjective","Characteristic of the physical body. Also: having material substance; able to be seen.","Was the ghost of Hamlet's father imaginary or [corporeal]?"],
+   ["corps","noun","A military organization of officers or of officers and enlistees. Also: an army unit.","During WWII, the Women's Army [Corps] became known by its acronym, WACs."],
+   ["corpulent","adjective","Excessively bulky; fat.","Some designers specialize in clothes to flatter the [corpulent] figure."],
+   ["corpus","noun","A body or collection of writings. Also: a structure of special character in the animal body.","Some people believe that “Paul's Case” is the masterpiece of Willa Cather's [corpus] of short stories."]]},
+  {r:"cor, cordis: “heart”", w:[
+   ["accord","noun","Harmony; agreement. (As a verb: to grant or bestow; to agree.)","Her ambitions were not in [accord] with those of her parents."],
+   ["cordial","adjective","Hearty, warm, sincere. Also: stimulating.","A [cordial] exchange of letters between the poets Elizabeth Barrett and Robert Browning began the friendship that led to their marriage."],
+   ["concordance","noun","A state of agreement; harmony. Also: an alphabetical index of every word in a text.","The heads of state achieved [concordance] through patient diplomacy."]]},
+  {r:"os, ossis: “bone”", w:[
+   ["ossify","verb","To turn into bone. Also: to become rigid in behavior, habits, or beliefs.","An infant's skull does not [ossify] fully until after birth."]]}
+ ]},
+ {n:12, title:"The Body", groups:[
+  {r:"derma: “skin”", w:[
+   ["dermatology","noun","The scientific study of the skin and its diseases.","An allergic reaction of the skin is one of the concerns of [dermatology]."],
+   ["epidermis","noun","The outer protective layer of the skin, or the outer layer of various organisms.","The hunter's arrow did not puncture the elephant's thick [epidermis]."]]},
+  {r:"dorsum: “the back”", w:[
+   ["dorsal","adjective","Pertaining to the back, especially of animals.","When the [dorsal] fin of the shark rose from the water, the swimmers fled."],
+   ["dossier","noun","A set of documents containing information about a person or event; a file.","The candidate for a federal judgeship submitted a thick [dossier]."],
+   ["endorse","verb","To sign the back of a check or document. Also: to support actively; to sanction.","In 1969, the Labor Party in Israel [endorsed] Golda Meir as prime minister."]]},
+  {r:"gaster, gastros: “stomach,” “belly”", w:[
+   ["gastric","adjective","Pertaining to the stomach.","[Gastric] juices are acidic."],
+   ["gastronome","noun","A person who is knowledgeable about good food and drink; a gourmet.","In decades of writing about food, Ms. Fisher proved herself an elegant writer as well as a [gastronome]."]]},
+  {r:"nervus: “sinew,” “nerve”", w:[
+   ["enervate","verb","To deprive of strength; to weaken.","The heavy lunch [enervated] us."]]},
+  {r:"sanguis, sanguinis: “blood”", w:[
+   ["sanguine","adjective","Cheerful; hopeful. Also: reddish or ruddy.","The baseball team remained [sanguine] despite their losing season."],
+   ["consanguinity","noun","Blood relationship. Also: any close relationship.","Although the four sisters in Little Women enjoy [consanguinity], they differ greatly in temperament."]]},
+  {r:"sedeo, sedere: “to sit,” “to settle”", w:[
+   ["assiduous","adjective","Unceasingly attentive; devoted. Also: persistent; diligent.","Freshwater aquariums require [assiduous] care."],
+   ["dissident","adjective","Differing; disagreeing; dissenting. (As a noun: a person who disagrees.)","Totalitarian governments do not tolerate [dissident] voices."],
+   ["séance","noun","A meeting at which a spiritualist attempts to communicate with the dead.","At the [séance], no communication came from the other world."],
+   ["sedentary","adjective","Characterized by much sitting. Also: remaining in one area; not migratory.","Computer programmers spend many [sedentary] hours at their desks."],
+   ["supersede","verb","To take the place of; to replace.","The steamship [superseded] the sailing ship as the standard ocean-going vessel."]]}
+ ]},
+ {n:13, title:"The Hands", groups:[
+  {r:"manus: “hand”", w:[
+   ["emancipate","verb","To free from restraint or influence. Also: to free a slave from bondage.","The Nineteenth Amendment to the U.S. Constitution [emancipated] women as voters in 1920."],
+   ["manacle","noun","A device for confining the hands; handcuffs (usually plural). Also: anything that constrains.","Their [manacles] were removed, and the prisoners were set free."],
+   ["mandate","noun","A formal order from a higher court; an authoritative command, order, or injunction.","A court of appeals [mandate] overturned the verdict of the district court."],
+   ["manifest","adjective","Clearly apparent to sight or understanding; obvious. (Verb: to show plainly; noun: a list of cargo or passengers.)","Check the [manifest] to see if a doctor is on board."],
+   ["manipulate","verb","To use or handle skillfully. Also: to manage with devious skill.","Queen Elizabeth I cleverly [manipulated] her royal suitors, pretending interest in marriage to keep peace with their countries."]]},
+  {r:"dextra: “right hand”", w:[
+   ["dexterity","noun","Skill in the use of the hands or body; adroitness. Also: mental skill; cleverness.","The complexity of computer programs shows the [dexterity] of the designers."],
+   ["ambidextrous","adjective","Able to use either hand equally well.","The [ambidextrous] pitcher kept batters off balance."]]},
+  {r:"digitus: “finger”", w:[
+   ["digital","adjective","Relating to a finger. Also: referring to a numerical system for encoding data.","Lacemaking requires exceptional [digital] skill."]]},
+  {r:"flecto, flectere: “to bend”", w:[
+   ["deflect","verb","To turn aside; to swerve.","The official tried to [deflect] the reporter's embarrassing questions."],
+   ["genuflect","verb","To bend the knee in a kneeling or half-kneeling position to express reverence or respect.","King Richard II chided the Duke of Northumberland for failing to [genuflect], an honor due the English monarch."],
+   ["inflection","noun","An alteration of pitch or tone of the voice. In grammar: a change in a word's form.","The English often ask questions with a falling [inflection]; Americans, with a rising one."],
+   ["reflection","noun","Something thrown back, as light, heat, sound, or an image. Also: discredit; deep thought.","The breeze over the pond blurred the [reflection] of autumn foliage.",["reflections"]]]},
+  {r:"rapio, rapere: “to snatch”", w:[
+   ["rapacious","adjective","Excessively grasping or greedy. Also: given to seizing for plunder or as prey.","[Rapacious] land developers endangered the wildlife preserve."],
+   ["rapt","adjective","Giving one's complete attention. Also: overcome with emotion; filled with joy.","The storyteller held the children in [rapt] silence as they listened to the adventures of Brer Rabbit."],
+   ["surreptitious","adjective","Done secretly, without approval.","Our [surreptitious] raids on the cookie jar ended when we got caught."]]}
+ ]},
+ {n:14, title:"The Hands", groups:[
+  {r:"plico, plicare: “to fold”", w:[
+   ["complicity","noun","Participation with another in an act that is or seems to be deceitful.","The [complicity] of Mary Queen of Scots in a plan to murder Queen Elizabeth I appears in letters written in 1586."],
+   ["duplicity","noun","Deceitfulness in speech or conduct; double-dealing. Also: doubleness.","Voters do not approve of [duplicity] by elected officials."],
+   ["explicate","verb","To make clear; to explain thoroughly, often in a literary context.","If you read Madame Bovary in French class, your teacher will no doubt ask you to [explicate] the text."],
+   ["explicit","adjective","Definite; stated in detail, leaving nothing to be guessed at; outspoken.","When giving directions, be [explicit]."],
+   ["exploit","noun","A notable or heroic deed. (As a verb: to make selfish or unethical use of; to publicize.)","Beryl Markham's greatest [exploit] was making the first solo flight from east to west across the Atlantic Ocean."],
+   ["imply","verb","To indicate indirectly; to hint. Also: to require as a necessary condition.","My teacher [implied] that I had done well."],
+   ["ploy","noun","A tactic intended to frustrate, embarrass, or gain an advantage over an opponent.","The tennis player's constant chatter may be a [ploy] to disrupt a rival's concentration."],
+   ["ply","verb","To use a tool vigorously; to work at a trade. Also: to offer something persistently. (Noun: thickness of cloth, yarn, or rope.)","Our teachers [ply] us with questions to make us think."],
+   ["supplicate","verb","To ask humbly or earnestly for, as in praying; to beseech.","When the legendary Amazons were in difficulty, they [supplicated] the goddess Artemis."]]},
+  {r:"prehendo, prehendere: “to catch,” “to seize,” “to grasp”", w:[
+   ["apprehend","verb","To arrest. Also: to grasp mentally; to understand; to anticipate with anxiety.","The police [apprehended] the thieves carrying stolen goods."],
+   ["comprise","verb","To consist of; to contain.","The jury that found the defendant not guilty [comprised] six women and six men."],
+   ["entrepreneur","noun","A person who organizes, operates, and assumes the risk for business ventures.","The lemonade stand was our first venture as [entrepreneurs]."],
+   ["impregnable","adjective","Strong enough to resist attack or capture, as a fortress. Also: not to be overcome in argument.","In WWII, the French believed their Maginot Line to be [impregnable]."],
+   ["reprehend","verb","To reprimand, reprove, or express disapproval.","The judge [reprehended] the attorney for manipulating the evidence."],
+   ["reprisal","noun","An act of retaliation against someone for injuries received.","In 1942, the Nazis destroyed the Czech village of Lidice as a [reprisal] for the assassination of a German police official."]]}
+ ]},
+ {n:15, title:"The Feet", groups:[
+  {r:"pes, pedis: “foot”", w:[
+   ["expedient","adjective","Appropriate to a purpose or useful in achieving a goal. (Noun: a means to an end.)","Mary Ann Evans found it [expedient] to publish her novels under the name George Eliot."],
+   ["expedite","verb","To help or hurry the progress of something. Also: to perform business quickly.","International cooperation can [expedite] a country's recovery after a serious earthquake or flood."],
+   ["impede","verb","To hinder; to block the way of.","Rival claims to territory have [impeded] a permanent peace in the Middle East."],
+   ["pedigree","noun","A line or list of ancestors, especially distinguished ones. Also: a recorded line of descent of a purebred animal.","Living up to his distinguished [pedigree], the colt Citation won the Triple Crown of American racing."],
+   ["pedometer","noun","A device that calculates distance traveled by counting the number of steps taken.","The [pedometer] attached to the hiker's belt recorded a walk of ten miles."],
+   ["peon","noun","An unskilled laborer or farm worker, especially in Latin America; a person who does menial work. (Not defined in your packet, standard dictionary meaning.)",null]]},
+  {r:"pous, podos: “foot”", w:[
+   ["antipodes","noun","Any two places on opposite sides of the earth. Also: the exact opposite of something.","Charles Lamb observed that a beggar is always the [antipodes] to a king."],
+   ["podiatry","noun","The study and treatment of foot ailments.","[Podiatry] includes the treatment of corns and bunions."],
+   ["podium","noun","An elevated platform for an orchestra conductor or lecturer; a dais.","In 1976, Sarah Caldwell became the first woman to mount the [podium] and conduct at the Metropolitan Opera House."]]},
+  {r:"gradior, gradi: “to step,” “to walk”", w:[
+   ["aggression","noun","The act or habit of launching attacks; invasion. Also: hostile action or behavior.","Italy's [aggression] against Ethiopia began in 1936."],
+   ["degradation","noun","Reduction in rank or status. Also: lowering of moral character; disgrace.","While Dorian Gray remains beautiful despite his moral [degradation], his portrait grows increasingly hideous."],
+   ["digress","verb","To stray from the main topic in writing or speaking; to turn aside.","Careful writers do not [digress] from the assigned topic on an exam."],
+   ["gradation","noun","A systematic progression through a series of stages.","The [gradation] of colors in the spectrum moves from red to violet."],
+   ["gradient","noun","An incline or slope; the rate of incline.","The [gradient] of some streets in San Francisco is so steep that drivers must take special precautions when parking."],
+   ["regress","verb","To go back; to return to a former or less developed condition.","A new baby in the family sometimes causes older siblings to [regress] to babyish behaviors."]]}
+ ]},
+ {n:16, title:"The Feet", groups:[
+  {r:"ambulo, ambulare: “to walk around”", w:[
+   ["ambulatory","adjective","Able to walk about; pertaining to walking. (Noun: a place for walking; a cloister.)","Although impeded by a cast, the patient was [ambulatory]."],
+   ["preamble","noun","A preliminary statement in speech or writing; an introductory part.","The coordinator gave a brief [preamble] before the conference began."]]},
+  {r:"calcitro, calcitrare: “to kick”", w:[
+   ["recalcitrant","adjective","Stubbornly resistant to authority or guidance. Also: hard to manage.","An experienced trainer can teach the most [recalcitrant] animal to obey."]]},
+  {r:"sto, stare: “to stand”; statio: “a standing”", w:[
+   ["constituent","adjective","Serving as a necessary part of a whole. (Noun: a voter in a district represented by an elected official.)","The heart and lungs are [constituent] parts of the body."],
+   ["desist","verb","To cease doing something; to abstain (often used with “from”).","Cesar Chavez refused to [desist] from a hunger strike in support of farm workers."],
+   ["destitute","adjective","Altogether lacking. Also: poverty-stricken.","The refugees were [destitute] of hope."],
+   ["interstice","noun","An intervening space; a chink; a crevice.","The archaeologist discovered a fragment of ancient bone in the [interstice] between two rocks."],
+   ["obstinate","adjective","Very stubborn; inflexible. Also: difficult to control or subdue.","A conditioner helps control [obstinate] hair."],
+   ["oust","verb","To force out of a position or place.","Voters [ousted] the corrupt judge."],
+   ["restitution","noun","Restoration of a thing to its proper owner or original state. Also: repayment for injury or damage.","The manufacturer made full [restitution] to consumers who had bought the faulty pedometers."],
+   ["restive","adjective","Uneasy; restless. Also: unruly.","The class grew [restive] during the two-hour lecture."],
+   ["stance","noun","The position of the body and feet while standing. Also: an emotional or mental attitude.","The guards at Buckingham Palace do not break their military [stance], even when tourists ask them questions."],
+   ["static","adjective","At rest; unmoving. Also: pertaining to electric charges; radio or TV interference.","The drama critic charged that some scenes in the new play were [static] and therefore dull."],
+   ["subsist","verb","To exist. Also: to be sustained; to live (used with “on” or “by”).","Survivors [subsisted] for weeks on roots and berries."]]}
+ ]}
+];
+CHAPTERS.forEach(c => {
+  c.words = [];
+  c.groups.forEach(g => g.w.forEach(([w,pos,d,s,alts]) => c.words.push({w,pos,d,s,r:g.r,alts:alts||[]})));
+});
+
+let CH = CHAPTERS[1], WORDS = CH.words;
+
+const CAN_SPEAK = ('speechSynthesis' in window) && typeof SpeechSynthesisUtterance !== 'undefined';
+
+const MODES = {
+  def:   {name:"Definition → Word", desc:"Read the definition, spell the word.", icon:"📘"},
+  sent:  {name:"Fill in the Blank", desc:"Finish the example sentence.", icon:"✏️"},
+  bee:   {name:"Spelling Bee", desc:"Hear the word out loud, then spell it.", icon:"🐝", needsSpeech:true},
+  mixed: {name:"Mixed", desc:"Definitions and sentences, shuffled.", icon:"🔀"},
+  learn: {name:"Mastery", desc:"Missed words come back until you've gotten every word right.", icon:"🧠"},
+  weak:  {name:"Weak Words", desc:"Drills the 8 words you miss most.", icon:"🎯"},
+  blitz: {name:"Blitz · 90s", desc:"Speed round. Faster answers earn bonus points.", icon:"⚡"}
+};
+const BLITZ_MS = 90000;
+
+/* ---------- STORAGE ---------- */
+const KEY = "genVocabQuiz.v2";
+let ST = {best:{}, words:{}, bestStreak:0, settings:{count:0, second:true, ch:2}};
+try { const saved = JSON.parse(localStorage.getItem(KEY)); if (saved) ST = Object.assign(ST, saved); } catch(e){}
+Object.keys(ST.best).forEach(k => { if (!k.includes(":")){ ST.best["2:" + k] = ST.best[k]; delete ST.best[k]; } });
+if (ST.settings.count === 15) ST.settings.count = 0;
+if (!ST.settings.ch) ST.settings.ch = 2;
+const bestKey = m => CH.n + ":" + m;
+function setChapter(n){ CH = CHAPTERS.find(c => c.n === n) || CHAPTERS[1]; WORDS = CH.words; ST.settings.ch = CH.n; save(); }
+setChapter(ST.settings.ch);
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(ST)); } catch(e){} }
+
+/* ---------- HELPERS ---------- */
+const $ = id => document.getElementById(id);
+const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+function shuffle(a){ a = a.slice(); for (let k = a.length-1; k > 0; k--){ const j = Math.floor(Math.random()*(k+1)); [a[k],a[j]] = [a[j],a[k]]; } return a; }
+function say(word){ if (!CAN_SPEAK) return; try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(word); u.lang = "en-US"; u.rate = 0.85; speechSynthesis.speak(u); } catch(e){} }
+const norm = t => t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase().replace(/\s+/g, " ");
+const sentForm = w => { const m = w.s && w.s.match(/\[([^\]]+)\]/); return m ? m[1] : null; };
+const sentBlank = w => w.s.replace(/\[[^\]]+\]/, "____");
+const sentPlain = w => w.s.replace(/\[([^\]]+)\]/, "$1");
+function fmtTime(ms){ const s = Math.max(0, Math.round(ms/1000)); return Math.floor(s/60) + ":" + String(s%60).padStart(2,"0"); }
+function wordAcc(w){ const r = ST.words[w]; return r && r.t ? r.c / r.t : null; }
+
+function show(id){
+  ["home","quiz","end","study","stats","mquiz","mend","mnotes"].forEach(s => $(s).classList.toggle("hidden", s !== id));
+  window.scrollTo(0,0);
+}
+
+/* Levenshtein with backtrace: ops describe how to turn typed into correct */
+function diffOps(a, b){
+  const n = a.length, m = b.length, dp = [];
+  for (let i = 0; i <= n; i++){ dp[i] = [i]; }
+  for (let j = 0; j <= m; j++){ dp[0][j] = j; }
+  for (let i = 1; i <= n; i++) for (let j = 1; j <= m; j++)
+    dp[i][j] = Math.min(dp[i-1][j]+1, dp[i][j-1]+1, dp[i-1][j-1] + (a[i-1] === b[j-1] ? 0 : 1));
+  const ops = []; let i = n, j = m;
+  while (i > 0 || j > 0){
+    if (i > 0 && j > 0 && a[i-1] === b[j-1] && dp[i][j] === dp[i-1][j-1]){ ops.push(["=", a[i-1]]); i--; j--; }
+    else if (i > 0 && j > 0 && dp[i][j] === dp[i-1][j-1] + 1){ ops.push(["~", a[i-1], b[j-1]]); i--; j--; }
+    else if (i > 0 && dp[i][j] === dp[i-1][j] + 1){ ops.push(["-", a[i-1]]); i--; }
+    else { ops.push(["+", b[j-1]]); j--; }
+  }
+  return {ops: ops.reverse(), dist: dp[n][m]};
+}
+function renderDiff(typed, correct){
+  const box = el("span", "diff");
+  diffOps(typed, correct).ops.forEach(op => {
+    if (op[0] === "=") box.appendChild(document.createTextNode(op[1]));
+    else if (op[0] === "~"){ box.appendChild(el("span","x",op[1])); box.appendChild(el("span","add",op[2])); }
+    else if (op[0] === "-") box.appendChild(el("span","x",op[1]));
+    else box.appendChild(el("span","add",op[1]));
+  });
+  return box;
+}
+
+/* ---------- HOME ---------- */
+function renderHome(){
+  const isMath = ST.subject === "math";
+  document.querySelectorAll("#subjBar button").forEach(b => b.classList.toggle("on", b.dataset.subj === ST.subject));
+  $("vocabHome").classList.toggle("hidden", isMath); $("mathHome").classList.toggle("hidden", !isMath);
+  $("toStudy").textContent = isMath ? "📖 Notes summary" : "📖 Study list";
+  $("countSel").value = String(ST.settings.count);
+  $("secondChance").checked = !!ST.settings.second;
+  if (isMath){ renderMathHome(); show("home"); return; }
+  const sel = $("chapSel");
+  if (!sel.options.length){
+    CHAPTERS.forEach(c => { const o = el("option", null, `Chapter ${c.n}: ${c.title} (${c.words.length} words)`); o.value = c.n; sel.appendChild(o); });
+  }
+  sel.value = String(CH.n);
+  $("chapRoots").textContent = "Roots: " + CH.groups.map(g => g.r).join(" · ");
+  const box = $("modes"); box.innerHTML = "";
+  Object.entries(MODES).forEach(([key, m]) => {
+    if (m.needsSpeech && !CAN_SPEAK) return;
+    const b = el("button", "mode");
+    b.appendChild(el("b", null, m.icon + " " + m.name));
+    b.appendChild(el("span", null, m.desc));
+    b.appendChild(el("i", null, ST.best[bestKey(key)] ? "Best: " + ST.best[bestKey(key)] + " pts" : ""));
+    b.onclick = () => startMode(key);
+    box.appendChild(b);
+  });
+  $("countSel").value = String(ST.settings.count);
+  $("secondChance").checked = !!ST.settings.second;
+  show("home");
+}
+$("chapSel").onchange = e => { setChapter(+e.target.value); renderHome(); };
+$("countSel").onchange = e => { ST.settings.count = +e.target.value; save(); };
+$("secondChance").onchange = e => { ST.settings.second = e.target.checked; save(); };
+$("toStudy").onclick = () => ST.subject === "math" ? renderMNotes() : renderStudy();
+$("toStats").onclick = () => { resetBackupUI(); ST.subject === "math" ? renderMStats() : renderStats(); };
+document.querySelectorAll("[data-home]").forEach(b => b.onclick = renderHome);
+
+/* ---------- GAME ---------- */
+let S = null;
+
+function pickType(mode, w){
+  let t = (mode === "def" || mode === "sent" || mode === "bee") ? mode : (Math.random() < 0.5 ? "def" : "sent");
+  if (t === "sent" && !(w && w.s)) t = "def";
+  return t;
+}
+function weakest(n){
+  const scored = WORDS.map(w => { const r = ST.words[w.w] || {c:0,t:0}; return {w, k:(r.c+1)/(r.t+2) + Math.random()*0.01}; });
+  return scored.sort((a,b) => a.k - b.k).slice(0, n).map(x => x.w);
+}
+
+function startMode(mode, override){
+  clearTimers();
+  let list = override || (mode === "weak" ? weakest(8) : WORDS);
+  let queue = shuffle(list);
+  if (!override && ["def","sent","bee","mixed"].includes(mode) && ST.settings.count) queue = queue.slice(0, ST.settings.count);
+  S = {
+    mode, queue: queue.map(w => ({w, type: pickType(mode, w)})), idx: 0,
+    score: 0, streak: 0, bestStreak: 0, results: [], mastered: new Set(),
+    total: queue.length, start: Date.now(), timer: null, adv: null, override: !!override
+  };
+  $("hudTimer").classList.toggle("hidden", mode !== "blitz");
+  if (mode === "blitz"){
+    S.end = Date.now() + BLITZ_MS;
+    S.timer = setInterval(tick, 200); tick();
+  }
+  show("quiz");
+  showQ();
+}
+function clearTimers(){ if (S){ clearInterval(S.timer); clearTimeout(S.adv); } }
+function tick(){
+  const rem = S.end - Date.now();
+  $("hudTimer").textContent = "⏱ " + fmtTime(rem);
+  $("prog").style.width = (100 - rem/BLITZ_MS*100) + "%";
+  if (rem <= 0) finish();
+}
+
+function showQ(){
+  const q = S.queue[S.idx];
+  S.hint = 0; S.attempt = 1; S.answered = false; S.qStart = Date.now();
+  const wrap = $("promptWrap"); wrap.innerHTML = "";
+  if (q.type === "def"){
+    $("pos").textContent = q.w.pos;
+    wrap.appendChild(el("p", "prompt", q.w.d));
+  } else if (q.type === "sent"){
+    $("pos").textContent = "fill in the blank · " + q.w.pos;
+    const p = el("p", "prompt");
+    const parts = sentBlank(q.w).split("____");
+    p.appendChild(document.createTextNode(parts[0]));
+    p.appendChild(el("span", "blank", " "));
+    p.appendChild(document.createTextNode(parts[1] || ""));
+    wrap.appendChild(p);
+  } else {
+    $("pos").textContent = "spelling bee · " + q.w.pos;
+    const b = el("button", "play primary", "🔊 Play word");
+    b.type = "button"; b.onclick = () => { say(q.w.w); $("answer").focus(); };
+    wrap.appendChild(b);
+    say(q.w.w);
+  }
+  $("hint").classList.add("hidden"); $("hint").innerHTML = "";
+  const a = $("answer"); a.value = ""; a.className = ""; a.readOnly = false; a.placeholder = "Type the word…";
+  $("fb").innerHTML = ""; $("fb").className = "fb";
+  $("check").textContent = "Check";
+  $("skip").disabled = false;
+  $("sayRow").classList.add("hidden");
+  updateHintBtn();
+  updateHud();
+  a.focus();
+}
+
+function updateHud(){
+  $("hudScore").textContent = S.score + " pts";
+  $("hudStreak").textContent = S.streak >= 2 ? "🔥" + S.streak : "";
+  if (S.mode === "learn"){
+    $("count").textContent = `Mastered ${S.mastered.size} of ${S.total}`;
+    $("prog").style.width = (S.mastered.size / S.total * 100) + "%";
+  } else if (S.mode === "blitz"){
+    $("count").textContent = `Question ${S.idx + 1} · ${S.results.filter(r => r.ok).length} correct`;
+  } else {
+    $("count").textContent = `Word ${S.idx + 1} of ${S.queue.length}`;
+    $("prog").style.width = (S.idx / S.queue.length * 100) + "%";
+  }
+}
+
+function updateHintBtn(){
+  const q = S.queue[S.idx];
+  const labels = ["Hint: letters", "Hint: 1st letter", q.type === "def" ? (q.w.s ? "Hint: sentence" : "Hint: root") : "Hint: definition"];
+  const b = $("hintBtn");
+  b.textContent = S.hint < 3 ? labels[S.hint] : "No more hints";
+  b.disabled = S.hint >= 3 || S.answered;
+}
+$("hintBtn").onclick = () => {
+  if (S.answered || S.hint >= 3) return;
+  S.hint++;
+  const q = S.queue[S.idx], w = q.w.w, box = $("hint");
+  box.innerHTML = "";
+  const letters = w.split("").map((c, k) => (S.hint >= 2 && k === 0) ? c : "_").join(" ");
+  box.appendChild(el("span", "letters", letters));
+  box.appendChild(document.createTextNode(`${w.length} letters`));
+  if (S.hint >= 3){
+    const extra = q.type === "def" ? (q.w.s ? "\n" + sentBlank(q.w) : "\nRoot: " + q.w.r) : "\nDefinition: " + q.w.d;
+    box.appendChild(document.createTextNode(extra));
+  }
+  box.classList.remove("hidden");
+  updateHintBtn();
+  $("answer").focus();
+};
+
+function isCorrect(typed, q){
+  const t = norm(typed);
+  const ok = [q.w.w, ...q.w.alts];
+  if (q.type === "sent" && sentForm(q.w)) ok.push(sentForm(q.w));
+  return ok.some(a => norm(a) === t);
+}
+
+function calcPoints(){
+  let p = 100 - 20 * S.hint;
+  if (S.attempt === 2) p *= 0.5;
+  p *= 1 + Math.min(S.streak, 10) * 0.1;
+  if (S.mode === "blitz"){ const secs = (Date.now() - S.qStart) / 1000; p += Math.max(0, 50 - secs * 5); }
+  return Math.max(10, Math.round(p));
+}
+
+$("form").addEventListener("submit", e => {
+  e.preventDefault();
+  if (S.answered){ next(); return; }
+  const typed = $("answer").value.trim();
+  if (!typed){ $("answer").focus(); return; }
+  const q = S.queue[S.idx];
+  if (isCorrect(typed, q)) return reveal(true, typed);
+  const dist = diffOps(norm(typed), norm(q.w.w)).dist;
+  if (S.attempt === 1 && ST.settings.second && S.mode !== "blitz"){
+    S.attempt = 2;
+    const a = $("answer"); a.className = "retry"; a.classList.add("shake");
+    setTimeout(() => a.classList.remove("shake"), 520);
+    $("fb").className = "fb warn";
+    $("fb").textContent = dist === 1 ? "So close, just 1 letter off. Try again (half points)."
+                        : dist === 2 ? "2 letters off. Try again (half points)."
+                        : "Not it. One more try (half points).";
+    a.select();
+    return;
+  }
+  reveal(false, typed);
+});
+$("skip").onclick = () => { if (!S.answered) reveal(false, ""); };
+$("sayBtn").onclick = () => say(S.queue[S.idx].w.w);
+["hintBtn","skip","check","sayBtn"].forEach(id => $(id).addEventListener("mousedown", e => e.preventDefault()));
+$("quit").onclick = () => { clearTimers(); $("answer").blur(); renderHome(); };
+
+function reveal(ok, typed){
+  const q = S.queue[S.idx], w = q.w.w;
+  S.answered = true;
+  const a = $("answer"); a.readOnly = true;
+  $("skip").disabled = true; updateHintBtn();
+  const rec = ST.words[w] || (ST.words[w] = {c:0, t:0});
+  rec.t++; if (ok) rec.c++;
+  const fb = $("fb"); fb.innerHTML = "";
+  let pts = 0;
+  if (ok){
+    S.streak++; S.bestStreak = Math.max(S.bestStreak, S.streak);
+    pts = calcPoints(); S.score += pts;
+    if (S.mode === "learn") S.mastered.add(w);
+    a.className = "good"; fb.className = "fb good";
+    let msg = `✓ Correct! +${pts}`;
+    if (S.streak >= 2) msg += `  🔥${S.streak} streak`;
+    fb.textContent = msg;
+  } else {
+    S.streak = 0;
+    a.className = "bad"; fb.className = "fb bad";
+    fb.appendChild(document.createTextNode(typed ? "✗ Not quite. " : "Skipped. "));
+    const n = el("span", "norm", "The word is "); n.appendChild(el("b", null, w)); fb.appendChild(n);
+    if (typed && diffOps(norm(typed), norm(w)).dist <= Math.ceil(w.length / 2)){
+      fb.appendChild(document.createElement("br"));
+      fb.appendChild(renderDiff(norm(typed), norm(w)));
+      fb.appendChild(el("div", "legend", "red strikethrough = remove · green underline = add"));
+    }
+    if (S.mode === "learn"){
+      const pos = Math.min(S.queue.length, S.idx + 3);
+      S.queue.splice(pos, 0, {w: q.w, type: pickType("learn", q.w)});
+    }
+  }
+  const rl = el("div", "rootline"); rl.appendChild(document.createTextNode("Root: ")); rl.appendChild(el("b", null, q.w.r));
+  fb.appendChild(rl);
+  S.results.push({w, typed, ok, hints: S.hint, attempt: S.attempt, pts});
+  save();
+  updateHud();
+  if (CAN_SPEAK) $("sayRow").classList.remove("hidden");
+  const last = S.mode !== "blitz" && S.idx >= S.queue.length - 1;
+  $("check").textContent = last ? "See results" : "Next →";
+  a.placeholder = "Tap Go or Next →";
+  if (S.mode === "blitz"){ S.adv = setTimeout(next, ok ? 550 : 1600); }
+}
+
+function next(){
+  clearTimeout(S.adv);
+  S.idx++;
+  if (S.mode === "blitz"){
+    if (Date.now() >= S.end) return finish();
+    if (S.idx >= S.queue.length) S.queue = S.queue.concat(shuffle(WORDS).map(w => ({w, type: pickType("mixed", w)})));
+    return showQ();
+  }
+  if (S.idx >= S.queue.length) return finish();
+  showQ();
+}
+
+/* ---------- RESULTS ---------- */
+function finish(){
+  if (!S || S.finished) return;
+  S.finished = true; clearTimers();
+  $("answer").blur();
+  const answered = S.results.length, correct = S.results.filter(r => r.ok).length;
+  const acc = answered ? Math.round(correct / answered * 100) : 0;
+  const elapsed = S.mode === "blitz" ? BLITZ_MS : Date.now() - S.start;
+  let newBest = false;
+  if (!S.override && S.score > (ST.best[bestKey(S.mode)] || 0)){ ST.best[bestKey(S.mode)] = S.score; newBest = true; }
+  ST.bestStreak = Math.max(ST.bestStreak || 0, S.bestStreak);
+  save();
+
+  $("endMode").textContent = `Chapter ${CH.n} · ` + MODES[S.mode].icon + " " + MODES[S.mode].name + (S.override ? " · retry" : "");
+  $("endScore").textContent = S.score;
+  $("newBest").classList.toggle("hidden", !newBest);
+  $("endAcc").textContent = acc + "%";
+  $("endStreak").textContent = "🔥" + S.bestStreak;
+  $("endTime").textContent = fmtTime(elapsed);
+  $("bragText").classList.add("hidden");
+  $("brag").textContent = "📋 Copy score to send";
+
+  const missed = [...new Set(S.results.filter(r => !r.ok).map(r => r.w))];
+  $("retryMissed").classList.toggle("hidden", missed.length === 0);
+  $("retryMissed").onclick = () => startMode(["def","sent","bee"].includes(S.mode) ? S.mode : "mixed",
+                                             WORDS.filter(w => missed.includes(w.w)));
+  const replayMode = S.mode, replayList = S.override ? WORDS.filter(w => S.results.some(r => r.w === w.w)) : null;
+  $("again").onclick = () => startMode(replayMode, replayList);
+
+  const ul = $("resList"); ul.innerHTML = "";
+  if (!answered) ul.appendChild(el("li", "small", "No answers this round."));
+  S.results.forEach(r => {
+    const li = el("li");
+    li.appendChild(el("span", r.ok ? "ok" : "no", r.ok ? "✓ " : "✗ "));
+    li.appendChild(el("b", null, r.w));
+    const notes = [];
+    if (r.ok) notes.push("+" + r.pts);
+    if (r.hints) notes.push(r.hints + " hint" + (r.hints > 1 ? "s" : ""));
+    if (r.attempt === 2 && r.ok) notes.push("2nd try");
+    if (!r.ok && !r.typed) notes.push("skipped");
+    if (notes.length) li.appendChild(el("span", "small", "  " + notes.join(" · ")));
+    if (!r.ok && r.typed && diffOps(norm(r.typed), norm(r.w)).dist <= Math.ceil(r.w.length / 2)){ li.appendChild(document.createElement("br")); li.appendChild(renderDiff(norm(r.typed), norm(r.w))); }
+    ul.appendChild(li);
+  });
+
+  S.bragMsg = `Vocab Ch. ${CH.n} (${MODES[S.mode].name}): ${S.score} pts, ${correct}/${answered} spelled right, 🔥${S.bestStreak} streak. Beat that.`;
+  show("end");
+  if (newBest || (answered >= 5 && correct === answered)) confetti();
+}
+$("home2").onclick = renderHome;
+$("brag").onclick = () => {
+  const t = S.bragMsg, box = $("bragText");
+  const fallback = () => { box.value = t; box.classList.remove("hidden"); box.select(); $("brag").textContent = "Select and copy below"; };
+  try {
+    navigator.clipboard.writeText(t).then(() => { $("brag").textContent = "✓ Copied!"; }).catch(fallback);
+  } catch(e){ fallback(); }
+};
+
+/* ---------- STUDY ---------- */
+function renderStudy(){
+  const box = $("studyList"); box.innerHTML = "";
+  $("studyTitle").textContent = `Chapter ${CH.n}: ${CH.title}`;
+  CH.groups.forEach(g => {
+    box.appendChild(el("div", "grouphead", g.r));
+    WORDS.filter(w => w.r === g.r).forEach(w => {
+      const d = el("div", "word");
+      const top = el("div"); top.appendChild(el("span", "w", w.w));
+      top.appendChild(el("span", "small", "  " + w.pos));
+      if (CAN_SPEAK){ const b = el("button", "say", "🔊"); b.onclick = () => say(w.w); top.appendChild(b); }
+      d.appendChild(top);
+      d.appendChild(el("div", "d", w.d));
+      if (w.s) d.appendChild(el("div", "s", sentPlain(w)));
+      box.appendChild(d);
+    });
+  });
+  show("study");
+}
+
+/* ---------- STATS ---------- */
+function renderStats(){
+  const bl = $("bestList"); bl.innerHTML = "";
+  $("statsTitle").textContent = `Chapter ${CH.n} best scores`;
+  $("accTitle").innerHTML = 'Word accuracy <span class="small">(weakest first)</span>';
+  Object.entries(MODES).forEach(([k, m]) => {
+    if (m.needsSpeech && !CAN_SPEAK) return;
+    const row = el("div", null); row.style.cssText = "display:flex;justify-content:space-between;padding:4px 0";
+    row.appendChild(el("span", null, m.icon + " " + m.name));
+    row.appendChild(el("b", null, ST.best[bestKey(k)] ? ST.best[bestKey(k)] + " pts" : "–"));
+    bl.appendChild(row);
+  });
+  const sr = el("div", "small", "Longest streak ever: 🔥" + (ST.bestStreak || 0)); sr.style.marginTop = "8px"; bl.appendChild(sr);
+
+  const al = $("accList"); al.innerHTML = "";
+  const sorted = WORDS.slice().sort((a, b) => {
+    const x = wordAcc(a.w), y = wordAcc(b.w);
+    return (x == null ? 2 : x) - (y == null ? 2 : y);
+  });
+  sorted.forEach(w => {
+    const r = ST.words[w.w], acc = wordAcc(w.w);
+    const d = el("div", "word");
+    const top = el("div"); top.style.cssText = "display:flex;justify-content:space-between";
+    top.appendChild(el("span", "w", w.w));
+    top.appendChild(el("span", "small", acc == null ? "not tried yet" : `${Math.round(acc*100)}%  (${r.c}/${r.t})`));
+    d.appendChild(top);
+    const bar = el("div", "acc"), fill = el("div");
+    fill.style.width = (acc == null ? 0 : acc * 100) + "%";
+    fill.style.background = acc == null ? "transparent" : acc >= .8 ? "var(--good)" : acc >= .5 ? "var(--warn)" : "var(--bad)";
+    bar.appendChild(fill); d.appendChild(bar);
+    al.appendChild(d);
+  });
+  $("resetStats").textContent = "Reset vocab stats (all chapters)";
+  $("resetStats").dataset.armed = "";
+  show("stats");
+}
+$("resetStats").onclick = e => {
+  const b = e.currentTarget;
+  if (!b.dataset.armed){ b.dataset.armed = "1"; b.textContent = "Tap again to confirm reset"; return; }
+  if (ST.subject === "math"){ ST.mbest = {}; ST.mq = {}; save(); renderMStats(); return; }
+  ST.best = {}; ST.words = {}; ST.bestStreak = 0; save(); renderStats();
+};
+
+/* ---------- CONFETTI ---------- */
+function confetti(){
+  const c = $("confetti"), ctx = c.getContext("2d");
+  c.width = innerWidth; c.height = innerHeight;
+  const colors = ["#3b5bdb","#2f9e44","#e8590c","#f59f00","#e03131","#ae3ec9"];
+  const P = Array.from({length: 140}, () => ({
+    x: c.width/2 + (Math.random()-.5)*120, y: c.height*0.35,
+    vx: (Math.random()-.5)*12, vy: -Math.random()*12 - 4,
+    s: 5 + Math.random()*5, r: Math.random()*6, vr: (Math.random()-.5)*.3,
+    col: colors[Math.floor(Math.random()*colors.length)]
+  }));
+  let frames = 0;
+  (function draw(){
+    ctx.clearRect(0, 0, c.width, c.height);
+    P.forEach(p => {
+      p.vy += 0.35; p.x += p.vx; p.y += p.vy; p.r += p.vr;
+      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.r);
+      ctx.fillStyle = p.col; ctx.fillRect(-p.s/2, -p.s/4, p.s, p.s/2); ctx.restore();
+    });
+    if (++frames < 150) requestAnimationFrame(draw); else ctx.clearRect(0, 0, c.width, c.height);
+  })();
+}
+
+/* ---------- MATH CORE: parse, evaluate, render, check ---------- */
+const MC = (() => {
+  const FUN = {sqrt:Math.sqrt, cbrt:Math.cbrt, sin:Math.sin, cos:Math.cos, tan:Math.tan, ln:Math.log, log:Math.log10, abs:Math.abs};
+  const FNAMES = Object.keys(FUN).sort((a,b) => b.length - a.length);
+
+  function clean(s){
+    return String(s)
+      .replace(/[−–—]/g, "-").replace(/[×·∙•]/g, "*").replace(/÷/g, " ÷ ")
+      .replace(/π/g, "pi").replace(/√/g, "sqrt").replace(/∛/g, "cbrt")
+      .replace(/²/g, "^2").replace(/³/g, "^3").replace(/∞/g, "inf")
+      .replace(/[\[{]/g, "(").replace(/[\]}]/g, ")");
+  }
+
+  function tokenize(src){
+    const s = clean(src), out = [];
+    let i = 0;
+    while (i < s.length){
+      const c = s[i];
+      if (/\s/.test(c)){ i++; continue; }
+      if (/[0-9.]/.test(c)){
+        const m = s.slice(i).match(/^(\d+\.?\d*|\.\d+)/);
+        if (!m) throw new Error("bad number");
+        out.push({t:"num", v:parseFloat(m[1]), s:m[1]}); i += m[1].length; continue;
+      }
+      if (/[a-zA-Z]/.test(c)){
+        let word = s.slice(i).match(/^[a-zA-Z]+/)[0]; i += word.length;
+        while (word.length){
+          const f = FNAMES.find(n => word.toLowerCase().startsWith(n));
+          if (f){ out.push({t:"fn", n:f}); word = word.slice(f.length); continue; }
+          if (word.toLowerCase().startsWith("pi")){ out.push({t:"num", v:Math.PI, s:"π"}); word = word.slice(2); continue; }
+          out.push({t:"var", n:word[0]}); word = word.slice(1);
+        }
+        continue;
+      }
+      if ("+-*/^()÷".includes(c)){ out.push({t:c}); i++; continue; }
+      throw new Error("unexpected " + c);
+    }
+    return out;
+  }
+
+  function parse(src){
+    const tk = tokenize(src); let p = 0;
+    const peek = () => tk[p], eat = t => { if (!tk[p] || tk[p].t !== t) throw new Error("expected " + t); return tk[p++]; };
+    const startsFactor = x => x && (x.t === "num" || x.t === "var" || x.t === "fn" || x.t === "(");
+    function expr(){
+      let a = obel();
+      while (peek() && (peek().t === "+" || peek().t === "-")){ const op = tk[p++].t; a = {k:"add", op, a, b:obel()}; }
+      return a;
+    }
+    // "÷" splits a term into two halves: a/b ÷ c/d = (a/b) ÷ (c/d)
+    function obel(){
+      let a = term();
+      while (peek() && peek().t === "÷"){ p++; a = {k:"div", a, b:term(), ob:true}; }
+      return a;
+    }
+    function term(){
+      let a = unary();
+      for (;;){
+        const x = peek();
+        if (x && x.t === "*"){ p++; a = {k:"mul", a, b:unary(), ex:true}; }
+        else if (x && x.t === "/"){ p++; a = {k:"div", a, b:unary()}; }
+        else if (startsFactor(x)){ a = {k:"mul", a, b:power(), ex:false}; }
+        else return a;
+      }
+    }
+    function unary(){
+      const x = peek();
+      if (x && x.t === "-"){ p++; return {k:"neg", a:unary()}; }
+      if (x && x.t === "+"){ p++; return unary(); }
+      return power();
+    }
+    function power(){
+      const b = primary();
+      if (peek() && peek().t === "^"){ p++; return {k:"pow", a:b, b:unary()}; }
+      return b;
+    }
+    function primary(){
+      const x = tk[p++];
+      if (!x) throw new Error("unexpected end");
+      if (x.t === "num") return {k:"num", v:x.v, s:x.s};
+      if (x.t === "var") return {k:"var", n:x.n};
+      if (x.t === "fn"){
+        const arg = (peek() && peek().t === "(") ? primary() : power();
+        return {k:"fn", n:x.n, a:arg};
+      }
+      if (x.t === "("){ if (peek() && peek().t === ")"){ p++; return {k:"box"}; } const e = expr(); eat(")"); return {k:"par", a:e}; }
+      throw new Error("unexpected " + x.t);
+    }
+    const e = expr();
+    if (p < tk.length) throw new Error("unexpected " + tk[p].t);
+    return e;
+  }
+
+  function evaluate(n, env){
+    switch (n.k){
+      case "num": return n.v;
+      case "box": throw new Error("fill in the empty box");
+      case "var": { if (!(n.n in env)) throw new Error("unknown variable " + n.n); return env[n.n]; }
+      case "add": { const a = evaluate(n.a, env), b = evaluate(n.b, env); return n.op === "+" ? a + b : a - b; }
+      case "mul": return evaluate(n.a, env) * evaluate(n.b, env);
+      case "div": return evaluate(n.a, env) / evaluate(n.b, env);
+      case "neg": return -evaluate(n.a, env);
+      case "par": return evaluate(n.a, env);
+      case "fn":  return FUN[n.n](evaluate(n.a, env));
+      case "pow": {
+        const a = evaluate(n.a, env), b = evaluate(n.b, env);
+        if (a < 0 && !Number.isInteger(b)){
+          // real odd roots, e.g. x^(1/3) or x^(2/3)
+          for (const q of [3,5,7]){ const pq = b*q; if (Math.abs(pq - Math.round(pq)) < 1e-9){ const r = -Math.pow(-a, 1/q); return Math.pow(r, Math.round(pq)); } }
+        }
+        return Math.pow(a, b);
+      }
+    }
+  }
+  function vars(n, set = new Set()){
+    if (n.k === "var") set.add(n.n);
+    ["a","b"].forEach(k => n[k] && typeof n[k] === "object" && vars(n[k], set));
+    return set;
+  }
+
+  /* ---- render AST to HTML ---- */
+  const RAD = `<svg class="radsvg" viewBox="0 0 12 24" preserveAspectRatio="none" aria-hidden="true"><path d="M0.5 14.5 L3.2 13 L6.6 23.2 L11.6 0.8" vector-effect="non-scaling-stroke"/></svg>`;
+  const esc = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;");
+  const strip = n => n.k === "par" ? n.a : n;
+  function startsNum(n){ while (n.k === "mul" || n.k === "pow" || n.k === "add") n = n.a; return n.k === "num"; }
+  function endsNum(n){ while (n.k === "mul" || n.k === "add") n = n.b; return n.k === "num" || (n.k === "pow"); }
+  function R(n){
+    switch (n.k){
+      case "num": return `<span class="mn">${esc(n.s)}</span>`;
+      case "box": return `<span class="mbox"></span>`;
+      case "var": return `<i class="mv">${esc(n.n)}</i>`;
+      case "add": return R(n.a) + `<span class="mo">${n.op === "+" ? "+" : "−"}</span>` + R(n.b);
+      case "neg": return `<span class="mneg">−</span>` + R(n.a);
+      case "par": return (n.a.k === "div" && !n.a.ob) ? R(n.a) : `<span class="mp">(</span>${R(n.a)}<span class="mp">)</span>`;
+      case "mul": {
+        const needDot = n.ex || (endsNum(n.a) && startsNum(n.b)) || n.b.k === "neg";
+        return R(n.a) + (needDot ? `<span class="mo">·</span>` : "") + R(n.b);
+      }
+      case "div":
+        if (n.ob) return R(n.a) + `<span class="mo">÷</span>` + R(n.b);
+        return `<span class="frac"><span class="fnum">${R(strip(n.a))}</span><span class="fden">${R(strip(n.b))}</span></span>`;
+      case "pow": {
+        let base = n.a.k === "par" ? `<span class="mp">(</span>${R(n.a.a)}<span class="mp">)</span>` : R(n.a);
+        if (["div","add","neg","mul"].includes(n.a.k) || (n.a.k === "fn" && n.a.n !== "sqrt")) base = `<span class="mp">(</span>${base}<span class="mp">)</span>`;
+        return base + `<sup>${R(strip(n.b))}</sup>`;
+      }
+      case "fn":
+        if (n.n === "sqrt" || n.n === "cbrt") return `<span class="msqrt">${n.n === "cbrt" ? `<span class="ridx">3</span>` : ""}${RAD}<span class="radi">${R(strip(n.a))}</span></span>`;
+        return `<span class="mf">${n.n}</span><span class="mp">(</span>${R(strip(n.a))}<span class="mp">)</span>`;
+    }
+  }
+  function render(src){ try { return R(parse(src)); } catch(e){ return esc(src); } }
+  function toLabel(to){
+    if (to === "inf") return "∞"; if (to === "-inf") return "−∞";
+    const m = String(to).match(/^(.*?)([+-])$/); // one-sided like "2+" "-1-"
+    if (m && m[1] !== "") return render(m[1]) + `<sup>${m[2] === "+" ? "+" : "−"}</sup>`;
+    return render(to);
+  }
+  function renderLim(v, to, body){
+    return `<span class="mlim"><span class="limw">lim<span class="limsub"><i>${v}</i>→${toLabel(to)}</span></span>${body}</span>`;
+  }
+  // text with {{math}} snippets
+  function renderText(t){
+    return esc(t).replace(/\{\{(.+?)\}\}/g, (_, m) => m === "lim" ? `<span class="mf">lim</span>` : `<span class="mi">${render(m.replace(/&lt;/g,"<").replace(/&amp;/g,"&"))}</span>`);
+  }
+
+  /* ---- answers ---- */
+  const SPECIAL = s => {
+    const t = s.trim().toLowerCase().replace(/\s+/g, "");
+    if (/^(dne|doesnotexist|undefined|und)$/.test(t)) return "DNE";
+    if (/^(\+?(inf|infinity|oo|∞))$/.test(t)) return "inf";
+    if (/^[-−](inf|infinity|oo|∞)$/.test(t)) return "-inf";
+    if (/^(none|no|n\/a|na|nothing|0solutions|ø|∅)$/.test(t)) return "none";
+    return null;
+  };
+  function numVal(s){
+    const n = parse(s);
+    if (vars(n).size) throw new Error("no variables allowed here");
+    const v = evaluate(n, {});
+    if (!isFinite(v)) throw new Error("not a number");
+    return v;
+  }
+  const close = (a, b) => Math.abs(a - b) <= 1e-7 * Math.max(1, Math.abs(a), Math.abs(b));
+
+  function rng(seed){ let s = seed >>> 0 || 1; return () => (s = (s * 1664525 + 1013904223) >>> 0) / 4294967296; }
+
+  // ---- "is it simplified?" helpers ----
+  const strip0 = n => (n.k === "par" || n.k === "neg") ? strip0(n.a) : n;
+  function hasDiv(n){ if (!n || typeof n !== "object") return false; if (n.k === "pow") return hasDiv(n.a); if (n.k === "div") return true; return hasDiv(n.a) || hasDiv(n.b); }
+  function nested(n){ if (!n || typeof n !== "object") return false;
+    if (n.k === "div"){ if (n.ob) return true; if (hasDiv(n.a) || hasDiv(n.b)) return true; }
+    if (n.k === "pow") return nested(n.a);
+    return nested(n.a) || nested(n.b); }
+  function addTerms(n, out = []){ n = n.k === "par" ? n.a : n; if (n.k === "add"){ addTerms(n.a, out); addTerms(n.b, out); } else out.push(n); return out; }
+  function structureIssue(ast){
+    if (nested(ast)) return "it's equivalent, but there's still a fraction inside a fraction. Simplify it fully";
+    if (addTerms(strip0(ast)).filter(hasDiv).length >= 2) return "it's equivalent, but it's not one single fraction yet. Combine over a common denominator";
+    return null;
+  }
+
+  function sameExpr(uSrc, aSrc, vs, range){
+    const u = parse(uSrc), a = parse(aSrc);
+    const extra = [...vars(u)].filter(v => !vs.includes(v));
+    if (extra.length) return {ok:false, why:`unexpected variable ${extra.join(", ")}`};
+    const [lo, hi] = range || [-4.3, 4.7];
+    const r = rng(12345); let good = 0;
+    for (let t = 0; t < 40 && good < 7; t++){
+      const env = {}; vs.forEach(v => env[v] = lo + (hi - lo) * r());
+      const av = evaluate(a, env); if (!isFinite(av) || Math.abs(av) > 1e7) continue;
+      const uv = evaluate(u, env);
+      if (!isFinite(uv) || Math.abs(uv - av) > 1e-6 * Math.max(1, Math.abs(av))) return {ok:false};
+      good++;
+    }
+    return {ok: good >= 4};
+  }
+
+  // check one field; returns {ok, msg}
+  function check(field, input){
+    const raw = (input || "").trim();
+    if (!raw) return {ok:false, empty:true};
+    const sp = SPECIAL(raw);
+    try {
+      switch (field.t){
+        case "num": {
+          const a = String(field.a);
+          if (a === "DNE") return {ok: sp === "DNE"};
+          if (a === "inf" || a === "-inf") return {ok: sp === a || sp === "DNE", note: sp === "DNE" ? "Full credit. Your notes accept DNE, but writing " + (a === "inf" ? "∞" : "−∞") + " says more." : ""};
+          if (a === "none") return {ok: sp === "none"};
+          if (sp) return {ok:false};
+          let s = raw.replace(/^[a-z]\s*=/i, "").replace(/^f\(\s*0\s*\)\s*=/i, "");
+          return {ok: close(numVal(s), numVal(a))};
+        }
+        case "expr": case "rat": {
+          if (field.a === "none") return {ok: sp === "none"};
+          if (sp) return {ok:false};
+          let s = raw.replace(/^(y|f\s*\(\s*[a-z]\s*\)|[a-z]\s*\(\s*[a-z]\s*\))\s*=/i, "");
+          const res = sameExpr(s, field.a, field.v || ["x"], field.r);
+          if (!res.ok) return res;
+          if (field.simp){
+            const u = parse(s), issue = structureIssue(u);
+            if (issue) return {ok:false, why:issue, equiv:true};
+            for (const env of (field.mustDefine || [])){
+              const v = evaluate(u, env);
+              if (!isFinite(v)) return {ok:false, why:"it's equivalent, but a common factor still cancels. Simplify fully", equiv:true};
+            }
+          }
+          if (field.t === "rat" && field.holes){
+            const u = parse(s);
+            for (const h of field.holes){
+              const v = evaluate(u, {x:h});
+              if (isFinite(v)) return {ok:false, why:`your function is defined at x = ${h}, but the graph has a hole there. Keep the canceling factor`};
+            }
+          }
+          return {ok:true};
+        }
+        case "set": {
+          const want = field.a.map(numVal);
+          if (sp === "none") return {ok: want.length === 0};
+          if (sp) return {ok:false};
+          let s = raw.replace(/[a-z]\s*(≠|!=|=|<>)/gi, ",").replace(/\band\b|\bor\b|;|&/gi, ",");
+          const got = s.split(",").map(x => x.trim()).filter(Boolean).map(numVal);
+          const left = want.slice(), extra = [];
+          for (const g of got){ const i = left.findIndex(w => close(w, g)); if (i < 0) extra.push(g); else left.splice(i, 1); }
+          if (!left.length && !extra.length) return {ok:true};
+          if (!extra.length && field.canceled && left.every(m => field.canceled.some(c => close(+c, m))))
+            return {ok:false, why:"you're missing value(s) from a factor that canceled. Excluded values come from the ORIGINAL denominator"};
+          if (!extra.length) return {ok:false, why:`missing ${left.length} value${left.length > 1 ? "s" : ""}`};
+          if (!left.length) return {ok:false, why:"you have an extra value that isn't excluded"};
+          return {ok:false};
+        }
+        case "pts": {
+          const want = field.a.map(([x, y]) => [numVal(x), numVal(y)]);
+          if (sp === "none") return {ok: want.length === 0};
+          if (sp) return {ok:false};
+          const pairs = [...raw.matchAll(/\(([^()]*(?:\([^()]*\)[^()]*)*)\)/g)].map(m => m[1].split(","));
+          if (!pairs.length || pairs.some(p => p.length !== 2)) return {ok:false, why:"write points like (4, 2/7)"};
+          const got = pairs.map(([x, y]) => [numVal(x), numVal(y)]);
+          if (got.length !== want.length) return {ok:false, why: got.length < want.length ? "missing a point" : "too many points"};
+          const left = want.slice();
+          for (const g of got){ const i = left.findIndex(w => close(w[0], g[0]) && close(w[1], g[1])); if (i < 0) return {ok:false}; left.splice(i, 1); }
+          return {ok:true};
+        }
+        case "text": {
+          const n = t => t.toLowerCase().replace(/[^a-z0-9 ]/g, " ").replace(/\b(a|an|the)\b/g, " ").replace(/\s+/g, " ").trim();
+          return {ok: field.a.some(x => n(x) === n(raw))};
+        }
+      }
+    } catch(e){ return {ok:false, why:"couldn't read that: " + e.message}; }
+    return {ok:false};
+  }
+
+  // HTML for showing the correct answer of a field
+  function answerHTML(f){
+    const show = a => a === "DNE" ? "DNE" : a === "inf" ? "∞" : a === "-inf" ? "−∞" : a === "none" ? "none" : render(a);
+    switch (f.t){
+      case "num": case "expr": case "rat": return show(String(f.a));
+      case "set": return f.a.length ? f.a.map(render).join(", ") : "none";
+      case "pts": return f.a.length ? f.a.map(([x,y]) => `(${render(x)}, ${render(y)})`).join(", ") : "none";
+      case "text": return esc(f.a[0]);
+    }
+  }
+  // live preview of what the student typed
+  function preview(f, input){
+    const raw = (input || "").trim(); if (!raw) return "";
+    const sp = SPECIAL(raw);
+    if (sp) return sp === "inf" ? "∞" : sp === "-inf" ? "−∞" : sp;
+    if (f.t === "text") return "";
+    try {
+      if (f.t === "set") return raw.replace(/[a-z]\s*(≠|!=|=)/gi, ",").split(/,|\band\b/).map(x => x.trim()).filter(Boolean).map(x => R(parse(x))).join(", ");
+      if (f.t === "pts") return esc(raw);
+      const s = raw.replace(/^(y|f\s*\(\s*[a-z]\s*\)|[a-z]\s*\(\s*[a-z]\s*\))\s*=/i, "").replace(/^[a-z]\s*=/i, "");
+      return R(parse(s));
+    } catch(e){ return `<span class="perr">can't read that yet</span>`; }
+  }
+
+  return {parse, evaluate, render, renderLim, renderText, check, answerHTML, preview, sameExpr, numVal, vars};
+})();
+
+
+/* ---------- HONORS MATH 3 · UNIT 4 QUESTION BANK ---------- */
+const MSECTIONS = [
+  {id:"4.1",  name:"4.1 Simplifying & Excluded Values"},
+  {id:"4.1.2",name:"4.1.2 Multiplying & Dividing"},
+  {id:"4.2",  name:"4.2 Adding, Subtracting, Decomposing"},
+  {id:"4.3",  name:"4.3 Limits"},
+  {id:"4.4",  name:"4.4 Limits to Infinity"},
+  {id:"4.5",  name:"4.5 Asymptotes, Holes, Intercepts"},
+  {id:"4.6",  name:"4.6 Writing Rational Equations"},
+  {id:"rev",  name:"Unit 4 Review (test prep)"},
+  {id:"all",  name:"Whole Unit 4 mix"}
+];
+
+const MNOTES = {
+  "4.1": ["Rational expression = polynomial ÷ polynomial.",
+          "Excluded value: an x that makes the denominator 0 (the expression is undefined there).",
+          "Factor everything first: GCF, difference of squares, cubic (sum/difference of cubes, grouping).",
+          "Factor out −1 to flip: {{(x-y)/(y-x)}} = −1.",
+          "Find excluded values from the ORIGINAL denominator, before canceling."],
+  "4.1.2":["Multiply: {{a/b * c/d}} = {{(ac)/(bd)}}.",
+           "Divide: flip the second fraction and multiply: {{a/b ÷ c/d}} = {{(ad)/(bc)}}.",
+           "When dividing, the numerator of the divisor also can't be 0, so its zeros are excluded too.",
+           "Complex fractions: multiply the top and bottom by the LCD of all the little fractions."],
+  "4.2": ["Add/subtract: factor the denominators, find the LCD, rewrite each fraction over it, combine the numerators, then simplify.",
+          "{{a/(x-2) - b/(2-x)}}: factor out −1 so the denominators match.",
+          "Partial fractions: {{(5x-5)/((x-4)(x+1))}} = {{A/(x-4) + B/(x+1)}}. Multiply through, then plug in each root (or match coefficients) to solve for A and B.",
+          "Difference quotient: {{(f(x+h)-f(x))/h}}. Expand, cancel, factor out h, then cancel h."],
+  "4.3": ["Try direct substitution first. If you get a real number, that's the limit.",
+          "{{0/0}} → factor and cancel, or multiply by the conjugate (for square roots), or clear the little fractions.",
+          "Nonzero ÷ 0 → the function blows up: the limit is ∞, −∞, or DNE.",
+          "The limit exists only if the left-hand and right-hand limits are equal.",
+          "Hole = removable discontinuity. Vertical asymptote = non-removable discontinuity."],
+  "4.4": ["{{lim}} of a constant b is b; {{lim}} of {{1/x}} as x → ±∞ is 0.",
+          "Quick method: keep only the highest-degree term on top and bottom, simplify, then plug in ∞ or −∞.",
+          "Degree on top < degree on bottom → 0.",
+          "Degrees equal → ratio of the leading coefficients.",
+          "Degree on top > degree on bottom → ±∞ (DNE). Watch the sign when x → −∞."],
+  "4.5": ["Factor and reduce first.",
+          "Hole: a factor that cancels. Plug its x into the REDUCED function to get the y.",
+          "VA: set the reduced denominator = 0. Odd multiplicity → branches go opposite ways; even → same way.",
+          "HA: evaluate {{lim}} as x → ∞ (compare degrees).",
+          "SA: numerator degree is exactly 1 more than the denominator's. Use long division and throw away the remainder.",
+          "x-intercepts: reduced numerator = 0. y-intercept: plug in x = 0."],
+  "4.6": ["VA at x = d → put (x − d) in the denominator.",
+          "Hole at x = e → put (x − e) in BOTH the numerator and denominator.",
+          "x-intercept at x = g → put (x − g) in the numerator.",
+          "HA y = h → adjust the leading coefficient so the limit at ∞ equals h.",
+          "Check the y-intercept. If there's an SA, the numerator's degree must be exactly 1 more than the denominator's."]
+};
+
+const MBANK = [];
+let _id = 0;
+const add = o => { o.id = "m" + (++_id); MBANK.push(o); };
+const T = {simp:"Simplify. State any excluded values.", simpOnly:"Simplify.", lim:"Evaluate the limit. If it doesn't exist, write DNE.",
+           asy:"Find all asymptotes, holes, and intercepts.", write:"Write an equation for this rational graph.", one:"Write as a single rational expression and simplify."};
+
+function canceledPts(ans, excl, v){
+  // excluded values where the simplified answer is still defined = factors that canceled
+  if (!excl) return [];
+  const a = MC.parse(ans);
+  return excl.map(MC.numVal).filter(x => { try { return isFinite(MC.evaluate(a, {[v]: x})); } catch(e){ return false; } });
+}
+function simp(secs, src, math, ans, excl, steps, o = {}){
+  const v0 = (o.v || ["x"])[0], canc = canceledPts(ans, excl, v0);
+  const fields = [{l:"Simplified", t:"expr", a:ans, v:o.v || ["x"], r:o.r, simp:true, mustDefine:canc.map(x => ({[v0]: x}))}];
+  if (excl) fields.push({l:`Excluded values: ${v0} ≠`, t:"set", a:excl, ph:"e.g. 2, -3", canceled:canc});
+  add({secs, src, text: o.text || (excl ? T.simp : T.simpOnly), math, fields, steps, kind:"simp", o});
+}
+function lim(secs, src, math, v, to, ans, steps, o = {}){
+  add({secs, src, text: o.text || T.lim, math, lim:{v, to}, fields:[{l:"Limit", t:"num", a:ans, ph:"number, ∞, −∞, or DNE"}], steps, kind:"lim", o});
+}
+function pf(secs, src, math, d1, d2, A, B, steps){
+  add({secs, src, text:"Decompose into partial fractions.", math, pfForm:[d1, d2],
+       fields:[{l:"A", t:"num", a:A}, {l:"B", t:"num", a:B}], steps, kind:"pf"});
+}
+function dq(secs, src, f, ans, steps){
+  add({secs, src, text:"Find the difference quotient {{(f(x+h)-f(x))/h}}", pre:"f(x) = ", math:f,
+       fields:[{l:"Difference quotient", t:"expr", a:ans, v:["x","h"], simp:true, mustDefine:[{x:1.37, h:0}]}], steps, kind:"dq"});
+}
+// features: va [], ha (str|'none'), sa (str|'none'), holes [[x,y]], xint [], yint (str|'none')
+function asy(secs, src, math, F, steps, o = {}){
+  add({secs, src, text: o.text || T.asy, pre: o.pre || "f(x) = ", math, F, graphAfter:true,
+       fields:[
+         {l:"Vertical asymptotes: x =", t:"set", a:F.va, ph:"e.g. 2, -3 or none"},
+         {l:"Horizontal asymptote: y =", t:"num", a:F.ha, ph:"number or none"},
+         {l:"Slant asymptote: y =", t:"expr", a:F.sa, ph:"e.g. x + 3 or none"},
+         {l:"Holes", t:"pts", a:F.holes, ph:"e.g. (4, 2/7) or none"},
+         {l:"x-intercepts: x =", t:"set", a:F.xint, ph:"e.g. 1, -2 or none"},
+         {l:"y-intercept: y =", t:"num", a:F.yint, ph:"number or none"}
+       ], steps, kind:"asy", o});
+}
+function write(secs, src, target, F, steps){
+  add({secs, src, text:T.write, target, F, graphBefore:true,
+       fields:[{l:"f(x) =", t:"rat", a:target, v:["x"], holes:F.holes.map(h => +MC.numVal(h[0])), ph:"e.g. (x+3)(x+1)/((x+2)(x+1))"}],
+       steps, kind:"write"});
+}
+function txt(secs, src, text, accepts, steps){
+  add({secs, src, text, fields:[{l:"Answer", t:"text", a:accepts}], steps, kind:"text"});
+}
+
+/* ===== 4.1 Simplifying ===== */
+simp(["4.1"], "4.1 Notes #1", "21a^2b/(7a^3b^4)", "3/(ab^3)", null,
+  ["Divide the coefficients: 21/7 = 3.", "Subtract exponents: {{a^2/a^3}} = {{1/a}}, {{b/b^4}} = {{1/b^3}}.", "Result: {{3/(ab^3)}}, with a ≠ 0 and b ≠ 0."], {v:["a","b"], r:[0.5,3]});
+simp(["4.1"], "4.1 Notes #2", "(2x^3-8x)/(x^2-4)", "2x", ["2","-2"],
+  ["Factor: {{(2x(x-2)(x+2))/((x-2)(x+2))}}", "Cancel (x − 2)(x + 2) → {{2x}}", "Excluded from the original denominator: x ≠ 2, −2 (both removable)."]);
+simp(["4.1"], "4.1 Notes #3", "(64-w^3)/(w^2-8w+16)", "-(w^2+4w+16)/(w-4)", ["4"],
+  ["Difference of cubes: {{64-w^3}} = {{(4-w)(16+4w+w^2)}} = {{-(w-4)(w^2+4w+16)}}", "Denominator: {{(w-4)^2}}", "Cancel one (w − 4) → {{-(w^2+4w+16)/(w-4)}}, w ≠ 4."], {v:["w"]});
+simp(["4.1"], "4.1 Notes #4", "(3-3y)/(2y^2-2)", "-3/(2(y+1))", ["1","-1"],
+  ["{{(f/g)(y)}} = {{(3-3y)/(2y^2-2)}}", "Factor: {{(-3(y-1))/(2(y-1)(y+1))}}", "Cancel (y − 1) → {{-3/(2(y+1))}}; y ≠ 1 (removable), −1 (non-removable)."],
+  {v:["y"], text:"Find (f/g)(y) if f(y) = 3 − 3y and g(y) = 2y² − 2. Simplify and state excluded values."});
+simp(["4.1"], "4.1 Notes #5", "((6x+5)^3(8x)-4x^2(3)(6x+5)^2(6))/(6x+5)^6", "-8x(3x-5)/(6x+5)^4", ["-5/6"],
+  ["Factor out {{(6x+5)^2}} from the top: {{(6x+5)^2((6x+5)(8x)-72x^2)}}", "Inside: {{48x^2+40x-72x^2}} = {{-24x^2+40x}} = {{-8x(3x-5)}}", "Cancel {{(6x+5)^2}} → {{(-8x(3x-5))/(6x+5)^4}}, x ≠ −5/6."]);
+simp(["4.1"], "4.1 Notes #6", "(x^(2/3)-4x^(-1/3))/(2x-8)", "1/(2x^(1/3))", ["0","4"],
+  ["Factor out the smallest power {{x^(-1/3)}}: {{x^(-1/3)(x-4)}}", "Denominator: {{2(x-4)}}", "Cancel (x − 4) → {{1/(2x^(1/3))}} = {{1/(2cbrt(x))}}; x ≠ 0, 4."], {r:[0.3,6]});
+simp(["4.1","rev"], "Review #1", "(3n^2-5n-2)/(2n-4)", "(3n+1)/2", ["2"],
+  ["Factor: {{((3n+1)(n-2))/(2(n-2))}}", "Cancel (n − 2) → {{(3n+1)/2}}, n ≠ 2."], {v:["n"]});
+simp(["4.1","rev"], "Review #2", "(a-b)/(xa-xb-a+b)", "1/(x-1)", null,
+  ["Group the denominator: {{x(a-b)-1(a-b)}} = {{(a-b)(x-1)}}", "Cancel (a − b) → {{1/(x-1)}}; x ≠ 1 and a ≠ b."], {v:["a","b","x"]});
+simp(["4.1","rev"], "Review #3", "(x^3+4x^2-9x-36)/(2x^3+7x^2-4x)", "(x^2-9)/(x(2x-1))", ["0","1/2","-4"],
+  ["Group the top: {{x^2(x+4)-9(x+4)}} = {{(x+4)(x-3)(x+3)}}", "Bottom: {{x(2x^2+7x-4)}} = {{x(2x-1)(x+4)}}", "Cancel (x + 4) → {{((x-3)(x+3))/(x(2x-1))}}; x ≠ 0, 1/2, −4."]);
+simp(["4.1"], "4.1 Notes", "(x-y)/(y-x)", "-1", null,
+  ["Factor −1 out of the bottom: {{y-x}} = {{-1(x-y)}}", "{{(x-y)/(-1(x-y))}} = −1"], {v:["x","y"]});
+txt(["4.1"], "4.1 Notes", "A value of x that makes the denominator equal zero (so the expression is undefined) is called a(n) ______.", ["excluded value","excluded values"],
+  ["Excluded value: it makes the denominator 0."]);
+txt(["4.1"], "4.1 Notes", "A rational expression is a ratio of two ______.", ["polynomials","polynomial"],
+  ["Rational expression = polynomial ÷ polynomial."]);
+
+/* ===== 4.1.2 Multiplying & Dividing ===== */
+simp(["4.1.2"], "4.1 Notes #7", "((x^3-8)/(4-x^2))*((x^2+5x+6)/(x^2+3x))", "-(x^2+2x+4)/x", ["2","-2","0","-3"],
+  ["Factor: {{((x-2)(x^2+2x+4))/(-(x-2)(x+2))}} · {{((x+2)(x+3))/(x(x+3))}}", "Cancel (x − 2), (x + 2), (x + 3) → {{-(x^2+2x+4)/x}}", "Excluded: x ≠ 2, −2, 0, −3."]);
+simp(["4.1.2"], "4.1 Notes #8", "((y^2+6y+8)/(y^2+y-2))/((y+4)/(2y+4))", "2(y+2)/(y-1)", ["-2","1","-4"],
+  ["Rewrite as {{(y^2+6y+8)/(y^2+y-2)}} ÷ {{(y+4)/(2y+4)}} and flip: × {{(2y+4)/(y+4)}}", "Factor: {{((y+2)(y+4))/((y+2)(y-1))}} · {{(2(y+2))/(y+4)}}", "→ {{(2(y+2))/(y-1)}}; y ≠ −2, 1, and −4 (the divisor's top can't be 0)."], {v:["y"]});
+simp(["4.1.2"], "4.1 Notes #9", "(y+4)/(y^2+5y+6) ÷ (3y^2+12y)/(2y^2+5y-3)", "(2y-1)/(3y(y+2))", ["-2","-3","1/2","0","-4"],
+  ["Flip and multiply: {{(y+4)/((y+2)(y+3))}} · {{((2y-1)(y+3))/(3y(y+4))}}", "Cancel (y + 4), (y + 3) → {{(2y-1)/(3y(y+2))}}", "Excluded: y ≠ −2, −3, 1/2 (original bottoms) and 0, −4 (the divisor's top)."], {v:["y"]});
+simp(["4.1.2"], "4.1 Notes #10", "(x^3-3x^2-x+3)/(28-3x-x^2) ÷ (x^2-4x+3)/(x^2-9x+20)", "-((x+1)(x-5))/(x+7)", ["-7","4","5","3","1"],
+  ["Top: {{x^2(x-3)-1(x-3)}} = {{(x-3)(x-1)(x+1)}}. Bottom: {{-(x+7)(x-4)}}", "Divisor: {{((x-3)(x-1))/((x-4)(x-5))}}, so flip it", "Cancel → {{-((x+1)(x-5))/(x+7)}}; x ≠ −7, 4, 5, 3, 1."]);
+simp(["4.1.2"], "4.1 Notes #11", "(x^2/(3xy))*((6xy)/(x^2y^2))", "2/y^2", null,
+  ["Multiply: {{(6x^3y)/(3x^3y^3)}}", "Simplify: {{2/y^2}}; x ≠ 0, y ≠ 0."], {v:["x","y"], r:[0.5,3]});
+simp(["4.1.2"], "4.1 Notes #12", "(x/y+3)/(x^2/y-9y)", "1/(x-3y)", null,
+  ["Multiply the top and bottom by y: {{(x+3y)/(x^2-9y^2)}}", "Factor: {{(x+3y)/((x+3y)(x-3y))}} → {{1/(x-3y)}}; y ≠ 0."], {v:["x","y"], r:[0.5,4]});
+simp(["4.1.2","rev"], "Review #4", "((a^2+6a+9)/(a^2-9))*((3a-9)/(a+3))", "3", ["3","-3"],
+  ["Factor: {{(a+3)^2/((a+3)(a-3))}} · {{(3(a-3))/(a+3)}}", "Everything cancels except 3; a ≠ 3, −3."], {v:["a"]});
+simp(["4.1.2","rev"], "Review #5", "(d+c)/(c^2+d^2) ÷ (c^2-d^2)/(d^2-dc)", "-d/(c^2+d^2)", null,
+  ["Flip: {{(d+c)/(c^2+d^2)}} · {{(d(d-c))/((c-d)(c+d))}}", "{{(d-c)/(c-d)}} = −1, so → {{-d/(c^2+d^2)}}"], {v:["c","d"], r:[0.5,4]});
+simp(["4.1.2","rev"], "Review #6", "(12a^2-7ab+b^2)/(9a^2-b^2) ÷ (16a^2-b^2)/(3ab+b^2)", "b/(4a+b)", null,
+  ["Factor: {{((3a-b)(4a-b))/((3a-b)(3a+b))}} · {{(b(3a+b))/((4a-b)(4a+b))}}", "Cancel → {{b/(4a+b)}}"], {v:["a","b"], r:[0.5,4]});
+simp(["4.1.2","rev"], "Review #7", "((6x^2-11x-10)/(6x^2-5x-6))*((6-4x)/(25-20x+4x^2))", "-2/(2x-5)", ["-2/3","3/2","5/2"],
+  ["Factor: {{((3x+2)(2x-5))/((3x+2)(2x-3))}} · {{(-2(2x-3))/(2x-5)^2}}", "Cancel → {{-2/(2x-5)}}; x ≠ −2/3, 3/2, 5/2."]);
+simp(["4.1.2","rev"], "Review #8", "((x^2+2x-3)/(x^2+3x-4))/((x^2+x-6)/(x+4))", "1/(x-2)", ["-4","1","-3","2"],
+  ["Top fraction: {{((x+3)(x-1))/((x+4)(x-1))}}. Bottom: {{((x+3)(x-2))/(x+4)}}", "Flip and multiply → {{1/(x-2)}}", "Excluded: −4, 1 (inner bottoms) and −3, 2 (the bottom fraction's top)."]);
+simp(["4.1.2","rev"], "Review #9", "(1/a-1/(2a))/(4/a)", "1/8", ["0"],
+  ["Top: {{1/a-1/(2a)}} = {{1/(2a)}}", "{{1/(2a)}} · {{a/4}} = {{1/8}}; a ≠ 0."], {v:["a"]});
+simp(["4.1.2","rev"], "Review #10", "((5x)/2+1)/((5x)/4-1/(5x))", "(10x)/(5x-2)", ["0","2/5","-2/5"],
+  ["Multiply the top and bottom by the LCD 20x: {{(50x^2+20x)/(25x^2-4)}}", "Factor: {{(10x(5x+2))/((5x-2)(5x+2))}} → {{(10x)/(5x-2)}}", "Excluded: 0 (inner bottom), ±2/5."]);
+simp(["4.1.2","rev"], "Review #11", "(1+(4x+3)/(x^2+1))/(1-(x+7)/(x^2+1))", "(x+2)/(x-3)", ["3","-2"],
+  ["Multiply the top and bottom by {{x^2+1}}: {{(x^2+4x+4)/(x^2-x-6)}}", "Factor: {{(x+2)^2/((x-3)(x+2))}} → {{(x+2)/(x-3)}}; x ≠ 3, −2."]);
+
+/* ===== 4.2 Adding / Subtracting / Partial fractions / Difference quotient ===== */
+simp(["4.2"], "4.2 HW #4", "(x^2+5x+16)/(x+3)-(1-3x)/(x+3)", "x+5", ["-3"],
+  ["Same denominator: {{(x^2+5x+16-1+3x)/(x+3)}} = {{(x^2+8x+15)/(x+3)}}", "Factor: {{((x+3)(x+5))/(x+3)}} → {{x+5}}; x ≠ −3."], {text:T.one + " State any excluded values."});
+simp(["4.2"], "4.2 HW #6", "x/(x-2)-(x+1)/(2-x)", "(2x+1)/(x-2)", ["2"],
+  ["{{2-x}} = {{-(x-2)}}, so subtracting becomes adding: {{x/(x-2)+(x+1)/(x-2)}}", "→ {{(2x+1)/(x-2)}}; x ≠ 2."], {text:T.one + " State any excluded values."});
+simp(["4.2"], "4.2 HW #9", "1/(6xy)-2/(15x^2)", "(5x-4y)/(30x^2y)", null,
+  ["LCD = {{30x^2y}}", "{{(5x)/(30x^2y)-(4y)/(30x^2y)}} = {{(5x-4y)/(30x^2y)}}; x ≠ 0, y ≠ 0."], {v:["x","y"], r:[0.5,3], text:T.one});
+simp(["4.2"], "4.2 HW #10", "2/(x+3)+5/(x-4)", "(7x+7)/((x+3)(x-4))", ["-3","4"],
+  ["LCD = (x + 3)(x − 4)", "{{(2(x-4)+5(x+3))/((x+3)(x-4))}} = {{(7x+7)/((x+3)(x-4))}}", "= {{(7(x+1))/((x+3)(x-4))}}; x ≠ −3, 4."], {text:T.one + " State any excluded values."});
+simp(["4.2"], "4.2 HW #12", "5/(x-2)+3/(x^2-4)", "(5x+13)/((x-2)(x+2))", ["2","-2"],
+  ["{{x^2-4}} = (x − 2)(x + 2) is the LCD", "{{(5(x+2)+3)/((x-2)(x+2))}} = {{(5x+13)/((x-2)(x+2))}}; x ≠ 2, −2."], {text:T.one + " State any excluded values."});
+simp(["4.2"], "4.2 HW #14", "4/(x^2-9)+3/(x^2-4x+3)", "(7x+5)/((x+3)(x-3)(x-1))", ["3","-3","1"],
+  ["Factor: {{4/((x+3)(x-3))+3/((x-3)(x-1))}}", "LCD = (x + 3)(x − 3)(x − 1): {{(4(x-1)+3(x+3))/((x+3)(x-3)(x-1))}}", "= {{(7x+5)/((x+3)(x-3)(x-1))}}; x ≠ 3, −3, 1."], {text:T.one + " State any excluded values."});
+simp(["4.2"], "4.2 HW #15", "2/(x^2+4x-5)-4/(x^2+3x-10)", "(-2x)/((x+5)(x-1)(x-2))", ["-5","1","2"],
+  ["Factor: {{2/((x+5)(x-1))-4/((x+5)(x-2))}}", "LCD = (x + 5)(x − 1)(x − 2): {{(2(x-2)-4(x-1))/((x+5)(x-1)(x-2))}}", "Numerator: 2x − 4 − 4x + 4 = −2x → {{(-2x)/((x+5)(x-1)(x-2))}}; x ≠ −5, 1, 2."], {text:T.one + " State any excluded values."});
+simp(["4.2"], "4.2 HW #16", "5/(x+1)+3/x+4/x^3", "(8x^3+3x^2+4x+4)/(x^3(x+1))", ["-1","0"],
+  ["LCD = {{x^3(x+1)}}", "{{(5x^3+3x^2(x+1)+4(x+1))/(x^3(x+1))}}", "= {{(8x^3+3x^2+4x+4)/(x^3(x+1))}}; x ≠ 0, −1."], {text:T.one + " State any excluded values."});
+simp(["4.2","rev"], "Review #12", "(3x)/(2y)-(5x)/(6y)+x/(3y)", "x/y", null,
+  ["LCD = 6y: {{(9x-5x+2x)/(6y)}} = {{(6x)/(6y)}}", "= {{x/y}}"], {v:["x","y"], r:[0.5,4], text:T.one});
+simp(["4.2","rev"], "Review #13", "(a-b)/a^2+1/a", "(2a-b)/a^2", null,
+  ["LCD = {{a^2}}: {{(a-b+a)/a^2}}", "= {{(2a-b)/a^2}}"], {v:["a","b"], r:[0.5,4], text:T.one});
+simp(["4.2","rev"], "Review #14", "1/(p-2)-1/(p+2)", "4/((p-2)(p+2))", ["2","-2"],
+  ["LCD = (p − 2)(p + 2): {{((p+2)-(p-2))/((p-2)(p+2))}}", "= {{4/((p-2)(p+2))}}; p ≠ ±2."], {v:["p"], text:T.one + " State any excluded values."});
+simp(["4.2","rev"], "Review #15", "1/(p-2)+1/(2-p)", "0", ["2"],
+  ["{{1/(2-p)}} = {{-1/(p-2)}}", "So the sum is 0 (p ≠ 2)."], {v:["p"], text:T.one + " State any excluded values."});
+simp(["4.2","rev"], "Review #16", "1/(b+1)-b/(1+b)", "(1-b)/(b+1)", ["-1"],
+  ["Same denominator: {{(1-b)/(b+1)}}; b ≠ −1."], {v:["b"], text:T.one + " State any excluded values."});
+simp(["4.2","rev"], "Review #17", "1-1/(1+p)", "p/(p+1)", ["-1"],
+  ["{{(1+p)/(1+p)-1/(1+p)}} = {{p/(p+1)}}; p ≠ −1."], {v:["p"], text:T.one + " State any excluded values."});
+simp(["4.2","rev"], "Review #18", "3/(x-4)+2/(4-x)", "1/(x-4)", ["4"],
+  ["{{2/(4-x)}} = {{-2/(x-4)}}", "{{(3-2)/(x-4)}} = {{1/(x-4)}}; x ≠ 4."], {text:T.one + " State any excluded values."});
+simp(["4.2","rev"], "Review #19", "(8x)/(3y-2x)+(12y)/(2x-3y)", "-4", null,
+  ["{{(8x)/(3y-2x)}} = {{(-8x)/(2x-3y)}}", "{{(12y-8x)/(2x-3y)}} = {{(-4(2x-3y))/(2x-3y)}} = −4"], {v:["x","y"], text:T.one});
+simp(["4.2","rev"], "Review #20", "1/(2m-4n)-1/(2m+4n)-m/(m^2-4n^2)", "-1/(m+2n)", null,
+  ["LCD = {{2(m-2n)(m+2n)}}", "Numerator: (m + 2n) − (m − 2n) − 2m = 4n − 2m = −2(m − 2n)", "→ {{-1/(m+2n)}}"], {v:["m","n"], r:[0.3,3], text:T.one});
+simp(["4.2","rev"], "Review #21", "(b^2+1)/(b^2-4)+1/(b+2)+1/(b-2)", "(b+1)^2/((b-2)(b+2))", ["2","-2"],
+  ["LCD = (b − 2)(b + 2): numerator {{b^2+1+(b-2)+(b+2)}} = {{b^2+2b+1}}", "= {{(b+1)^2/((b-2)(b+2))}}; b ≠ ±2."], {v:["b"], text:T.one + " State any excluded values."});
+pf(["4.2"], "4.2 HW #23", "(5x-5)/(x^2-3x-4)", "x-4", "x+1", "3", "2",
+  ["{{5x-5}} = A(x + 1) + B(x − 4)", "x = 4: 15 = 5A → A = 3.  x = −1: −10 = −5B → B = 2", "{{3/(x-4)+2/(x+1)}}"]);
+pf(["4.2"], "4.2 HW #25", "(4x+14)/(x^2+x-2)", "x+2", "x-1", "-2", "6",
+  ["{{4x+14}} = A(x − 1) + B(x + 2)", "x = 1: 18 = 3B → B = 6.  x = −2: 6 = −3A → A = −2", "{{-2/(x+2)+6/(x-1)}}"]);
+pf(["4.2","rev"], "Review #22", "(2x)/(x^2+9x+18)", "x+3", "x+6", "-2", "4",
+  ["{{x^2+9x+18}} = (x + 3)(x + 6); 2x = A(x + 6) + B(x + 3)", "x = −3: −6 = 3A → A = −2.  x = −6: −12 = −3B → B = 4"]);
+pf(["4.2","rev"], "Review #23", "(5x+7)/(x^2+4x-5)", "x+5", "x-1", "3", "2",
+  ["{{x^2+4x-5}} = (x + 5)(x − 1); 5x + 7 = A(x − 1) + B(x + 5)", "x = 1: 12 = 6B → B = 2.  x = −5: −18 = −6A → A = 3"]);
+pf(["4.2","rev"], "Review #24", "(5x+19)/(2x^2+13x+6)", "2x+1", "x+6", "3", "1",
+  ["{{2x^2+13x+6}} = (2x + 1)(x + 6); 5x + 19 = A(x + 6) + B(2x + 1)", "x = −6: −11 = −11B → B = 1.  x = −1/2: 16.5 = 5.5A → A = 3"]);
+dq(["4.2"], "4.2 HW #27", "3x^2+2x-4", "6x+3h+2",
+  ["{{f(x+h)}} = {{3(x+h)^2+2(x+h)-4}} = {{3x^2+6xh+3h^2+2x+2h-4}}", "Subtract f(x): {{6xh+3h^2+2h}}", "Divide by h: {{6x+3h+2}}"]);
+dq(["4.2"], "4.2 HW #28", "1-x^2", "-2x-h",
+  ["{{f(x+h)}} = {{1-(x^2+2xh+h^2)}}", "Subtract f(x): {{-2xh-h^2}}", "Divide by h: {{-2x-h}}"]);
+dq(["4.2","rev"], "Review #25", "2x+5", "2",
+  ["{{(2(x+h)+5-(2x+5))/h}} = {{(2h)/h}} = 2"]);
+dq(["4.2","rev"], "Review #26", "x^2+2x+4", "2x+h+2",
+  ["{{f(x+h)-f(x)}} = {{2xh+h^2+2h}}", "Divide by h: {{2x+h+2}}"]);
+dq(["4.2","rev"], "Review #27", "2x^2-x+3", "4x+2h-1",
+  ["{{f(x+h)-f(x)}} = {{4xh+2h^2-h}}", "Divide by h: {{4x+2h-1}}"]);
+simp(["4.2","rev"], "Review #28", "((x+3)2(x^2-1)(2x)-(x^2-1)^2(1))/(x+3)^2", "((x^2-1)(3x^2+12x+1))/(x+3)^2", ["-3"],
+  ["Factor out {{(x^2-1)}}: {{(x^2-1)(4x(x+3)-(x^2-1))}}", "Inside: {{4x^2+12x-x^2+1}} = {{3x^2+12x+1}}", "→ {{((x^2-1)(3x^2+12x+1))/(x+3)^2}}; x ≠ −3."]);
+simp(["4.2","rev"], "Review #29", "((2x-1)^2(3)(4x^2+4)^2(8x)-(4x^2+4)^3(2)(2x-1)(2))/((4x^2+4)^3)^2", "((2x-1)(4x^2-3x-2))/(32(x^2+1)^4)", null,
+  ["Factor out {{(2x-1)(4x^2+4)^2}}: {{(2x-1)(4x^2+4)^2(24x(2x-1)-4(4x^2+4))}}", "Inside: {{32x^2-24x-16}} = {{8(4x^2-3x-2)}}", "Divide by {{(4x^2+4)^6}} and use {{4x^2+4}} = {{4(x^2+1)}} → {{((2x-1)(4x^2-3x-2))/(32(x^2+1)^4)}}"]);
+txt(["4.2"], "4.2 Notes", "The expression (f(x + h) − f(x)) / h is called the ______.", ["difference quotient"],
+  ["It's the difference quotient (the slope between x and x + h)."]);
+
+/* ===== 4.3 Limits ===== */
+lim(["4.3"], "4.3 HW #7", "sin(x)/x", "x", "0", "1",
+  ["Table: x = ±0.1 → 0.998, x = ±0.01 → 0.99998…", "Both sides approach 1."], {text:"Evaluate the limit (use a table of values)."});
+lim(["4.3"], "4.3 HW #8", "(3x^2-9x)/(x-3)", "x", "3", "9",
+  ["Factor: {{(3x(x-3))/(x-3)}} = 3x", "Plug in 3 → 9"]);
+lim(["4.3"], "4.3 HW #9", "(c^2-6c+8)/(c^2+c-6)", "c", "2", "-2/5",
+  ["Factor: {{((c-4)(c-2))/((c+3)(c-2))}} = {{(c-4)/(c+3)}}", "Plug in 2 → {{-2/5}}"]);
+lim(["4.3"], "4.3 HW #12", "(4-w)/(w^2-8w+16)", "w", "4", "DNE",
+  ["Factor: {{(-(w-4))/(w-4)^2}} = {{-1/(w-4)}}", "Plug in 4 → {{-1/0}}: left side → +∞, right side → −∞, so DNE."]);
+lim(["4.3"], "4.3 HW #13", "(sqrt(x)+2)/(x^2+4)", "x", "4", "1/5",
+  ["Direct substitution: {{(sqrt(4)+2)/(16+4)}} = {{4/20}} = {{1/5}}"]);
+lim(["4.3"], "4.3 HW #15", "(2r^2+9r-5)/(r^2+10r+25)", "r", "-5", "DNE",
+  ["Factor: {{((2r-1)(r+5))/(r+5)^2}} = {{(2r-1)/(r+5)}}", "Plug in −5 → {{-11/0}}: the two sides go to opposite infinities, so DNE."]);
+lim(["4.3"], "4.3 HW #17", "(5t^2+6t-8)/(3t^2+5t-2)", "t", "-2", "2",
+  ["Factor: {{((5t-4)(t+2))/((3t-1)(t+2))}} = {{(5t-4)/(3t-1)}}", "Plug in −2 → {{-14/-7}} = 2"]);
+lim(["4.3"], "4.3 HW #19", "(2x^2+7x-4)/(x^3+64)", "x", "-4", "-3/16",
+  ["Factor: {{((2x-1)(x+4))/((x+4)(x^2-4x+16))}}", "Plug −4 into {{(2x-1)/(x^2-4x+16)}} → {{-9/48}} = {{-3/16}}"]);
+lim(["4.3"], "4.3 HW #20", "(3x^2-x-2)/(x^4-1)", "x", "1", "5/4",
+  ["Factor: {{((3x+2)(x-1))/((x-1)(x+1)(x^2+1))}}", "Plug in 1 → {{5/(2·2)}} = {{5/4}}"]);
+lim(["4.3"], "4.3 HW #22", "(sqrt(1-x)-2)/(x+3)", "x", "-3", "-1/4",
+  ["Multiply by the conjugate {{(sqrt(1-x)+2)}}: top becomes {{1-x-4}} = {{-(x+3)}}", "→ {{-1/(sqrt(1-x)+2)}} → {{-1/4}}"]);
+lim(["4.3"], "4.3 HW #23", "(x/(x+2)-2)/(x+4)", "x", "-4", "1/2",
+  ["Multiply the top and bottom by (x + 2): {{(x-2(x+2))/((x+4)(x+2))}} = {{(-(x+4))/((x+4)(x+2))}}", "→ {{-1/(x+2)}} → {{-1/-2}} = {{1/2}}"]);
+lim(["4.3","rev"], "Review #30", "(x^3-8)/(x-2)", "x", "2", "12",
+  ["Factor: {{((x-2)(x^2+2x+4))/(x-2)}}", "Plug in 2 → 4 + 4 + 4 = 12"]);
+lim(["4.3","rev"], "Review #31", "sin(3x)/(4x)", "x", "0", "3/4",
+  ["Table: x = ±0.01 → 0.74998…", "Approaches {{3/4}} (since {{sin(3x)/(3x)}} → 1)."]);
+lim(["4.3","rev"], "Review #32", "3pi", "x", "7", "3pi",
+  ["The limit of a constant is the constant: 3π."]);
+lim(["4.3","rev"], "Review #33", "(x^2+6)/(x-3)", "x", "2", "-10",
+  ["Direct substitution: {{(4+6)/(2-3)}} = −10"]);
+lim(["4.3","rev"], "Review #34", "(x^2+3x-28)/(x-4)", "x", "4", "11",
+  ["Factor: {{((x+7)(x-4))/(x-4)}} = x + 7 → 11"]);
+lim(["4.3","rev"], "Review #35", "(3x^2-5x)/(7x)", "x", "0", "-5/7",
+  ["Factor: {{(x(3x-5))/(7x)}} = {{(3x-5)/7}} → {{-5/7}}"]);
+lim(["4.3","rev"], "Review #36", "(x^3+x^2-9x-9)/(x^2+2x-15)", "x", "3", "3",
+  ["Group the top: {{(x+1)(x-3)(x+3)}}; bottom {{(x+5)(x-3)}}", "Plug 3 into {{((x+1)(x+3))/(x+5)}} → {{24/8}} = 3"]);
+lim(["4.3","rev"], "Review #37", "(1/(x+4)-1/4)/x", "x", "0", "-1/16",
+  ["Combine the top: {{(4-(x+4))/(4(x+4))}} = {{(-x)/(4(x+4))}}", "Divide by x: {{-1/(4(x+4))}} → {{-1/16}}"]);
+lim(["4.3","rev"], "Review #38", "(4-sqrt(18-x))/(x-2)", "x", "2", "1/8",
+  ["Conjugate: top becomes {{16-(18-x)}} = x − 2", "→ {{1/(4+sqrt(18-x))}} → {{1/8}}"]);
+lim(["4.3","rev"], "Review #43", "sqrt(29)", "x", "7", "sqrt(29)",
+  ["Constant: √29."]);
+lim(["4.3","rev"], "Review #44", "(x^2-5x+9)/(x+7)", "x", "4", "5/11",
+  ["Direct substitution: {{(16-20+9)/11}} = {{5/11}}"]);
+lim(["4.3","rev"], "Review #45", "(3x^2+5x-2)/(2x^3+x^2-6x)", "x", "-2", "-1/2",
+  ["Factor: {{((3x-1)(x+2))/(x(2x-3)(x+2))}}", "Plug −2 into {{(3x-1)/(x(2x-3))}} → {{-7/14}} = {{-1/2}}"]);
+lim(["4.3","rev"], "Review #46", "sin(x)", "x", "pi/3", "sqrt(3)/2",
+  ["Direct substitution: sin(π/3) = {{sqrt(3)/2}}"]);
+lim(["4.3","rev"], "Review #47", "cos(x)", "x", "2pi/3", "-1/2",
+  ["Direct substitution: cos(2π/3) = {{-1/2}}"]);
+lim(["4.3","rev"], "Review #48", "tan(x)", "x", "3pi/4", "-1",
+  ["Direct substitution: tan(3π/4) = −1"]);
+lim(["4.3","rev"], "Review #49", "(x-4)/(5-sqrt(x+21))", "x", "4", "-10",
+  ["Conjugate: bottom becomes {{25-(x+21)}} = {{4-x}}", "→ {{-(5+sqrt(x+21))}} → −10"]);
+lim(["4.3","rev"], "Review #50", "(2-x)/(1/4-1/(2+x))", "x", "2", "-16",
+  ["Bottom: {{(2+x-4)/(4(2+x))}} = {{(x-2)/(4(2+x))}}", "→ {{-4(2+x)}} → −16"]);
+txt(["4.3"], "4.3 HW", "A hole in a graph is a ______ discontinuity.", ["removable","removeable"],
+  ["Holes are removable; vertical asymptotes and jumps are non-removable."]);
+txt(["4.3"], "4.3 HW", "A vertical asymptote is a ______ discontinuity.", ["non-removable","nonremovable","non removable","non-removeable"],
+  ["Vertical asymptotes are non-removable."]);
+txt(["4.3"], "4.3 HW", "If the left-hand limit and the right-hand limit are different, the limit ______. (Answer with the abbreviation.)", ["DNE","does not exist"],
+  ["The limit exists only when both one-sided limits agree."]);
+
+/* ===== 4.4 Limits to infinity ===== */
+lim(["4.4"], "4.4 Notes #1a", "1/x", "x", "inf", "0", ["As x grows, 1/x shrinks toward 0."]);
+lim(["4.4"], "4.4 Notes #1b", "1/x", "x", "-inf", "0", ["As x → −∞, 1/x → 0 (from below)."]);
+lim(["4.4"], "4.4 Notes #2a", "x^3", "x", "inf", "inf", ["x³ grows without bound → ∞."]);
+lim(["4.4"], "4.4 Notes #2b", "x^3", "x", "-inf", "-inf", ["Odd power of a huge negative number → −∞."]);
+lim(["4.4"], "4.4 Notes #3", "(3x+11)/(5x-7)", "x", "inf", "3/5", ["Degrees equal → leading coefficients: {{3/5}}"]);
+lim(["4.4"], "4.4 Notes #4", "(4x^2-2x+5)/(2x-3x^2-1)", "x", "-inf", "-4/3", ["Highest terms: {{(4x^2)/(-3x^2)}} = {{-4/3}}"]);
+lim(["4.4"], "4.4 Notes #5", "(x^3+7x)/(-x^2+1)", "x", "inf", "-inf", ["{{x^3/(-x^2)}} = −x → −∞ as x → ∞"]);
+lim(["4.4"], "4.4 Notes #6", "(6x^2-2x+5)/(2x^2-3x-1)", "x", "inf", "3", ["{{(6x^2)/(2x^2)}} = 3"]);
+lim(["4.4"], "4.4 Notes #7", "(8x^2-3x+1)/(2x-1)", "x", "inf", "inf", ["{{(8x^2)/(2x)}} = 4x → ∞ (your notes also accept DNE)"]);
+lim(["4.4"], "4.4 Notes #8", "(4x+6)/(3x^2+8x-1)", "x", "inf", "0", ["{{(4x)/(3x^2)}} = {{4/(3x)}} → 0"]);
+lim(["4.4"], "4.4 Notes #9", "(4x^3+x^2-7)/(x-4x^3-1)", "x", "-inf", "-1", ["{{(4x^3)/(-4x^3)}} = −1"]);
+lim(["4.4"], "4.4 Notes #10", "(4(x-2)^3(2x+1)^2)/((x^3-27)(3x-4)^2)", "x", "inf", "16/9", ["Top: {{4·x^3·4x^2}} = {{16x^5}}. Bottom: {{x^3·9x^2}} = {{9x^5}}", "→ {{16/9}}"]);
+lim(["4.4"], "4.4 Notes #11", "(-3x^2+7x-4)/((2x-5)^2(x+4))", "x", "inf", "0", ["Top {{-3x^2}}, bottom {{4x^3}} → {{-3/(4x)}} → 0"]);
+lim(["4.4"], "4.4 Notes #12", "(7-2x)/sqrt(9x^2-x+1)", "x", "inf", "-2/3", ["{{sqrt(9x^2)}} = 3x for x > 0, so {{(-2x)/(3x)}} = {{-2/3}}"]);
+lim(["4.4"], "4.4 Notes #13", "cbrt(8x^3-2x^2+4x+1)/(3-5x)", "x", "-inf", "-2/5", ["{{cbrt(8x^3)}} = 2x, so {{(2x)/(-5x)}} = {{-2/5}}"]);
+lim(["4.4","rev"], "Review #39", "(x^2+2x+1)/(x+4)", "x", "inf", "inf", ["{{x^2/x}} = x → ∞"]);
+lim(["4.4","rev"], "Review #40", "(5x)/(x^2-4)", "x", "inf", "0", ["{{(5x)/x^2}} = {{5/x}} → 0"]);
+lim(["4.4","rev"], "Review #41", "(5x+7)/(3x-2)", "x", "inf", "5/3", ["Degrees equal → {{5/3}}"]);
+lim(["4.4","rev"], "Review #42", "((x+3)(2x-5))/((4x-7)(x+1))", "x", "inf", "1/2", ["Top {{2x^2}}, bottom {{4x^2}} → {{1/2}}"]);
+lim(["4.4","rev"], "Review #51", "(9-3x^2+7x^4)/(8x^3+12x^2+6x+1)", "x", "inf", "inf", ["{{(7x^4)/(8x^3)}} = {{(7x)/8}} → ∞"]);
+lim(["4.4","rev"], "Review #52", "(3x^2+5x-2)/(4x^3+2x^2-12x)", "x", "inf", "0", ["Top degree 2 < bottom degree 3 → 0"]);
+lim(["4.4","rev"], "Review #53", "(3+13x+4x^2)/(3x^2+x-2)", "x", "inf", "4/3", ["{{(4x^2)/(3x^2)}} = {{4/3}}"]);
+lim(["4.4","rev"], "Review #54", "((5x-7)(2x+3)^2)/((6x-5)(x+4)^2)", "x", "inf", "10/3", ["Top {{5x·4x^2}} = {{20x^3}}; bottom {{6x·x^2}} = {{6x^3}} → {{10/3}}"]);
+txt(["4.4"], "4.4 Notes", "If the degree of the numerator is less than the degree of the denominator, the limit as x → ∞ is ______. (number)", ["0","zero"],
+  ["Bottom-heavy → 0."]);
+txt(["4.4"], "4.4 Notes", "If the degrees of the numerator and denominator are equal, the limit as x → ∞ is the ratio of the ______.", ["leading coefficients","leading coefficient","coefficients of the leading terms"],
+  ["Equal degrees → divide the leading coefficients."]);
+
+/* ===== 4.5 Asymptotes, holes, intercepts ===== */
+const N = "none";
+asy(["4.5"], "4.5 Notes #1", "(x-5)/(x+3)", {va:["-3"], ha:"1", sa:N, holes:[], xint:["5"], yint:"-5/3"},
+  ["VA: x + 3 = 0 → x = −3", "HA: degrees equal → {{1/1}} = 1", "x-int: x = 5; y-int: {{-5/3}}"]);
+asy(["4.5"], "4.5 Notes #2", "(x^2-6x+8)/(x^2-x-12)", {va:["-3"], ha:"1", sa:N, holes:[["4","2/7"]], xint:["2"], yint:"-2/3"},
+  ["Factor: {{((x-2)(x-4))/((x-4)(x+3))}} → reduced {{(x-2)/(x+3)}}", "Hole at x = 4: {{(4-2)/(4+3)}} = {{2/7}} → (4, 2/7)", "VA x = −3; HA y = 1; x-int 2; y-int {{8/-12}} = {{-2/3}}"]);
+asy(["4.5"], "4.5 Notes #3", "(x^2+2x+1)/(3x^2-5x-2)", {va:["-1/3","2"], ha:"1/3", sa:N, holes:[], xint:["-1"], yint:"-1/2"},
+  ["Factor: {{(x+1)^2/((3x+1)(x-2))}}", "VA x = −1/3, 2; HA {{1/3}}", "x-int −1 (bounces, even multiplicity); y-int {{1/-2}}"]);
+asy(["4.5"], "4.5 Notes #4", "(x^2-5x+4)/(x-2)", {va:["2"], ha:N, sa:"x-3", holes:[], xint:["1","4"], yint:"-2"},
+  ["Top degree is 1 more than the bottom's → slant asymptote", "Long division: {{x^2-5x+4}} ÷ (x − 2) = x − 3, remainder −2 → SA y = x − 3", "VA x = 2; x-int 1, 4; y-int {{4/-2}} = −2"]);
+asy(["4.5"], "4.5 Notes #5", "(x^2-25)/(x^2+6x+5)", {va:["-1"], ha:"1", sa:N, holes:[["-5","5/2"]], xint:["5"], yint:"-5"},
+  ["Factor: {{((x-5)(x+5))/((x+5)(x+1))}} → {{(x-5)/(x+1)}}", "Hole x = −5: {{-10/-4}} = {{5/2}}", "VA x = −1; HA 1; x-int 5; y-int −5"]);
+asy(["4.5"], "4.5 Notes #6", "(x^2+2x+1)/(x+4)", {va:["-4"], ha:N, sa:"x-2", holes:[], xint:["-1"], yint:"1/4"},
+  ["Long division: {{x^2+2x+1}} ÷ (x + 4) = x − 2, remainder 9 → SA y = x − 2", "VA x = −4; x-int −1; y-int {{1/4}}"]);
+asy(["4.5"], "4.5 Notes #7", "(2(x+1)(x-2))/(x^2+5x+6)", {va:["-2","-3"], ha:"2", sa:N, holes:[], xint:["-1","2"], yint:"-2/3"},
+  ["Bottom: (x + 2)(x + 3) → VA x = −2, −3", "HA: {{(2x^2)/x^2}} = 2", "x-int −1, 2; y-int {{(2(1)(-2))/6}} = {{-2/3}}"]);
+asy(["4.5"], "4.5 Notes #8", "(x^2-5x+6)/(x-2)", {va:[], ha:N, sa:N, holes:[["2","-1"]], xint:["3"], yint:"-3"},
+  ["Factor: {{((x-2)(x-3))/(x-2)}} = x − 3 with a hole at x = 2", "Hole (2, −1). The graph is just the line y = x − 3, so there are no asymptotes", "x-int 3; y-int −3"]);
+asy(["4.5"], "4.5 Notes #9", "((x+3)(x-4))/(x+1)^2", {va:["-1"], ha:"1", sa:N, holes:[], xint:["-3","4"], yint:"-12"},
+  ["VA x = −1 (even multiplicity → both branches go the same way)", "HA: degrees equal → 1", "x-int −3, 4; y-int {{(3)(-4)/1}} = −12"]);
+asy(["4.5","rev"], "Review #55", "(x^3+x^2-8x-12)/(x^2-x-2)", {va:["2","-1"], ha:N, sa:"x+2", holes:[], xint:["-2","3"], yint:"6"},
+  ["Factor: {{((x+2)^2(x-3))/((x-2)(x+1))}}", "Long division ÷ {{x^2-x-2}}: quotient x + 2 → SA y = x + 2", "VA 2, −1; x-int −2, 3; y-int {{-12/-2}} = 6"]);
+asy(["4.5","rev"], "Review #56", "(-x^3+2x^2)/((x+1)(x^2-2x-3))", {va:["-1","3"], ha:"-1", sa:N, holes:[], xint:["0","2"], yint:"0"},
+  ["Factor: {{(-x^2(x-2))/((x+1)^2(x-3))}}", "VA −1 (even), 3; HA {{-x^3/x^3}} = −1", "x-int 0, 2; y-int 0"]);
+asy(["4.5","rev"], "Review #57", "(10x^2-3x-1)/(2x^2+5x-12)", {va:["3/2","-4"], ha:"5", sa:N, holes:[], xint:["-1/5","1/2"], yint:"1/12"},
+  ["Factor: {{((5x+1)(2x-1))/((2x-3)(x+4))}}", "VA 3/2, −4; HA {{10/2}} = 5", "x-int −1/5, 1/2; y-int {{-1/-12}} = {{1/12}}"]);
+asy(["4.5","rev"], "Review #58", "((2x-1)(3x+1)^2)/((x-2)(4x^2-5x-6))", {va:["2","-3/4"], ha:"9/2", sa:N, holes:[], xint:["1/2","-1/3"], yint:"-1/12"},
+  ["Bottom: {{(x-2)(4x+3)(x-2)}} → VA 2 (even), −3/4", "HA: {{(2·9x^3)/(4x^3)}} = {{9/2}}", "x-int 1/2, −1/3; y-int {{(-1)(1)/((-2)(-6))}} = {{-1/12}}"]);
+asy(["4.5","rev"], "Review #59", "2/(x+2)", {va:["-2"], ha:"0", sa:N, holes:[], xint:[], yint:"1"},
+  ["VA x = −2; HA y = 0 (bottom-heavy)", "No x-intercepts (the top is never 0); y-int {{2/2}} = 1"]);
+asy(["4.5","rev"], "Review #60", "(3x^2-4x-15)/(x^2+x-12)", {va:["-4"], ha:"3", sa:N, holes:[["3","2"]], xint:["-5/3"], yint:"5/4"},
+  ["Factor: {{((3x+5)(x-3))/((x+4)(x-3))}} → {{(3x+5)/(x+4)}}", "Hole x = 3: {{14/7}} = 2 → (3, 2)", "VA −4; HA 3; x-int {{-5/3}}; y-int {{5/4}}"]);
+asy(["4.5","rev"], "Review #61", "(x^3+x^2-4x-4)/(x^2-2x-8)", {va:["4"], ha:N, sa:"x+3", holes:[["-2","-2/3"]], xint:["-1","2"], yint:"1/2"},
+  ["Factor: {{((x+1)(x-2)(x+2))/((x-4)(x+2))}} → {{((x+1)(x-2))/(x-4)}}", "Hole x = −2: {{((-1)(-4))/(-6)}} = {{-2/3}}", "SA: {{x^2-x-2}} ÷ (x − 4) = x + 3 (rem 10). VA 4; x-int −1, 2; y-int {{1/2}}"]);
+asy(["4.5","rev"], "Review #62", "(x^2+2x+1)/(x^3+4x)", {va:["0"], ha:"0", sa:N, holes:[], xint:["-1"], yint:N},
+  ["Factor: {{(x+1)^2/(x(x^2+4))}}. {{x^2+4}} is never 0", "VA x = 0; HA y = 0; x-int −1", "No y-intercept (x = 0 is an asymptote)."]);
+asy(["4.5","rev"], "Review #63", "(2x^3-7x^2-14x-5)/(x^2-4x-5)", {va:[], ha:N, sa:N, holes:[["5","11"],["-1","-1"]], xint:["-1/2"], yint:"1"},
+  ["Factor: {{((x+1)(2x+1)(x-5))/((x-5)(x+1))}} = 2x + 1", "Holes at x = 5 → (5, 11) and x = −1 → (−1, −1)", "The graph is the line y = 2x + 1 with two holes: no asymptotes. x-int −1/2; y-int 1"]);
+txt(["4.5"], "4.5 Notes", "A vertical asymptote with ODD multiplicity: the branches go the ______ direction(s) on each side.", ["opposite"],
+  ["Odd → opposite; even → same."]);
+txt(["4.5"], "4.5 Notes", "A vertical asymptote with EVEN multiplicity: the branches go the ______ direction on each side.", ["same"],
+  ["Even multiplicity → same direction (both up or both down)."]);
+txt(["4.5"], "4.5 Notes", "To find a slant asymptote, use polynomial ______ division (and throw away the remainder).", ["long"],
+  ["Polynomial long division."]);
+txt(["4.5"], "4.5 Notes", "A slant asymptote happens when the numerator's degree is exactly ______ more than the denominator's. (number)", ["1","one"],
+  ["Exactly one degree higher."]);
+
+/* ===== 4.6 Writing rational equations ===== */
+write(["4.6"], "4.6 Notes #1", "((x+3)(x+1))/((x+2)(x+1))", {va:["-2"], ha:"1", sa:N, holes:[["-1","2"]], xint:["-3"], yint:"3/2"},
+  ["Hole x = −1 → (x + 1) on the top AND bottom", "VA x = −2 → (x + 2) on the bottom; x-int −3 → (x + 3) on the top", "HA: {{lim}} = 1 ✓; y-int {{3/2}} ✓ → {{((x+3)(x+1))/((x+2)(x+1))}}"]);
+write(["4.6"], "4.6 Notes #2", "((x+1)(2x-3))/(-2(x+2)(x-1))", {va:["-2","1"], ha:"-1", sa:N, holes:[], xint:["-1","3/2"], yint:"-3/4"},
+  ["VA x = −2, 1 → (x + 2)(x − 1) on the bottom", "x-int −1, 3/2 → (x + 1)(2x − 3) on the top", "HA should be −1: the top leads with 2x², so put −2 on the bottom. y-int {{-3/4}} ✓"]);
+write(["4.6"], "4.6 Notes #3", "(x-1)^2/x", {va:["0"], ha:N, sa:"x-2", holes:[], xint:["1"], yint:N},
+  ["VA x = 0 → x on the bottom", "x-int 1 touches (even multiplicity) → {{(x-1)^2}} on the top", "SA: top degree is 1 more than the bottom's ✓; {{(x^2-2x+1)/x}} = x − 2 + … ✓"]);
+write(["4.6"], "4.6 Notes #4", "(-(x-1)^3)/((x+1)(x-3))", {va:["-1","3"], ha:N, sa:"-x+1", holes:[], xint:["1"], yint:"-1/3"},
+  ["VA x = −1, 3 → (x + 1)(x − 3) on the bottom", "x-int 1 flattens out → {{(x-1)^3}}; the degree must be 3 for an SA", "y-int should be {{-1/3}}: {{1/(-3)}} needs a −1 in front → {{(-(x-1)^3)/((x+1)(x-3))}}"]);
+write(["4.6","rev"], "Review #60 (graph)", "((3x+5)(x-3))/((x+4)(x-3))", {va:["-4"], ha:"3", sa:N, holes:[["3","2"]], xint:["-5/3"], yint:"5/4"},
+  ["Hole x = 3 → (x − 3) on the top and bottom; VA x = −4 → (x + 4)", "x-int −5/3 → (3x + 5) on the top, which also makes the HA 3 ✓"]);
+write(["4.6","rev"], "Review #61 (graph)", "((x+1)(x-2)(x+2))/((x-4)(x+2))", {va:["4"], ha:N, sa:"x+3", holes:[["-2","-2/3"]], xint:["-1","2"], yint:"1/2"},
+  ["Hole x = −2 → (x + 2) on the top and bottom; VA x = 4 → (x − 4)", "x-int −1, 2 → (x + 1)(x − 2) on the top. Top degree 3 vs bottom 2 → SA ✓"]);
+
+/* example graphs for the notes summary (from the 4.3–4.6 notes) */
+const MNOTE_GRAPHS = {
+  "4.3": [
+    {cap:"Hole (removable discontinuity): {{lim}} as x → 1 is still 2, even though f(1) is undefined.", f:"(x^2-1)/(x-1)", F:{va:[], ha:"none", sa:"none", holes:[["1","2"]], xint:["-1"], yint:"1"}},
+    {cap:"Vertical asymptote (non-removable): left side → −∞, right side → +∞, so {{lim}} as x → 2 is DNE.", f:"1/(x-2)", F:{va:["2"], ha:"0", sa:"none", holes:[], xint:[], yint:"-1/2"}}
+  ],
+  "4.4": [
+    {cap:"Bottom-heavy: {{lim}} as x → ±∞ of {{1/x}} is 0.", f:"1/x", F:{va:["0"], ha:"0", sa:"none", holes:[], xint:[], yint:"none"}},
+    {cap:"Equal degrees: {{(3x-1)/(x-1)}} → {{3/1}} = 3 as x → ±∞.", f:"(3x-1)/(x-1)", F:{va:["1"], ha:"3", sa:"none", holes:[], xint:["1/3"], yint:"1"}}
+  ],
+  "4.5": [
+    {cap:"Odd multiplicity VA: the branches go OPPOSITE ways.", f:"3/(x-1)", F:{va:["1"], ha:"0", sa:"none", holes:[], xint:[], yint:"-3"}},
+    {cap:"Even multiplicity VA: the branches go the SAME way.", f:"3/(x-1)^2", F:{va:["1"], ha:"0", sa:"none", holes:[], xint:[], yint:"3"}},
+    {cap:"Hole: (x − 1) cancels, leaving y = 3 with a hole at (1, 3).", f:"(3(x-1))/(x-1)", F:{va:[], ha:"none", sa:"none", holes:[["1","3"]], xint:[], yint:"3", line:true}},
+    {cap:"Slant asymptote: {{x^2+x+1}} ÷ (x − 2) = x + 3 (remainder thrown away).", f:"(x^2+x+1)/(x-2)", F:{va:["2"], ha:"none", sa:"x+3", holes:[], xint:[], yint:"-1/2"}},
+    {cap:"Intercepts: top = 0 → x = 1, −2. Plug in x = 0 → y = {{-2/3}}.", f:"((x-1)(x+2))/(x+3)", F:{va:["-3"], ha:"none", sa:"x-2", holes:[], xint:["1","-2"], yint:"-2/3"}}
+  ],
+  "4.6": [
+    {cap:"4.6 Notes #1: hole at x = −1, VA x = −2, x-int −3, HA y = 1.", f:"((x+3)(x+1))/((x+2)(x+1))", F:{va:["-2"], ha:"1", sa:"none", holes:[["-1","2"]], xint:["-3"], yint:"3/2"}},
+    {cap:"4.6 Notes #3: the x-intercept touches and turns (squared factor), with SA y = x − 2.", f:"(x-1)^2/x", F:{va:["0"], ha:"none", sa:"x-2", holes:[], xint:["1"], yint:"none"}}
+  ]
+};
+
+/* ---------- RANDOM PROBLEM GENERATORS (endless drills) ---------- */
+const MGEN = (() => {
+  const ri = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+  const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+  const nz = (a, b) => { let v; do { v = ri(a, b); } while (v === 0); return v; };
+  const gcd = (a, b) => { a = Math.abs(a); b = Math.abs(b); while (b){ [a, b] = [b, a % b]; } return a || 1; };
+  function frac(p, q){ if (q < 0){ p = -p; q = -q; } const g = gcd(p, q); p /= g; q /= g; return q === 1 ? String(p) : `${p}/${q}`; }
+  function distinct(n, lo, hi, avoid = []){ const out = []; let guard = 0; while (out.length < n && guard++ < 500){ const v = ri(lo, hi); if (!out.includes(v) && !avoid.includes(v)) out.push(v); } return out; }
+  // polynomials: arrays of coefficients, highest power first
+  const pmul = (a, b) => { const r = Array(a.length + b.length - 1).fill(0); a.forEach((x, i) => b.forEach((y, j) => r[i + j] += x * y)); return r; };
+  const fromRoots = (roots, k = 1) => roots.reduce((p, r) => pmul(p, [1, -r]), [k]);
+  function pstr(c, v = "x"){
+    const d = c.length - 1; let s = "";
+    c.forEach((a, i) => { if (!a) return; const pw = d - i; const abs = Math.abs(a);
+      const coef = (abs === 1 && pw > 0) ? "" : String(abs);
+      const term = coef + (pw > 0 ? v : "") + (pw > 1 ? "^" + pw : "");
+      s += (s ? (a < 0 ? "-" : "+") : (a < 0 ? "-" : "")) + term; });
+    return s || "0";
+  }
+  const fac = r => r === 0 ? "x" : r < 0 ? `(x+${-r})` : `(x-${r})`;
+  const facs = rs => rs.map(fac).join("");
+  // long division by a monic polynomial; returns quotient
+  function pdiv(n, d){ n = n.slice(); const q = []; while (n.length >= d.length){ const c = n[0] / d[0]; q.push(c); d.forEach((x, i) => n[i] -= c * x); n.shift(); } return q; }
+  const evalRoots = (rs, x) => rs.reduce((p, r) => p * (x - r), 1);
+
+  function ratBuild(){
+    const shape = pick([[1,1],[1,1],[2,2],[1,2],[0,1],[2,1],[2,1]]);
+    const holeOn = Math.random() < 0.5;
+    const all = distinct(shape[0] + shape[1] + (holeOn ? 1 : 0), -5, 5);
+    const N = all.slice(0, shape[0]), D = all.slice(shape[0], shape[0] + shape[1]), H = holeOn ? [all[all.length - 1]] : [];
+    let k = shape[0] === shape[1] ? pick([1, 1, 2, -1, 3, -2]) : pick([1, 1, 2, -1]);
+    const num = fromRoots(N.concat(H), k), den = fromRoots(D.concat(H));
+    const reduced = x => k * evalRoots(N, x) / evalRoots(D, x);
+    const fracAt = x => frac(k * evalRoots(N, x), evalRoots(D, x));
+    const F = {va: D.map(String), holes: H.map(h => [String(h), fracAt(h)]), xint: N.map(String)};
+    if (shape[0] < shape[1]){ F.ha = "0"; F.sa = "none"; }
+    else if (shape[0] === shape[1]){ F.ha = String(k); F.sa = "none"; }
+    else { F.ha = "none"; const q = pdiv(num, den); F.sa = pstr(q.map(c => Math.round(c))); }
+    F.yint = (D.includes(0) || H.includes(0)) ? "none" : fracAt(0);
+    const tops = N.concat(H);
+    const numF = tops.length ? (k === -1 ? "-" : k !== 1 ? String(k) : "") + facs(tops) : String(k);
+    const target = `(${numF})/(${facs(D.concat(H))})`;
+    return {expanded: `(${pstr(num)})/(${pstr(den)})`, target, F, N, D, H, k};
+  }
+
+  const G = {
+    "4.1": () => {
+      const [a, b, c] = distinct(3, -6, 6);
+      const num = fromRoots([a, b]), den = fromRoots([a, c]);
+      return {src:"Random drill", kind:"simp", text:"Simplify. State any excluded values.", math:`(${pstr(num)})/(${pstr(den)})`,
+        fields:[{l:"Simplified", t:"expr", a:`${fac(b)}/${fac(c)}`, v:["x"], simp:true, mustDefine:[{x:a}]}, {l:"Excluded values: x ≠", t:"set", a:[String(a), String(c)], ph:"e.g. 2, -3", canceled:[a]}],
+        steps:[`Factor: {{(${facs([a, b])})/(${facs([a, c])})}}`, `Cancel ${fac(a)} → {{${fac(b)}/${fac(c)}}}`, `Excluded (original denominator): x ≠ ${a}, ${c}`]};
+    },
+    "4.2": () => {
+      if (Math.random() < 0.5){
+        const a = nz(-4, 4), b = ri(-6, 6), c = ri(-9, 9);
+        const f = pstr([a, b, c]);
+        return {src:"Random drill", kind:"dq", text:"Find the difference quotient {{(f(x+h)-f(x))/h}}", pre:"f(x) = ", math:f,
+          fields:[{l:"Difference quotient", t:"expr", a:`${2*a}x+${a}h+${b}`.replace(/\+-/g, "-"), v:["x","h"], simp:true, mustDefine:[{x:1.37, h:0}]}],
+          steps:[`{{f(x+h)-f(x)}} = {{${2*a}xh+${a}h^2+${b}h}}`.replace(/\+-/g, "-"), `Divide by h: {{${2*a}x+${a}h+${b}}}`.replace(/\+-/g, "-")]};
+      }
+      const [r1, r2] = distinct(2, -6, 6), A = nz(-6, 6), B = nz(-6, 6);
+      const num = [A + B, -(A * r2 + B * r1)];
+      return {src:"Random drill", kind:"pf", text:"Decompose into partial fractions.", math:`(${pstr(num)})/(${pstr(fromRoots([r1, r2]))})`,
+        pfForm:[fac(r1).replace(/[()]/g, ""), fac(r2).replace(/[()]/g, "")],
+        fields:[{l:"A", t:"num", a:String(A)}, {l:"B", t:"num", a:String(B)}],
+        steps:[`Factor the bottom: {{${facs([r1, r2])}}}`, `{{${pstr(num)}}} = A${fac(r2)} + B${fac(r1)}`, `x = ${r1} → A = ${A};  x = ${r2} → B = ${B}`]};
+    },
+    "4.3": () => {
+      const [a, b, c] = distinct(3, -6, 6);
+      const num = fromRoots([a, b]), den = fromRoots([a, c]);
+      const atVA = Math.random() < 0.25;
+      const to = atVA ? c : a;
+      const ans = atVA ? "DNE" : frac(a - b, a - c);
+      return {src:"Random drill", kind:"lim", text:"Evaluate the limit. If it doesn't exist, write DNE.", math:`(${pstr(num)})/(${pstr(den)})`, lim:{v:"x", to:String(to)},
+        fields:[{l:"Limit", t:"num", a:ans, ph:"number, ∞, −∞, or DNE"}],
+        steps: atVA ? [`Factor and cancel: {{${fac(b)}/${fac(c)}}}`, `At x = ${c} the bottom is 0 but the top isn't: the sides go to opposite infinities → DNE`]
+                    : [`Direct substitution gives 0/0. Factor: {{(${facs([a, b])})/(${facs([a, c])})}}`, `Cancel → {{${fac(b)}/${fac(c)}}}; plug in ${a} → {{${ans}}}`]};
+    },
+    "4.4": () => {
+      const dn = ri(0, 3), dd = ri(1, 3), dir = pick(["inf", "inf", "-inf"]);
+      const mk = d => { const c = [nz(-9, 9)]; for (let i = 0; i < d; i++) c.push(ri(-9, 9)); return c; };
+      const n = mk(dn), d = mk(dd), ln = n[0], ld = d[0];
+      let ans;
+      if (dn < dd) ans = "0";
+      else if (dn === dd) ans = frac(ln, ld);
+      else { let s = Math.sign(ln / ld); if (dir === "-inf" && (dn - dd) % 2) s = -s; ans = s > 0 ? "inf" : "-inf"; }
+      const lead = (c, deg) => (deg ? `${c}x${deg > 1 ? "^" + deg : ""}` : `${c}`);
+      return {src:"Random drill", kind:"lim", text:"Evaluate the limit. If it doesn't exist, write DNE.", math:`(${pstr(n)})/(${pstr(d)})`, lim:{v:"x", to:dir},
+        fields:[{l:"Limit", t:"num", a:ans, ph:"number, ∞, −∞, or DNE"}],
+        steps:[`Highest-degree terms: {{(${lead(ln, dn)})/(${lead(ld, dd)})}}`, dn < dd ? "Bottom-heavy → 0" : dn === dd ? `Equal degrees → {{${ans}}}` : `Top-heavy → ${ans === "inf" ? "∞" : "−∞"}`]};
+    },
+    "4.5": () => {
+      const R = ratBuild();
+      return {src:"Random drill", kind:"asy", text:"Find all asymptotes, holes, and intercepts.", pre:"f(x) = ", math:R.expanded, F:R.F, graphAfter:true,
+        fields:[
+          {l:"Vertical asymptotes: x =", t:"set", a:R.F.va, ph:"e.g. 2, -3 or none"},
+          {l:"Horizontal asymptote: y =", t:"num", a:R.F.ha, ph:"number or none"},
+          {l:"Slant asymptote: y =", t:"expr", a:R.F.sa, ph:"e.g. x + 3 or none"},
+          {l:"Holes", t:"pts", a:R.F.holes, ph:"e.g. (4, 2/7) or none"},
+          {l:"x-intercepts: x =", t:"set", a:R.F.xint, ph:"e.g. 1, -2 or none"},
+          {l:"y-intercept: y =", t:"num", a:R.F.yint, ph:"number or none"}],
+        steps:[`Factor: {{${R.target}}}`, R.H.length ? `Hole at x = ${R.H[0]} → (${R.F.holes[0][0]}, ${R.F.holes[0][1]})` : "Nothing cancels, so there are no holes",
+               `VA: ${R.F.va.join(", ") || "none"} · HA: ${R.F.ha} · SA: ${R.F.sa} · x-int: ${R.F.xint.join(", ") || "none"} · y-int: ${R.F.yint}`]};
+    },
+    "4.6": () => {
+      const R = ratBuild();
+      return {src:"Random drill", kind:"write", text:"Write an equation for this rational graph.", target:R.target, F:R.F, graphBefore:true,
+        fields:[{l:"f(x) =", t:"rat", a:R.target, v:["x"], holes:R.H, ph:"e.g. (x+3)(x+1)/((x+2)(x+1))"}],
+        steps:[R.H.length ? `Hole x = ${R.H[0]} → ${fac(R.H[0])} on the top and bottom` : "No holes",
+               `VA → ${facs(R.D) || "nothing"} on the bottom; x-intercepts → ${facs(R.N) || "nothing"} on the top`,
+               `Leading coefficient ${R.k} (check the HA/SA and y-intercept) → {{${R.target}}}`]};
+    }
+  };
+  G["4.1.2"] = null;
+  return {has: sec => sec === "all" || sec === "rev" || !!G[sec],
+          make: sec => { const keys = Object.keys(G).filter(k => G[k]); const k = (sec === "all" || sec === "rev") ? pick(keys) : sec; const q = G[k](); q.id = "gen-" + k; q.secs = [k]; q.gen = true; return q; }};
+})();
+
+/* ========== HONORS MATH 3 UI ========== */
+const MMODES = {
+  practice:{name:"Practice", desc:"Problems from your notes, HW & review, shuffled.", icon:"📝"},
+  mastery: {name:"Mastery", desc:"Missed problems come back until you get every one.", icon:"🧠"},
+  drill:   {name:"Endless Drill", desc:"Brand-new random problems every time. Never runs out.", icon:"♾️", gen:true},
+  weak:    {name:"Weak Spots", desc:"The 8 problems you miss most in this section.", icon:"🎯"}
+};
+if (!ST.mbest) ST.mbest = {};
+if (!ST.mq) ST.mq = {};
+if (!ST.msec) ST.msec = "4.3";
+if (!ST.subject) ST.subject = "vocab";
+const KIND_TIP = {
+  simp:"Factor everything first, then cancel. Excluded values come from the ORIGINAL denominators (and the top of a fraction you divide by).",
+  lim:"Try direct substitution first. 0/0 → factor and cancel, use the conjugate, or clear the little fractions.",
+  liminf:"Keep only the highest-degree term on the top and bottom, simplify, then plug in ∞ or −∞.",
+  pf:"Multiply both sides by the full denominator, then plug in each root to make one term vanish.",
+  dq:"Expand f(x + h), subtract f(x), and every term should have an h. Divide it out.",
+  asy:"Factor and reduce. Canceled factor → hole. Leftover denominator → VA. Compare degrees for the HA/SA.",
+  write:"VAs → the bottom. Holes → the top AND bottom. x-intercepts → the top. Then fix the leading coefficient using the HA or y-intercept."
+};
+const mItems = sec => sec === "all" ? MBANK : MBANK.filter(q => q.secs.includes(sec));
+const mAcc = id => { const r = ST.mq[id]; return r && r.t ? r.c / r.t : null; };
+const mBestKey = m => ST.msec + ":" + m;
+
+/* ---- graph ---- */
+let _plotN = 0;
+function plotSVG(src, F, userSrc){
+  const cid = "clp" + (++_plotN);
+  const ast = MC.parse(src), f = x => { try { return MC.evaluate(ast, {x}); } catch(e){ return NaN; } };
+  const nv = s => MC.numVal(s);
+  const VA = F.va.map(nv), HO = F.holes.map(([a, b]) => [nv(a), nv(b)]), XI = F.xint.map(nv);
+  const YI = F.yint === "none" ? null : nv(F.yint), HA = F.ha === "none" ? null : nv(F.ha);
+  const SAa = F.sa === "none" ? null : MC.parse(F.sa), sa = x => MC.evaluate(SAa, {x});
+  const xs = [0, ...VA, ...HO.map(h => h[0]), ...XI];
+  let x0 = Math.min(-6, Math.floor(Math.min(...xs)) - 2), x1 = Math.max(6, Math.ceil(Math.max(...xs)) + 2);
+  const ys = [0, ...HO.map(h => h[1]), ...(YI != null ? [YI] : []), ...(HA != null ? [HA] : [])];
+  // include the visible shape of the curve away from the asymptotes (e.g. a slant branch's turning point)
+  for (let i = 0; i <= 120; i++){
+    const x = x0 + (x1 - x0) * i / 120;
+    if (VA.some(v => Math.abs(x - v) < 1.2)) continue;
+    const y = f(x); if (isFinite(y) && Math.abs(y) < 14) ys.push(y);
+  }
+  let y0 = Math.max(-14, Math.min(-6, Math.floor(Math.min(...ys)) - 2)), y1 = Math.min(14, Math.max(6, Math.ceil(Math.max(...ys)) + 2));
+  const W = 340, H = Math.round(Math.max(260, Math.min(420, W * (y1 - y0) / (x1 - x0))));
+  const sx = x => +((x - x0) / (x1 - x0) * W).toFixed(1), sy = y => +(H - (y - y0) / (y1 - y0) * H).toFixed(1);
+  const step = (x1 - x0) > 16 ? 2 : 1, ystep = (y1 - y0) > 16 ? 2 : 1;
+  let g = `<svg viewBox="-6 -6 ${W + 12} ${H + 12}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="graph"><defs><clipPath id="${cid}"><rect x="0" y="0" width="${W}" height="${H}"/></clipPath></defs>`;
+  for (let x = Math.ceil(x0); x <= x1; x += step) g += `<line class="g-grid" x1="${sx(x)}" y1="0" x2="${sx(x)}" y2="${H}"/>`;
+  for (let y = Math.ceil(y0); y <= y1; y += ystep) g += `<line class="g-grid" x1="0" y1="${sy(y)}" x2="${W}" y2="${sy(y)}"/>`;
+  g += `<line class="g-axis" x1="0" y1="${sy(0)}" x2="${W}" y2="${sy(0)}"/><line class="g-axis" x1="${sx(0)}" y1="0" x2="${sx(0)}" y2="${H}"/>`;
+  g += `<text class="g-lab" x="${W - 8}" y="${sy(0) - 5}">x</text><text class="g-lab" x="${sx(0) + 5}" y="11">y</text>`;
+  g += `<text class="g-tick" x="${sx(1)}" y="${sy(0) + 13}" text-anchor="middle">1</text><text class="g-tick" x="${sx(0) - 5}" y="${sy(1) + 4}" text-anchor="end">1</text>`;
+  g += `<g clip-path="url(#${cid})">`;
+  VA.forEach(v => g += `<line class="g-asy" x1="${sx(v)}" y1="0" x2="${sx(v)}" y2="${H}"/>`);
+  if (HA != null) g += `<line class="g-asy" x1="0" y1="${sy(HA)}" x2="${W}" y2="${sy(HA)}"/>`;
+  if (SAa) g += `<line class="g-asy" x1="${sx(x0)}" y1="${sy(sa(x0))}" x2="${sx(x1)}" y2="${sy(sa(x1))}"/>`;
+  const lim = (y1 - y0) * 3, N = 1200; let d = "", pen = false, px = null;
+  for (let i = 0; i <= N; i++){
+    const x = x0 + (x1 - x0) * i / N; let y = f(x);
+    const crossed = px != null && VA.some(v => (px - v) * (x - v) <= 0);
+    if (!isFinite(y) || crossed){ pen = false; px = x; if (!isFinite(y)) continue; }
+    y = Math.max(y0 - lim, Math.min(y1 + lim, y));
+    d += (pen ? "L" : "M") + sx(x) + " " + sy(y) + " "; pen = true; px = x;
+  }
+  g += `<path class="g-curve" d="${d}"/>`;
+  if (userSrc){
+    try {
+      const ua = MC.parse(userSrc), uf = x => { try { return MC.evaluate(ua, {x}); } catch(e){ return NaN; } };
+      let ud = "", upen = false, upy = null;
+      for (let i = 0; i <= N; i++){
+        const x = x0 + (x1 - x0) * i / N; let y = uf(x);
+        if (!isFinite(y) || (upy != null && Math.abs(y - upy) > (y1 - y0) * 2)){ upen = false; upy = isFinite(y) ? y : null; if (!isFinite(y)) continue; }
+        y = Math.max(y0 - lim, Math.min(y1 + lim, y));
+        ud += (upen ? "L" : "M") + sx(x) + " " + sy(y) + " "; upen = true; upy = y;
+      }
+      g += `<path class="g-user" d="${ud}"/>`;
+    } catch(e){}
+  }
+  g += `</g>`;
+  const lbl = (x, y, t, anchor = "start") => `<text class="g-val" x="${x}" y="${y}" text-anchor="${anchor}">${t}</text>`;
+  VA.forEach((v, i) => g += lbl(sx(v) + 4, 12 + i * 13, "x = " + F.va[i]));
+  if (HA != null) g += lbl(W - 4, sy(HA) - 5, "y = " + F.ha, "end");
+  if (SAa){ const xl = x0 + (x1 - x0) * 0.8, yl = sa(xl); if (yl > y0 && yl < y1) g += lbl(sx(xl) - 6, sy(yl) - 8, "y = " + F.sa.replace(/\*/g, ""), "end"); }
+  XI.forEach((v, i) => { g += `<circle class="g-dot" cx="${sx(v)}" cy="${sy(0)}" r="3.6"/>` + lbl(sx(v), sy(0) + (i % 2 ? -8 : 16), F.xint[i], "middle"); });
+  if (YI != null){ g += `<circle class="g-dot" cx="${sx(0)}" cy="${sy(YI)}" r="3.6"/>` + lbl(sx(0) + 6, sy(YI) - 6, F.yint); }
+  HO.forEach((h, i) => { g += `<circle class="g-hole" cx="${sx(h[0])}" cy="${sy(h[1])}" r="4.6"/>` + lbl(sx(h[0]) + 7, sy(h[1]) - 8, `(${F.holes[i][0]}, ${F.holes[i][1]})`); });
+  if (userSrc) g += `<text class="g-key" x="6" y="${H - 8}">— correct   ┅ yours</text>`;
+  return g + `</svg>`;
+}
+
+/* ---- home ---- */
+function renderMathHome(){
+  const sel = $("msecSel");
+  if (!sel.options.length) MSECTIONS.forEach(s => { const o = el("option", null, `${s.name} (${mItems(s.id).length})`); o.value = s.id; sel.appendChild(o); });
+  sel.value = ST.msec;
+  const box = $("mmodes"); box.innerHTML = "";
+  Object.entries(MMODES).forEach(([k, m]) => {
+    if (m.gen && !MGEN.has(ST.msec)) return;
+    const b = el("button", "mode");
+    b.appendChild(el("b", null, m.icon + " " + m.name));
+    b.appendChild(el("span", null, m.desc));
+    b.appendChild(el("i", null, ST.mbest[mBestKey(k)] ? "Best: " + ST.mbest[mBestKey(k)] + " pts" : ""));
+    b.onclick = () => mStart(k);
+    box.appendChild(b);
+  });
+  if (!MGEN.has(ST.msec)) box.appendChild(el("div", "small", "No Endless Drill for this section (every problem is from your notes)."));
+}
+$("msecSel").onchange = e => { ST.msec = e.target.value; save(); renderMathHome(); };
+document.querySelectorAll("#subjBar button").forEach(b => b.onclick = () => { ST.subject = b.dataset.subj; save(); renderHome(); });
+
+/* ---- notes summary ---- */
+function renderMNotes(){
+  const box = $("mnotesBody"); box.innerHTML = "";
+  const secs = (ST.msec === "all" || ST.msec === "rev") ? Object.keys(MNOTES) : [ST.msec];
+  secs.forEach(s => {
+    box.appendChild(el("div", "grouphead", MSECTIONS.find(x => x.id === s).name));
+    const ul = el("ul", "mnotes");
+    MNOTES[s].forEach(t => { const li = el("li"); li.innerHTML = MC.renderText(t); ul.appendChild(li); });
+    box.appendChild(ul);
+    (MNOTE_GRAPHS[s] || []).forEach(ex => {
+      const fig = el("div", "nfig");
+      fig.innerHTML = `<div class="ncap">${MC.renderText(ex.cap)}</div><div class="mdisplay nmath"><span class="mpre">f(<i class="mv">x</i>) =</span>${MC.render(ex.f)}</div><div class="mgraph">${plotSVG(ex.f, ex.F)}</div>`;
+      box.appendChild(fig);
+    });
+  });
+  show("mnotes");
+}
+
+/* ---- game ---- */
+let M = null;
+function mStart(mode, override){
+  let list = override || mItems(ST.msec);
+  if (mode === "weak") list = list.slice().sort((a, b) => ((mAcc(a.id) ?? 0.5) - (mAcc(b.id) ?? 0.5)) || Math.random() - 0.5).slice(0, 8);
+  let queue = mode === "drill" ? [MGEN.make(ST.msec)] : shuffle(list);
+  if (mode === "practice" && !override && ST.settings.count) queue = queue.slice(0, ST.settings.count);
+  M = {mode, queue, idx:0, score:0, streak:0, bestStreak:0, results:[], mastered:new Set(), total:queue.length, start:Date.now(), override:!!override};
+  show("mquiz");
+  mShow();
+}
+
+function mPrompt(q){
+  let html = "";
+  if (q.lim) html = MC.renderLim(q.lim.v, q.lim.to, MC.render(q.math));
+  else if (q.pfForm) html = MC.render(q.math) + `<span class="mo">=</span>` + MC.render(`A/(${q.pfForm[0]})+B/(${q.pfForm[1]})`);
+  else if (q.math) html = (q.pre ? `<span class="mpre">${q.pre.replace("x", "<i class='mv'>x</i>")}</span>` : "") + MC.render(q.math);
+  return html;
+}
+
+function mShow(){
+  const q = M.queue[M.idx];
+  Object.assign(M, {hint:0, attempt:1, answered:false, qStart:Date.now(), lastFocus:0});
+  $("mSrc").textContent = q.src;
+  $("mText").innerHTML = MC.renderText(q.text);
+  $("mMath").innerHTML = mPrompt(q);
+  $("mMath").classList.toggle("hidden", !$("mMath").innerHTML);
+  $("mGraph").innerHTML = q.graphBefore ? plotSVG(q.target, q.F) : "";
+  $("mHint").classList.add("hidden"); $("mHint").innerHTML = "";
+  $("mSol").classList.add("hidden"); $("mSol").innerHTML = "";
+  $("mFb").innerHTML = ""; $("mFb").className = "fb";
+  const box = $("mFields"); box.innerHTML = "";
+  q.fields.forEach((f, i) => {
+    const w = el("div", "mfield");
+    const lab = el("label", null, f.l); lab.htmlFor = "mf" + i; w.appendChild(lab);
+    const inp = el("input"); inp.type = "text"; inp.id = "mf" + i;
+    Object.assign(inp, {autocomplete:"off", spellcheck:false});
+    inp.setAttribute("autocapitalize", "none"); inp.setAttribute("autocorrect", "off");
+    inp.setAttribute("enterkeyhint", i === q.fields.length - 1 ? "go" : "next");
+    inp.placeholder = f.ph || (f.t === "text" ? "type the word(s)" : "type your answer");
+    const pv = el("div", "mprev");
+    inp.addEventListener("input", () => { if (f.t !== "text") pv.innerHTML = MC.preview(f, inp.value); });
+    inp.addEventListener("focus", () => M.lastFocus = i);
+    inp.addEventListener("keydown", e => {
+      if (e.key !== "Enter") return; e.preventDefault();
+      if (M.answered) return mNext();
+      const nxt = q.fields.findIndex((_, j) => j > i && !$("mf" + j).readOnly);
+      if (nxt > 0) $("mf" + nxt).focus(); else mCheck();
+    });
+    w.appendChild(inp); w.appendChild(pv); w.appendChild(el("div", "mans hidden"));
+    box.appendChild(w);
+  });
+  $("keypad").classList.toggle("hidden", q.fields.every(f => f.t === "text"));
+  $("mCheck").textContent = "Check";
+  $("mSkip").disabled = false;
+  mHintBtn(); mHud();
+  $("mf0").focus();
+}
+
+function mHints(q){
+  const tip = q.kind === "lim" && /inf/.test(q.lim.to) ? KIND_TIP.liminf : KIND_TIP[q.kind];
+  return (tip ? [tip] : []).concat((q.steps || []).slice(0, -1));
+}
+function mHintBtn(){
+  const n = mHints(M.queue[M.idx]).length, b = $("mHintBtn");
+  b.disabled = M.answered || M.hint >= n;
+  b.textContent = n === 0 ? "No hints" : M.hint >= n ? "No more hints" : `Hint ${M.hint + 1}/${n}`;
+}
+$("mHintBtn").onclick = () => {
+  const q = M.queue[M.idx], hs = mHints(q);
+  if (M.answered || M.hint >= hs.length) return;
+  M.hint++;
+  $("mHint").innerHTML = hs.slice(0, M.hint).map(h => `<div>💡 ${MC.renderText(h)}</div>`).join("");
+  $("mHint").classList.remove("hidden");
+  mHintBtn();
+  $("mf" + M.lastFocus).focus();
+};
+
+function mHud(){
+  $("mScore").textContent = M.score + " pts";
+  $("mStreak").textContent = M.streak >= 2 ? "🔥" + M.streak : "";
+  if (M.mode === "mastery"){ $("mCount").textContent = `Mastered ${M.mastered.size} of ${M.total}`; $("mProg").style.width = (M.mastered.size / M.total * 100) + "%"; }
+  else if (M.mode === "drill"){ const c = M.results.filter(r => r.ok).length; $("mCount").textContent = `Drill #${M.idx + 1} · ${c} correct`; $("mProg").style.width = "100%"; }
+  else { $("mCount").textContent = `Problem ${M.idx + 1} of ${M.queue.length}`; $("mProg").style.width = (M.idx / M.queue.length * 100) + "%"; }
+}
+
+// keypad: keep focus in the field
+$("keypad").querySelectorAll("button").forEach(b => {
+  b.addEventListener("pointerdown", e => e.preventDefault());
+  b.addEventListener("mousedown", e => e.preventDefault());
+  b.addEventListener("click", () => {
+    if (!M || M.answered) return;
+    const inp = $("mf" + M.lastFocus); if (!inp || inp.readOnly) return;
+    const ins = b.dataset.k, s = inp.selectionStart ?? inp.value.length, e = inp.selectionEnd ?? s;
+    if (ins === "⌫"){ inp.value = inp.value.slice(0, Math.max(0, s - (s === e ? 1 : 0))) + inp.value.slice(e); inp.setSelectionRange(Math.max(0, s - (s === e ? 1 : 0)), Math.max(0, s - (s === e ? 1 : 0))); }
+    else if (ins === "none" || ins === "DNE"){ inp.value = ins; }
+    else if (b.dataset.c != null && s !== e){
+      // wrap the selection: selected text goes in the first box
+      const sel = inp.value.slice(s, e), out = ins.replace("()", "(" + sel + ")");
+      inp.value = inp.value.slice(0, s) + out + inp.value.slice(e);
+      const c = s + out.length - (out.endsWith("()") ? 1 : 0); inp.setSelectionRange(c, c);
+    }
+    else { inp.value = inp.value.slice(0, s) + ins + inp.value.slice(e); const c = s + (b.dataset.c != null ? +b.dataset.c : ins.length); inp.setSelectionRange(c, c); }
+    inp.dispatchEvent(new Event("input")); inp.focus();
+  });
+});
+
+function mCheck(){
+  if (M.answered){ mNext(); return; }
+  const q = M.queue[M.idx];
+  const vals = q.fields.map((_, i) => $("mf" + i).value);
+  if (vals.every(v => !v.trim())){ $("mf0").focus(); return; }
+  const res = q.fields.map((f, i) => $("mf" + i).dataset.ok === "1" ? {ok:true} : MC.check(f, vals[i]));
+  const nOk = res.filter(r => r.ok).length;
+  if (nOk === q.fields.length) return mReveal(res, vals);
+  if (M.attempt === 1 && ST.settings.second){
+    M.attempt = 2;
+    res.forEach((r, i) => {
+      const inp = $("mf" + i);
+      const note = inp.parentNode.querySelector(".mans");
+      if (r.ok){ inp.className = "good"; inp.readOnly = true; inp.dataset.ok = "1"; note.classList.add("hidden"); }
+      else {
+        inp.className = "retry"; inp.classList.add("shake"); setTimeout(() => inp.classList.remove("shake"), 520);
+        if (r.why){ note.textContent = "↳ " + r.why.charAt(0).toUpperCase() + r.why.slice(1) + "."; note.className = "mans mwhy"; }
+        else note.classList.add("hidden");
+      }
+    });
+    $("mFb").className = "fb warn";
+    $("mFb").textContent = (q.fields.length > 1 ? `${nOk} of ${q.fields.length} right. Fix the orange ones` : "Not it. One more try") + " (half points).";
+    const firstBad = res.findIndex(r => !r.ok); $("mf" + firstBad).focus(); $("mf" + firstBad).select();
+    return;
+  }
+  mReveal(res, vals);
+}
+$("mCheck").onclick = mCheck;
+$("mSkip").onclick = () => { if (!M.answered) mReveal(M.queue[M.idx].fields.map(() => ({ok:false})), M.queue[M.idx].fields.map(() => ""), true); };
+["mCheck","mHintBtn","mSkip"].forEach(id => $(id).addEventListener("mousedown", e => e.preventDefault()));
+
+function mReveal(res, vals, skipped){
+  const q = M.queue[M.idx]; M.answered = true;
+  const nOk = res.filter(r => r.ok).length, all = nOk === q.fields.length;
+  q.fields.forEach((f, i) => {
+    const inp = $("mf" + i); inp.readOnly = true; inp.className = res[i].ok ? "good" : "bad";
+    const a = inp.parentNode.querySelector(".mans"); a.className = "mans hidden";
+    if (!res[i].ok){ a.innerHTML = "Answer: " + MC.answerHTML(f) + (res[i].why ? `<div class="mwhy">↳ ${res[i].why.charAt(0).toUpperCase() + res[i].why.slice(1)}.</div>` : ""); a.classList.remove("hidden"); }
+    else if (res[i].note){ a.textContent = res[i].note; a.classList.remove("hidden"); }
+  });
+  const rec = ST.mq[q.id] || (ST.mq[q.id] = {c:0, t:0}); rec.t++; if (all) rec.c++;
+  let pts = Math.round(100 * nOk / q.fields.length * (M.attempt === 2 ? 0.5 : 1)) - 20 * M.hint;
+  if (all){ M.streak++; M.bestStreak = Math.max(M.bestStreak, M.streak); pts = Math.round(pts * (1 + Math.min(M.streak, 10) * 0.1)); if (M.mode === "mastery") M.mastered.add(q.id); }
+  else { M.streak = 0; if (M.mode === "mastery") M.queue.splice(Math.min(M.queue.length, M.idx + 3), 0, q); }
+  pts = Math.max(0, pts); M.score += pts;
+  const fb = $("mFb");
+  fb.className = "fb " + (all ? "good" : nOk ? "warn" : "bad");
+  fb.textContent = all ? `✓ Correct! +${pts}` + (M.streak >= 2 ? `  🔥${M.streak} streak` : "")
+                 : skipped ? "Skipped. Here's how it works:" : nOk ? `${nOk} of ${q.fields.length} parts right. +${pts}` : "✗ Not quite. Here's how it works:";
+  const sol = $("mSol");
+  sol.innerHTML = `<b>Solution</b><ol>${(q.steps || []).map(s => `<li>${MC.renderText(s)}</li>`).join("")}</ol>`;
+  sol.classList.remove("hidden");
+  if (q.graphAfter) $("mGraph").innerHTML = plotSVG(q.math, q.F);
+  if (q.kind === "write" && !all && vals[0].trim()){
+    const us = vals[0].replace(/^(y|f\s*\(\s*x\s*\))\s*=/i, "");
+    $("mGraph").innerHTML = plotSVG(q.target, q.F, us);
+  }
+  M.results.push({id:q.id, src:q.src, q, ok:all, part:nOk + "/" + q.fields.length, pts, hints:M.hint, attempt:M.attempt, skipped:!!skipped});
+  save(); mHud();
+  const last = M.mode !== "drill" && M.idx >= M.queue.length - 1;
+  $("mCheck").textContent = last ? "See results" : "Next →";
+  $("mSkip").disabled = true; mHintBtn();
+  $("mf" + M.lastFocus).focus();
+}
+
+function mNext(){
+  M.idx++;
+  if (M.mode === "drill"){ M.queue.push(MGEN.make(ST.msec)); return mShow(); }
+  if (M.idx >= M.queue.length) return mFinish();
+  mShow();
+}
+$("mQuit").onclick = () => { if (M && M.results.length && M.mode === "drill") return mFinish(); document.activeElement && document.activeElement.blur(); renderHome(); };
+
+function mFinish(){
+  document.activeElement && document.activeElement.blur();
+  const n = M.results.length, c = M.results.filter(r => r.ok).length, acc = n ? Math.round(c / n * 100) : 0;
+  let newBest = false;
+  if (!M.override && M.score > (ST.mbest[mBestKey(M.mode)] || 0)){ ST.mbest[mBestKey(M.mode)] = M.score; newBest = true; }
+  save();
+  const secName = MSECTIONS.find(s => s.id === ST.msec).name;
+  $("meMode").textContent = `${secName} · ${MMODES[M.mode].icon} ${MMODES[M.mode].name}` + (M.override ? " · retry" : "");
+  $("meScore").textContent = M.score;
+  $("meBest").classList.toggle("hidden", !newBest);
+  $("meAcc").textContent = acc + "%"; $("meStreak").textContent = "🔥" + M.bestStreak; $("meTime").textContent = fmtTime(Date.now() - M.start);
+  const missed = M.results.filter(r => !r.ok && !r.q.gen).map(r => r.q).filter((q, i, a) => a.indexOf(q) === i);
+  $("meRetry").classList.toggle("hidden", !missed.length);
+  $("meRetry").onclick = () => mStart("practice", missed);
+  const mode = M.mode; $("meAgain").onclick = () => mStart(mode);
+  const ul = $("meList"); ul.innerHTML = "";
+  if (!n) ul.appendChild(el("li", "small", "No answers this round."));
+  M.results.forEach(r => {
+    const li = el("li");
+    li.innerHTML = `<span class="${r.ok ? "ok" : "no"}">${r.ok ? "✓" : "✗"}</span> <b>${r.src}</b> <span class="small">${r.ok ? "+" + r.pts : r.skipped ? "skipped" : r.part + " parts"}${r.hints ? " · " + r.hints + " hint" + (r.hints > 1 ? "s" : "") : ""}</span><div class="mmini">${mPrompt(r.q) || MC.renderText(r.q.text)}</div>`;
+    ul.appendChild(li);
+  });
+  M.brag = `Honors Math 3 (${secName}, ${MMODES[M.mode].name}): ${M.score} pts, ${c}/${n} right, 🔥${M.bestStreak} streak. Beat that.`;
+  $("meBrag").textContent = "📋 Copy score to send"; $("meBragText").classList.add("hidden");
+  show("mend");
+  if (newBest || (n >= 5 && c === n)) confetti();
+}
+$("meHome").onclick = renderHome;
+$("meBrag").onclick = () => {
+  const t = M.brag, box = $("meBragText");
+  const fallback = () => { box.value = t; box.classList.remove("hidden"); box.select(); $("meBrag").textContent = "Select and copy below"; };
+  try { navigator.clipboard.writeText(t).then(() => $("meBrag").textContent = "✓ Copied!").catch(fallback); } catch(e){ fallback(); }
+};
+
+/* ---- stats ---- */
+function renderMStats(){
+  const bl = $("bestList"); bl.innerHTML = "";
+  $("statsTitle").textContent = MSECTIONS.find(s => s.id === ST.msec).name + ": best scores";
+  Object.entries(MMODES).forEach(([k, m]) => {
+    const row = el("div"); row.style.cssText = "display:flex;justify-content:space-between;padding:4px 0";
+    row.appendChild(el("span", null, m.icon + " " + m.name)); row.appendChild(el("b", null, ST.mbest[mBestKey(k)] ? ST.mbest[mBestKey(k)] + " pts" : "–"));
+    bl.appendChild(row);
+  });
+  $("accTitle").innerHTML = "Accuracy by section";
+  const al = $("accList"); al.innerHTML = "";
+  MSECTIONS.filter(s => s.id !== "all").forEach(s => {
+    let c = 0, t = 0; mItems(s.id).forEach(q => { const r = ST.mq[q.id]; if (r){ c += r.c; t += r.t; } });
+    const g = ST.mq["gen-" + s.id]; const gc = g ? g.c : 0, gt = g ? g.t : 0;
+    const acc = (t + gt) ? (c + gc) / (t + gt) : null;
+    const d = el("div", "word");
+    const top = el("div"); top.style.cssText = "display:flex;justify-content:space-between";
+    top.appendChild(el("span", "w", s.name)); top.appendChild(el("span", "small", acc == null ? "not tried yet" : `${Math.round(acc * 100)}%  (${c + gc}/${t + gt})`));
+    d.appendChild(top);
+    const bar = el("div", "acc"), fill = el("div");
+    fill.style.width = (acc == null ? 0 : acc * 100) + "%";
+    fill.style.background = acc == null ? "transparent" : acc >= .8 ? "var(--good)" : acc >= .5 ? "var(--warn)" : "var(--bad)";
+    bar.appendChild(fill); d.appendChild(bar); al.appendChild(d);
+  });
+  show("stats");
+}
+
+/* ---- backup / restore (both subjects) ---- */
+function resetBackupUI(){
+  $("bkCopy").textContent = "📤 Copy backup code"; $("bkRestore").textContent = "📥 Restore";
+  $("bkRestore").dataset.mode = ""; $("bkText").classList.add("hidden"); $("bkText").value = "";
+  $("resetStats").dataset.armed = "";
+  $("resetStats").textContent = ST.subject === "math" ? "Reset math stats (all sections)" : "Reset vocab stats (all chapters)";
+}
+$("bkCopy").onclick = () => {
+  const code = btoa(unescape(encodeURIComponent(JSON.stringify(ST))));
+  const box = $("bkText"); box.value = code; box.readOnly = true; box.classList.remove("hidden"); box.select();
+  $("bkRestore").dataset.mode = "";
+  try { navigator.clipboard.writeText(code).then(() => $("bkCopy").textContent = "✓ Code copied").catch(() => $("bkCopy").textContent = "Copy the code below"); }
+  catch(e){ $("bkCopy").textContent = "Copy the code below"; }
+};
+$("bkRestore").onclick = () => {
+  const box = $("bkText"), b = $("bkRestore");
+  if (b.dataset.mode !== "paste"){
+    box.value = ""; box.readOnly = false; box.placeholder = "Paste your backup code here, then tap Restore again";
+    box.classList.remove("hidden"); b.dataset.mode = "paste"; b.textContent = "📥 Tap to restore"; box.focus(); return;
+  }
+  try {
+    const data = JSON.parse(decodeURIComponent(escape(atob(box.value.trim()))));
+    if (!data || typeof data !== "object" || !data.settings) throw new Error("bad");
+    ST = Object.assign(ST, data); save(); setChapter(ST.settings.ch || 2);
+    b.textContent = "✓ Restored"; b.dataset.mode = ""; box.classList.add("hidden");
+    ST.subject === "math" ? renderMStats() : renderStats();
+  } catch(e){ b.textContent = "That code didn't work"; b.dataset.mode = "paste"; }
+};
+
+renderHome();
+
+/* offline support: register the service worker when served over https (GitHub Pages) */
+if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")){
+  window.addEventListener("load", () => { navigator.serviceWorker.register("sw.js").catch(() => {}); });
+}
+</script>
+</body>
+</html>
