@@ -4,12 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="Vocab spelling and Honors Math 3 practice quizzes">
-<meta name="theme-color" content="#f6f4ef" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#16181c" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#F6F8FB" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#10151E" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Study Quiz">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
 <link rel="manifest" href="manifest.webmanifest">
 <script src="firebase-config.js"></script>
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
@@ -224,6 +227,140 @@
   .lbn{flex:1;display:flex;flex-direction:column;font-weight:600;min-width:0}
   .lbn .small{font-weight:400}
   #settings .settings{flex-direction:column;align-items:flex-start;gap:10px}
+
+  /* ================= THEME: graph-paper notebook ================= */
+  :root{
+    --bg:#F6F8FB; --grid:#E2E8F2; --card:#FFFFFF; --ink:#1A2232; --muted:#5D6A80;
+    --accent:#2F54EB; --accent-ink:#FFFFFF; --accent-soft:#E8EDFF;
+    --good:#1F9D55; --bad:#D64545; --warn:#D9730D; --line:#DCE3EE;
+    --rule:#E5484D; --hl:#FFD43B; --shadow:0 1px 0 rgba(26,34,50,.04), 0 6px 18px -10px rgba(26,34,50,.18);
+    --font:"Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#10151E; --grid:#1A2230; --card:#161D29; --ink:#E7ECF4; --muted:#8E9AB0;
+      --accent:#7D9BFF; --accent-ink:#0E1424; --accent-soft:#1E2943;
+      --good:#4CC38A; --bad:#FF6B6B; --warn:#FFA94D; --line:#263042;
+      --rule:#FF6369; --hl:#FFD43B; --shadow:0 1px 0 rgba(0,0,0,.2), 0 8px 20px -12px rgba(0,0,0,.6);
+    }
+  }
+
+  /* graph paper */
+  html{background:var(--bg)}
+  body{
+    font-family:var(--font); font-size:17px; line-height:1.5; color:var(--ink);
+    background-color:var(--bg);
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size:24px 24px; background-position:-1px -1px; background-attachment:fixed;
+    min-height:100vh; min-height:100dvh; box-sizing:border-box;
+  }
+  button, input, select, textarea{font-family:inherit}
+  h1{font-size:1.55rem;letter-spacing:-.01em;font-weight:700;margin:2px 0 10px}
+  h2{font-size:1.05rem;font-weight:700}
+  .sub{color:var(--muted);font-size:.92rem;max-width:60ch}
+
+  /* surfaces: quiet cards, one strong index card */
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow)}
+  .qcard{border-radius:6px;border-top:0;position:relative;padding-top:22px}
+  .qcard::before{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:var(--rule);border-radius:6px 6px 0 0}
+  .qcard::after{content:"";position:absolute;left:0;right:0;top:4px;height:1px;background:color-mix(in srgb, var(--rule) 25%, transparent)}
+
+  /* buttons */
+  button{border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-weight:600;transition:background-color .12s, border-color .12s}
+  button.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+  button.link{color:var(--accent);font-weight:700}
+  button:focus-visible, select:focus-visible{outline:3px solid color-mix(in srgb, var(--accent) 45%, transparent);outline-offset:2px}
+  input:focus, textarea:focus{outline:none;box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent)}
+  @media (hover:hover) and (pointer:fine){
+    button:not(:disabled):hover{border-color:var(--accent)}
+    button.primary:not(:disabled):hover{filter:brightness(1.07)}
+    .mode:hover{background:var(--accent-soft)}
+  }
+
+  /* subject switch: one segmented track */
+  .subj{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:4px;gap:4px;box-shadow:var(--shadow)}
+  .subj button{border:none;background:none;border-radius:9px;color:var(--muted);padding:10px 8px}
+  .subj button.on{background:var(--accent);color:var(--accent-ink)}
+
+  /* section pickers: sentence case, no shouting */
+  .chaplabel{text-transform:none;letter-spacing:0;font-size:.85rem;font-weight:700;color:var(--muted)}
+  select.chapsel{border:1.5px solid var(--line);background:var(--bg);font-weight:700;border-radius:10px}
+  .roots{font-size:.85rem}
+
+  /* modes: icon + text rows, easy thumb targets */
+  .mode{display:flex;flex-direction:column;gap:2px;padding:11px 12px;border-radius:10px;background:var(--card);box-shadow:var(--shadow);text-align:left}
+  .mode b{font-size:.98rem}
+  .mode span{color:var(--muted);font-weight:400}
+  .mode i{margin-top:auto;padding-top:4px;color:var(--ink);font-weight:700}
+  .mode i:not(:empty)::before{content:"";display:inline-block;width:.55em;height:.55em;border-radius:50%;background:var(--hl);margin-right:.35em;vertical-align:.05em}
+
+  /* question details */
+  .pos{text-transform:none;letter-spacing:0;font-weight:700;font-size:.8rem;border-radius:6px;background:var(--accent-soft);border-color:transparent}
+  .srcchip{border-radius:6px;background:var(--bg);border-color:var(--line);font-weight:700}
+  .prompt{font-size:1.15rem;line-height:1.55}
+  .grouphead{text-transform:none;letter-spacing:0;font-size:.95rem;color:var(--accent)}
+  input[type=text], input[type=password]{border-width:1.5px;border-radius:10px;background:var(--bg)}
+  .hud .streak{color:var(--ink);background:var(--hl);border-radius:6px;padding:0 6px}
+  .hud .streak:empty{display:none}
+  .badge{background:var(--hl);color:#1A2232}
+  .bar > div{background:var(--accent)}
+  .stat{background:var(--bg);border:1px solid var(--line)}
+  .hint, .mhint, .msol{background:var(--bg);border:1px solid var(--line)}
+  .qhead{background:color-mix(in srgb, var(--bg) 92%, transparent);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+  .dock{background:color-mix(in srgb, var(--bg) 94%, transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+  .keypad button{background:var(--card)}
+  .mgraph svg{border-radius:6px}
+
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important;animation:none !important;scroll-behavior:auto !important}
+  }
+
+  /* ================= larger screens ================= */
+  @media (min-width: 720px){
+    body{padding-left:24px;padding-right:24px}
+    .wrap{max-width:760px}
+    .qhead{margin-left:-24px;margin-right:-24px;padding-left:24px;padding-right:24px}
+    .qhead .bar{margin-left:-24px;margin-right:-24px}
+    .modes{grid-template-columns:repeat(3, 1fr)}
+  }
+
+  @media (min-width: 960px){
+    .wrap{max-width:1060px}
+    h1{font-size:1.9rem}
+
+    /* home: setup on the left, modes on the right */
+    #home:not(.hidden){display:grid;grid-template-columns:360px 1fr;column-gap:36px;align-items:start}
+    #home > *{grid-column:1}
+    #home > #vocabHome, #home > #mathHome{display:contents}
+    #home .modes{grid-column:2;grid-row:1 / span 8;grid-template-columns:repeat(2, 1fr);margin-top:6px;align-content:start}
+    #home .mode{padding:16px;min-height:96px}
+    #home .mode b{font-size:1.05rem}
+    #home .mode span{font-size:.86rem}
+    #home .row{margin-top:4px}
+
+    /* reading screens stay a comfortable width */
+    #study, #stats, #settings, #mnotes, #end, #mend{max-width:720px;margin:0 auto}
+    #quiz{max-width:720px;margin:0 auto}
+    #mquiz{max-width:1000px;margin:0 auto}
+
+    /* math quiz: question left, answers right */
+    #mquiz .mcard{display:grid;grid-template-columns:minmax(0, 1.05fr) minmax(0, 1fr);column-gap:32px;align-items:start;padding:26px 28px 24px}
+    #mquiz .mq-left{position:sticky;top:76px}
+    #mquiz .mdisplay{font-size:1.45rem;text-align:left;padding-left:0}
+    .mprev{font-size:1.1rem}
+  }
+
+  /* mouse + keyboard: the keypad sits under the answers instead of docking to the bottom */
+  @media (hover:hover) and (pointer:fine){
+    .dock{position:static;transform:none !important;background:none;border:0;box-shadow:none;padding:12px 0 0;-webkit-backdrop-filter:none;backdrop-filter:none}
+    .dock > *{max-width:none}
+    #mquiz{padding-bottom:24px}
+    .keypad{grid-template-columns:repeat(6, minmax(0, 52px));justify-content:start}
+    .keypad button{min-height:36px}
+  }
+
 </style>
 </head>
 <body>
@@ -275,7 +412,7 @@
       </div>
       <div class="bar"><div id="prog"></div></div>
     </div>
-    <div class="card">
+    <div class="card qcard">
       <span class="pos" id="pos"></span>
       <div id="promptWrap"></div>
       <div class="hint hidden" id="hint"></div>
@@ -365,17 +502,17 @@
       </div>
       <div class="bar"><div id="mProg"></div></div>
     </div>
-    <div class="card">
-      <span class="srcchip" id="mSrc"></span>
-      <p class="mtext" id="mText"></p>
-      <div class="mdisplay" id="mMath"></div>
-      <div class="mgraph" id="mGraph"></div>
-      <div class="mhint hidden" id="mHint"></div>
-      <div id="mFields"></div>
-      <div class="fb" id="mFb"></div>
-      <div class="msol hidden" id="mSol"></div>
-    </div>
-    <div class="dock" id="mDock">
+    <div class="card qcard mcard">
+      <div class="mq-left">
+        <span class="srcchip" id="mSrc"></span>
+        <p class="mtext" id="mText"></p>
+        <div class="mdisplay" id="mMath"></div>
+        <div class="mgraph" id="mGraph"></div>
+      </div>
+      <div class="mq-right">
+        <div class="mhint hidden" id="mHint"></div>
+        <div id="mFields"></div>
+        <div class="dock" id="mDock">
       <div class="keypad" id="keypad">
         <button data-k="(" aria-label="open parenthesis">(</button><button data-k=")" aria-label="close parenthesis">)</button>
         <button data-k="()/()" data-c="1" aria-label="fraction"><svg class="kico" viewBox="0 0 28 28" aria-hidden="true"><rect x="9" y="3" width="10" height="8" rx="1.5"/><line x1="5" y1="14" x2="23" y2="14" class="kfill"/><rect x="9" y="17" width="10" height="8" rx="1.5"/></svg></button><button data-k="^()" data-c="2" aria-label="exponent"><svg class="kico" viewBox="0 0 28 28" aria-hidden="true"><text x="3" y="23" class="ktxt">x</text><rect x="15" y="3" width="9" height="9" rx="1.5"/></svg></button>
@@ -387,6 +524,10 @@
         <button class="primary grow" id="mCheck">Check</button>
         <button id="mHintBtn">Hint</button>
         <button id="mSkip">Skip</button>
+      </div>
+    </div>
+        <div class="fb" id="mFb"></div>
+        <div class="msol hidden" id="mSol"></div>
       </div>
     </div>
   </section>
@@ -1219,6 +1360,7 @@ $("resetStats").onclick = e => {
 
 /* ---------- CONFETTI ---------- */
 function confetti(){
+  if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   const c = $("confetti"), ctx = c.getContext("2d");
   c.width = innerWidth; c.height = innerHeight;
   const colors = ["#3b5bdb","#2f9e44","#e8590c","#f59f00","#e03131","#ae3ec9"];
@@ -2443,15 +2585,17 @@ function renderMStats(){
 }
 
 /* ---- keep the docked keypad above the iPhone keyboard ---- */
+const dockFixed = () => { const d = $("mDock"); return !!d && getComputedStyle(d).position === "fixed"; };
 function placeDock(){
   const d = $("mDock"), vv = window.visualViewport;
   if (!d) return;
+  if (!dockFixed()){ d.style.transform = ""; document.documentElement.style.setProperty("--dockh", "0px"); return; }
   const off = vv ? Math.max(0, window.innerHeight - vv.height - vv.offsetTop) : 0;
   d.style.transform = off ? `translateY(${-off}px)` : "";
   document.documentElement.style.setProperty("--dockh", d.offsetHeight + "px");
 }
 function keepVisible(elm){
-  const d = $("mDock"); if (!elm || !d) return;
+  const d = $("mDock"); if (!elm || !d || !dockFixed()) return;
   const r = elm.getBoundingClientRect(), dockTop = d.getBoundingClientRect().top, headH = 64;
   if (r.bottom + 70 > dockTop) window.scrollBy({top: r.bottom + 70 - dockTop, behavior:"smooth"});
   else if (r.top < headH) window.scrollBy({top: r.top - headH - 10, behavior:"smooth"});
