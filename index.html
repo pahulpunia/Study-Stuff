@@ -11,6 +11,7 @@
 <meta name="apple-mobile-web-app-title" content="Study Quiz">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.webmanifest">
+<script src="firebase-config.js"></script>
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <title>Study Quiz</title>
@@ -149,8 +150,8 @@
   .mprev{min-height:1.5em;font-size:1.05rem;margin-top:5px;overflow-x:auto;white-space:nowrap}
   .perr{color:var(--muted);font-size:.85rem;font-style:italic}
   .mans{font-size:.95rem;margin-top:4px;color:var(--good);font-weight:600}
-  .keypad{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:12px}
-  .keypad button{padding:7px 0;font-size:1.15rem;display:flex;align-items:center;justify-content:center;min-height:44px}
+  .keypad{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+  .keypad button{padding:5px 0;font-size:1.15rem;display:flex;align-items:center;justify-content:center;min-height:40px}
   .keypad .kvar{font-family:"Times New Roman",Georgia,serif;font-style:italic;font-size:1.3rem}
   .keypad .kword{font-size:.82rem;font-weight:600}
   .kico{width:26px;height:26px}
@@ -178,7 +179,51 @@
   .ncap{font-size:.92rem;line-height:1.6}
   .nmath{font-size:1.05rem;padding:6px 0 0}
   .mwhy{color:var(--warn);font-weight:600;font-size:.88rem}
+  /* docked keypad + actions */
+  #mquiz{padding-bottom:calc(var(--dockh, 150px) + 16px)}
+  .dock{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--bg);border-top:1px solid var(--line);
+    padding:8px max(12px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+    box-shadow:0 -4px 16px rgba(0,0,0,.06)}
+  .dock > *{max-width:560px;margin-left:auto;margin-right:auto}
+  .dockrow{margin-top:8px}
+  .dock .keypad.hidden + .dockrow{margin-top:0}
+  #mquiz.hidden ~ .dock, section.hidden .dock{display:none}
+  /* compact multi-part answers */
+  .mgrid{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}
+  .mgrid .mfield{margin-top:10px;min-width:0}
+  .mgrid input[type=text]{font-size:16px;padding:9px 10px}
+  .mgrid .mfield label{font-size:.78rem}
+  .mfield input[type=text]{padding:10px 12px}
+  .mprev:empty{min-height:0;margin:0}
 
+  /* ---- mobile layout ---- */
+  .qhead{position:sticky;top:0;z-index:25;background:var(--bg);margin:-8px -16px 12px;padding:8px 16px 0}
+  .qhead .topbar{margin-bottom:6px;gap:8px}
+  .qhead .chip{flex:1;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.82rem}
+  .qhead .bar{margin:0 -16px;border-radius:0;height:4px}
+  .modes{gap:8px}
+  .mode{min-height:0;padding:10px 12px}
+  .mode span{font-size:.78rem}
+  #toSettings{padding:10px 14px;font-size:1.05rem}
+  .card{padding:16px}
+  h1{margin-bottom:4px}
+  input[type=password]{width:100%;font-size:16px;padding:11px 12px;border-radius:10px;border:2px solid var(--line);background:var(--bg);color:var(--ink);outline:none;-webkit-appearance:none}
+  input[type=password]:focus{border-color:var(--accent)}
+  #acForm{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+  #acForm input[type=text]{font-size:16px;padding:11px 12px}
+  .seg{display:flex;background:var(--bg);border-radius:10px;padding:3px;gap:3px}
+  .seg button{flex:1;border:none;background:none;padding:8px;font-size:.9rem;font-weight:600;color:var(--muted)}
+  .seg button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.1)}
+  .acrow{display:flex;justify-content:space-between;align-items:center}
+  .acerr{color:var(--bad);font-size:.88rem;margin-top:8px;min-height:1em}
+  .lbtoggle{width:100%;margin-top:10px}
+  ol.lb{list-style:none;padding:0;margin:10px 0 0}
+  ol.lb li{display:flex;align-items:center;gap:10px;padding:8px 6px;border-top:1px solid var(--line)}
+  ol.lb li.me{background:var(--bg);border-radius:8px}
+  .lbr{width:1.6em;text-align:center;font-weight:700;color:var(--muted)}
+  .lbn{flex:1;display:flex;flex-direction:column;font-weight:600;min-width:0}
+  .lbn .small{font-weight:400}
+  #settings .settings{flex-direction:column;align-items:flex-start;gap:10px}
 </style>
 </head>
 <body>
@@ -209,33 +254,27 @@
       </div>
       <div class="modes" id="mmodes"></div>
     </div>
-    <div class="card" style="margin-top:14px">
-      <div class="settings">
-        <label>Questions
-          <select id="countSel"><option value="5">5</option><option value="10">10</option><option value="0">All</option></select>
-        </label>
-        <label><input type="checkbox" id="secondChance"> Second chance on misses</label>
-      </div>
-      <div class="small" style="margin-top:8px">The question count applies to Definition, Fill in the Blank, Spelling Bee, Mixed, and math Practice.</div>
-    </div>
     <div class="row">
       <button class="grow" id="toStudy">📖 Study list</button>
       <button class="grow" id="toStats">📊 My stats</button>
+      <button id="toSettings" aria-label="Settings">⚙️</button>
     </div>
   </section>
 
   <!-- QUIZ -->
   <section id="quiz" class="hidden">
-    <div class="topbar">
-      <button class="link" id="quit">✕ Quit</button>
-      <div class="hud">
-        <span id="hudTimer" class="timer hidden"></span>
-        <span id="hudStreak" class="streak"></span>
-        <span id="hudScore"></span>
+    <div class="qhead">
+      <div class="topbar">
+        <button class="link" id="quit">✕ Quit</button>
+        <span class="chip" id="count"></span>
+        <div class="hud">
+          <span id="hudTimer" class="timer hidden"></span>
+          <span id="hudStreak" class="streak"></span>
+          <span id="hudScore"></span>
+        </div>
       </div>
+      <div class="bar"><div id="prog"></div></div>
     </div>
-    <div class="bar"><div id="prog"></div></div>
-    <div class="chip" id="count" style="margin-bottom:8px"></div>
     <div class="card">
       <span class="pos" id="pos"></span>
       <div id="promptWrap"></div>
@@ -290,24 +329,42 @@
     <div class="topbar"><button class="link" data-home>← Back</button></div>
     <div class="card"><h2 id="statsTitle">Best scores</h2><div id="bestList"></div></div>
     <div class="card"><h2 id="accTitle">Word accuracy <span class="small">(weakest first)</span></h2><div id="accList"></div></div>
+    <button id="resetStats">Reset stats (all chapters)</button>
+  </section>
+</div>
+
+  <!-- SETTINGS -->
+  <section id="settings" class="hidden">
+    <div class="topbar"><button class="link" data-home>← Back</button></div>
+    <div class="card"><h2>Quiz settings</h2>
+      <div class="settings">
+        <label>Questions
+          <select id="countSel"><option value="5">5</option><option value="10">10</option><option value="0">All</option></select>
+        </label>
+        <label><input type="checkbox" id="secondChance"> Second chance on misses</label>
+      </div>
+      <div class="small" style="margin-top:8px">The question count applies to Definition, Fill in the Blank, Spelling Bee, Mixed, and math Practice.</div>
+    
+    </div>
+    <div class="card"><h2>Account &amp; leaderboard</h2><div id="acct"></div></div>
     <div class="card">
       <h2>Backup</h2>
       <div class="small">One code holds your scores and stats for both subjects. Keep it somewhere safe (Notes app) and paste it back if you switch phones or your data gets cleared.</div>
       <div class="row"><button class="grow" id="bkCopy">📤 Copy backup code</button><button class="grow" id="bkRestore">📥 Restore</button></div>
       <textarea id="bkText" rows="3" class="hidden"></textarea>
     </div>
-    <button id="resetStats">Reset stats (all chapters)</button>
   </section>
-</div>
 
   <!-- MATH QUIZ -->
   <section id="mquiz" class="hidden">
-    <div class="topbar">
-      <button class="link" id="mQuit">✕ Quit</button>
-      <div class="hud"><span id="mStreak" class="streak"></span><span id="mScore"></span></div>
+    <div class="qhead">
+      <div class="topbar">
+        <button class="link" id="mQuit">✕ Quit</button>
+        <span class="chip" id="mCount"></span>
+        <div class="hud"><span id="mStreak" class="streak"></span><span id="mScore"></span></div>
+      </div>
+      <div class="bar"><div id="mProg"></div></div>
     </div>
-    <div class="bar"><div id="mProg"></div></div>
-    <div class="chip" id="mCount" style="margin-bottom:8px"></div>
     <div class="card">
       <span class="srcchip" id="mSrc"></span>
       <p class="mtext" id="mText"></p>
@@ -315,6 +372,10 @@
       <div class="mgraph" id="mGraph"></div>
       <div class="mhint hidden" id="mHint"></div>
       <div id="mFields"></div>
+      <div class="fb" id="mFb"></div>
+      <div class="msol hidden" id="mSol"></div>
+    </div>
+    <div class="dock" id="mDock">
       <div class="keypad" id="keypad">
         <button data-k="(" aria-label="open parenthesis">(</button><button data-k=")" aria-label="close parenthesis">)</button>
         <button data-k="()/()" data-c="1" aria-label="fraction"><svg class="kico" viewBox="0 0 28 28" aria-hidden="true"><rect x="9" y="3" width="10" height="8" rx="1.5"/><line x1="5" y1="14" x2="23" y2="14" class="kfill"/><rect x="9" y="17" width="10" height="8" rx="1.5"/></svg></button><button data-k="^()" data-c="2" aria-label="exponent"><svg class="kico" viewBox="0 0 28 28" aria-hidden="true"><text x="3" y="23" class="ktxt">x</text><rect x="15" y="3" width="9" height="9" rx="1.5"/></svg></button>
@@ -322,13 +383,11 @@
         <button data-k="x" class="kvar" aria-label="x">x</button><button data-k="-" aria-label="minus">−</button><button data-k=", " aria-label="comma">,</button>
         <button data-k="∞" aria-label="infinity">∞</button><button data-k="DNE" class="kword">DNE</button><button data-k="none" class="kword">none</button>
       </div>
-      <div class="row">
+      <div class="row dockrow">
         <button class="primary grow" id="mCheck">Check</button>
         <button id="mHintBtn">Hint</button>
         <button id="mSkip">Skip</button>
       </div>
-      <div class="fb" id="mFb"></div>
-      <div class="msol hidden" id="mSol"></div>
     </div>
   </section>
 
@@ -761,7 +820,7 @@ function fmtTime(ms){ const s = Math.max(0, Math.round(ms/1000)); return Math.fl
 function wordAcc(w){ const r = ST.words[w]; return r && r.t ? r.c / r.t : null; }
 
 function show(id){
-  ["home","quiz","end","study","stats","mquiz","mend","mnotes"].forEach(s => $(s).classList.toggle("hidden", s !== id));
+  ["home","quiz","end","study","stats","mquiz","mend","mnotes","settings"].forEach(s => $(s).classList.toggle("hidden", s !== id));
   window.scrollTo(0,0);
 }
 
@@ -825,7 +884,8 @@ $("chapSel").onchange = e => { setChapter(+e.target.value); renderHome(); };
 $("countSel").onchange = e => { ST.settings.count = +e.target.value; save(); };
 $("secondChance").onchange = e => { ST.settings.second = e.target.checked; save(); };
 $("toStudy").onclick = () => ST.subject === "math" ? renderMNotes() : renderStudy();
-$("toStats").onclick = () => { resetBackupUI(); ST.subject === "math" ? renderMStats() : renderStats(); };
+$("toStats").onclick = () => { ST.subject === "math" ? renderMStats() : renderStats(); };
+$("toSettings").onclick = () => renderSettings();
 document.querySelectorAll("[data-home]").forEach(b => b.onclick = renderHome);
 
 /* ---------- GAME ---------- */
@@ -1047,6 +1107,7 @@ function finish(){
   if (!S.override && S.score > (ST.best[bestKey(S.mode)] || 0)){ ST.best[bestKey(S.mode)] = S.score; newBest = true; }
   ST.bestStreak = Math.max(ST.bestStreak || 0, S.bestStreak);
   save();
+  LB.submit("vocab", S.score);
 
   $("endMode").textContent = `Chapter ${CH.n} · ` + MODES[S.mode].icon + " " + MODES[S.mode].name + (S.override ? " · retry" : "");
   $("endScore").textContent = S.score;
@@ -1581,12 +1642,12 @@ function dq(secs, src, f, ans, steps){
 function asy(secs, src, math, F, steps, o = {}){
   add({secs, src, text: o.text || T.asy, pre: o.pre || "f(x) = ", math, F, graphAfter:true,
        fields:[
-         {l:"Vertical asymptotes: x =", t:"set", a:F.va, ph:"e.g. 2, -3 or none"},
-         {l:"Horizontal asymptote: y =", t:"num", a:F.ha, ph:"number or none"},
-         {l:"Slant asymptote: y =", t:"expr", a:F.sa, ph:"e.g. x + 3 or none"},
-         {l:"Holes", t:"pts", a:F.holes, ph:"e.g. (4, 2/7) or none"},
-         {l:"x-intercepts: x =", t:"set", a:F.xint, ph:"e.g. 1, -2 or none"},
-         {l:"y-intercept: y =", t:"num", a:F.yint, ph:"number or none"}
+         {l:"VA: x =", t:"set", a:F.va, ph:"2, -3 or none"},
+         {l:"HA: y =", t:"num", a:F.ha, ph:"number or none"},
+         {l:"SA: y =", t:"expr", a:F.sa, ph:"x+3 or none"},
+         {l:"Holes", t:"pts", a:F.holes, ph:"(4, 2/7) or none"},
+         {l:"x-ints: x =", t:"set", a:F.xint, ph:"1, -2 or none"},
+         {l:"y-int: y =", t:"num", a:F.yint, ph:"number or none"}
        ], steps, kind:"asy", o});
 }
 function write(secs, src, target, F, steps){
@@ -1720,8 +1781,6 @@ txt(["4.2"], "4.2 Notes", "The expression (f(x + h) − f(x)) / h is called the 
   ["It's the difference quotient (the slope between x and x + h)."]);
 
 /* ===== 4.3 Limits ===== */
-lim(["4.3"], "4.3 HW #7", "sin(x)/x", "x", "0", "1",
-  ["Table: x = ±0.1 → 0.998, x = ±0.01 → 0.99998…", "Both sides approach 1."], {text:"Evaluate the limit (use a table of values)."});
 lim(["4.3"], "4.3 HW #8", "(3x^2-9x)/(x-3)", "x", "3", "9",
   ["Factor: {{(3x(x-3))/(x-3)}} = 3x", "Plug in 3 → 9"]);
 lim(["4.3"], "4.3 HW #9", "(c^2-6c+8)/(c^2+c-6)", "c", "2", "-2/5",
@@ -1744,8 +1803,6 @@ lim(["4.3"], "4.3 HW #23", "(x/(x+2)-2)/(x+4)", "x", "-4", "1/2",
   ["Multiply the top and bottom by (x + 2): {{(x-2(x+2))/((x+4)(x+2))}} = {{(-(x+4))/((x+4)(x+2))}}", "→ {{-1/(x+2)}} → {{-1/-2}} = {{1/2}}"]);
 lim(["4.3","rev"], "Review #30", "(x^3-8)/(x-2)", "x", "2", "12",
   ["Factor: {{((x-2)(x^2+2x+4))/(x-2)}}", "Plug in 2 → 4 + 4 + 4 = 12"]);
-lim(["4.3","rev"], "Review #31", "sin(3x)/(4x)", "x", "0", "3/4",
-  ["Table: x = ±0.01 → 0.74998…", "Approaches {{3/4}} (since {{sin(3x)/(3x)}} → 1)."]);
 lim(["4.3","rev"], "Review #32", "3pi", "x", "7", "3pi",
   ["The limit of a constant is the constant: 3π."]);
 lim(["4.3","rev"], "Review #33", "(x^2+6)/(x-3)", "x", "2", "-10",
@@ -1766,12 +1823,6 @@ lim(["4.3","rev"], "Review #44", "(x^2-5x+9)/(x+7)", "x", "4", "5/11",
   ["Direct substitution: {{(16-20+9)/11}} = {{5/11}}"]);
 lim(["4.3","rev"], "Review #45", "(3x^2+5x-2)/(2x^3+x^2-6x)", "x", "-2", "-1/2",
   ["Factor: {{((3x-1)(x+2))/(x(2x-3)(x+2))}}", "Plug −2 into {{(3x-1)/(x(2x-3))}} → {{-7/14}} = {{-1/2}}"]);
-lim(["4.3","rev"], "Review #46", "sin(x)", "x", "pi/3", "sqrt(3)/2",
-  ["Direct substitution: sin(π/3) = {{sqrt(3)/2}}"]);
-lim(["4.3","rev"], "Review #47", "cos(x)", "x", "2pi/3", "-1/2",
-  ["Direct substitution: cos(2π/3) = {{-1/2}}"]);
-lim(["4.3","rev"], "Review #48", "tan(x)", "x", "3pi/4", "-1",
-  ["Direct substitution: tan(3π/4) = −1"]);
 lim(["4.3","rev"], "Review #49", "(x-4)/(5-sqrt(x+21))", "x", "4", "-10",
   ["Conjugate: bottom becomes {{25-(x+21)}} = {{4-x}}", "→ {{-(5+sqrt(x+21))}} → −10"]);
 lim(["4.3","rev"], "Review #50", "(2-x)/(1/4-1/(2+x))", "x", "2", "-16",
@@ -1992,12 +2043,12 @@ const MGEN = (() => {
       const R = ratBuild();
       return {src:"Random drill", kind:"asy", text:"Find all asymptotes, holes, and intercepts.", pre:"f(x) = ", math:R.expanded, F:R.F, graphAfter:true,
         fields:[
-          {l:"Vertical asymptotes: x =", t:"set", a:R.F.va, ph:"e.g. 2, -3 or none"},
-          {l:"Horizontal asymptote: y =", t:"num", a:R.F.ha, ph:"number or none"},
-          {l:"Slant asymptote: y =", t:"expr", a:R.F.sa, ph:"e.g. x + 3 or none"},
-          {l:"Holes", t:"pts", a:R.F.holes, ph:"e.g. (4, 2/7) or none"},
-          {l:"x-intercepts: x =", t:"set", a:R.F.xint, ph:"e.g. 1, -2 or none"},
-          {l:"y-intercept: y =", t:"num", a:R.F.yint, ph:"number or none"}],
+          {l:"VA: x =", t:"set", a:R.F.va, ph:"2, -3 or none"},
+          {l:"HA: y =", t:"num", a:R.F.ha, ph:"number or none"},
+          {l:"SA: y =", t:"expr", a:R.F.sa, ph:"x+3 or none"},
+          {l:"Holes", t:"pts", a:R.F.holes, ph:"(4, 2/7) or none"},
+          {l:"x-ints: x =", t:"set", a:R.F.xint, ph:"1, -2 or none"},
+          {l:"y-int: y =", t:"num", a:R.F.yint, ph:"number or none"}],
         steps:[`Factor: {{${R.target}}}`, R.H.length ? `Hole at x = ${R.H[0]} → (${R.F.holes[0][0]}, ${R.F.holes[0][1]})` : "Nothing cancels, so there are no holes",
                `VA: ${R.F.va.join(", ") || "none"} · HA: ${R.F.ha} · SA: ${R.F.sa} · x-int: ${R.F.xint.join(", ") || "none"} · y-int: ${R.F.yint}`]};
     },
@@ -2175,6 +2226,7 @@ function mShow(){
   $("mSol").classList.add("hidden"); $("mSol").innerHTML = "";
   $("mFb").innerHTML = ""; $("mFb").className = "fb";
   const box = $("mFields"); box.innerHTML = "";
+  box.className = q.fields.length >= 4 ? "mgrid" : "";
   q.fields.forEach((f, i) => {
     const w = el("div", "mfield");
     const lab = el("label", null, f.l); lab.htmlFor = "mf" + i; w.appendChild(lab);
@@ -2184,8 +2236,9 @@ function mShow(){
     inp.setAttribute("enterkeyhint", i === q.fields.length - 1 ? "go" : "next");
     inp.placeholder = f.ph || (f.t === "text" ? "type the word(s)" : "type your answer");
     const pv = el("div", "mprev");
-    inp.addEventListener("input", () => { if (f.t !== "text") pv.innerHTML = MC.preview(f, inp.value); });
-    inp.addEventListener("focus", () => M.lastFocus = i);
+    // only show the pretty preview when it adds something (fractions, powers, roots)
+    inp.addEventListener("input", () => { if (f.t !== "text") pv.innerHTML = /[\/^]|sqrt|cbrt|pi|\*/i.test(inp.value) ? MC.preview(f, inp.value) : ""; });
+    inp.addEventListener("focus", () => { M.lastFocus = i; setTimeout(() => keepVisible(inp), 350); });
     inp.addEventListener("keydown", e => {
       if (e.key !== "Enter") return; e.preventDefault();
       if (M.answered) return mNext();
@@ -2196,6 +2249,7 @@ function mShow(){
     box.appendChild(w);
   });
   $("keypad").classList.toggle("hidden", q.fields.every(f => f.t === "text"));
+  window.scrollTo(0, 0);
   $("mCheck").textContent = "Check";
   $("mSkip").disabled = false;
   mHintBtn(); mHud();
@@ -2312,7 +2366,9 @@ function mReveal(res, vals, skipped){
   const last = M.mode !== "drill" && M.idx >= M.queue.length - 1;
   $("mCheck").textContent = last ? "See results" : "Next →";
   $("mSkip").disabled = true; mHintBtn();
-  $("mf" + M.lastFocus).focus();
+  $("keypad").classList.add("hidden");
+  document.activeElement && document.activeElement.blur();
+  setTimeout(() => { const t = q.graphAfter ? $("mGraph") : $("mFb"); const y = t.getBoundingClientRect().top + window.scrollY - 70; window.scrollTo({top: Math.max(0, y), behavior: "smooth"}); }, 60);
 }
 
 function mNext(){
@@ -2329,6 +2385,7 @@ function mFinish(){
   let newBest = false;
   if (!M.override && M.score > (ST.mbest[mBestKey(M.mode)] || 0)){ ST.mbest[mBestKey(M.mode)] = M.score; newBest = true; }
   save();
+  LB.submit("math", M.score);
   const secName = MSECTIONS.find(s => s.id === ST.msec).name;
   $("meMode").textContent = `${secName} · ${MMODES[M.mode].icon} ${MMODES[M.mode].name}` + (M.override ? " · retry" : "");
   $("meScore").textContent = M.score;
@@ -2359,6 +2416,7 @@ $("meBrag").onclick = () => {
 
 /* ---- stats ---- */
 function renderMStats(){
+  $("resetStats").dataset.armed = ""; $("resetStats").textContent = "Reset math stats (all sections)";
   const bl = $("bestList"); bl.innerHTML = "";
   $("statsTitle").textContent = MSECTIONS.find(s => s.id === ST.msec).name + ": best scores";
   Object.entries(MMODES).forEach(([k, m]) => {
@@ -2383,6 +2441,24 @@ function renderMStats(){
   });
   show("stats");
 }
+
+/* ---- keep the docked keypad above the iPhone keyboard ---- */
+function placeDock(){
+  const d = $("mDock"), vv = window.visualViewport;
+  if (!d) return;
+  const off = vv ? Math.max(0, window.innerHeight - vv.height - vv.offsetTop) : 0;
+  d.style.transform = off ? `translateY(${-off}px)` : "";
+  document.documentElement.style.setProperty("--dockh", d.offsetHeight + "px");
+}
+function keepVisible(elm){
+  const d = $("mDock"); if (!elm || !d) return;
+  const r = elm.getBoundingClientRect(), dockTop = d.getBoundingClientRect().top, headH = 64;
+  if (r.bottom + 70 > dockTop) window.scrollBy({top: r.bottom + 70 - dockTop, behavior:"smooth"});
+  else if (r.top < headH) window.scrollBy({top: r.top - headH - 10, behavior:"smooth"});
+}
+if (window.visualViewport){ visualViewport.addEventListener("resize", placeDock); visualViewport.addEventListener("scroll", placeDock); }
+window.addEventListener("resize", placeDock);
+new MutationObserver(placeDock).observe(document.getElementById("mDock"), {attributes:true, subtree:true, attributeFilter:["class"]});
 
 /* ---- backup / restore (both subjects) ---- */
 function resetBackupUI(){
@@ -2412,6 +2488,197 @@ $("bkRestore").onclick = () => {
     ST.subject === "math" ? renderMStats() : renderStats();
   } catch(e){ b.textContent = "That code didn't work"; b.dataset.mode = "paste"; }
 };
+
+/* ========== ACCOUNTS + LEADERBOARD (Firebase, optional) ==========
+   Works only when firebase-config.js sets window.FIREBASE_CONFIG.
+   The club password is checked by the Firestore security rules on the server,
+   so it never appears in this file. */
+const LB = (() => {
+  const V = "10.12.2", BASE = `https://www.gstatic.com/firebasejs/${V}/`;
+  let A = null, F = null, auth = null, db = null, user = null, memberName = null, ready = null, busy = false, creating = false, checked = false;
+  const cfg = () => (window.FIREBASE_CONFIG && window.FIREBASE_CONFIG.apiKey) ? window.FIREBASE_CONFIG : null;
+  const emailOf = n => n.toLowerCase() + "@users.studyquiz.app";
+  const NAME_RE = /^[A-Za-z0-9_]{3,16}$/;
+
+  function init(){
+    if (ready) return ready;
+    if (!cfg()) return Promise.reject(new Error("notset"));
+    ready = (async () => {
+      const [app, a, f] = await Promise.all([import(BASE + "firebase-app.js"), import(BASE + "firebase-auth.js"), import(BASE + "firebase-firestore.js")]);
+      A = a; F = f;
+      const inst = app.initializeApp(cfg());
+      auth = a.getAuth(inst); db = f.getFirestore(inst);
+      await new Promise(res => { const off = a.onAuthStateChanged(auth, u => { off(); res(u); }); });
+      a.onAuthStateChanged(auth, async u => {
+        if (creating) return;            // sign-up in progress handles itself
+        const was = !!(user && memberName);
+        user = u;
+        if (u){ await loadMember(); } else { memberName = null; checked = false; }
+        const now = !!(user && memberName);
+        // only redraw the account card when the signed-in state really changed
+        if (was !== now && !creating && !window.acctBusy && !$("settings").classList.contains("hidden")) renderAccount();
+      });
+    })();
+    ready.catch(() => { ready = null; });
+    return ready;
+  }
+
+  async function loadMember(){
+    try { const m = await F.getDoc(F.doc(db, "members", user.uid)); memberName = m.exists() ? m.data().name : null; checked = true; }
+    catch(e){ checked = false; }
+    ST.lbUser = memberName || null; save();
+    if (memberName) flush();
+  }
+
+  function niceError(e){
+    const c = (e && e.code) || "";
+    if (c.includes("invalid-credential") || c.includes("wrong-password") || c.includes("user-not-found") || c.includes("invalid-email")) return "Wrong username or password.";
+    if (c.includes("email-already-in-use")) return "That username is taken.";
+    if (c.includes("weak-password")) return "Password needs at least 6 characters.";
+    if (c.includes("too-many-requests")) return "Too many tries. Wait a minute and try again.";
+    if (c.includes("network") || c.includes("unavailable") || (e && /Failed to fetch|import/i.test(e.message || ""))) return "Can't reach the server. Check your internet.";
+    if (c.includes("permission-denied")) return "Wrong club password.";
+    if (c.includes("unauthorized-domain")) return "This website isn't allowed yet: add it under Firebase → Authentication → Settings → Authorized domains.";
+    return "Something went wrong (" + (c || (e && e.message) || "unknown") + ").";
+  }
+
+  async function signUp(name, pass, invite){
+    if (!NAME_RE.test(name)) throw new Error("Username: 3–16 letters, numbers, or _.");
+    if (!invite) throw new Error("Enter the club password.");
+    await init();
+    creating = true;
+    try {
+      const cred = await A.createUserWithEmailAndPassword(auth, emailOf(name), pass);
+      try {
+        await F.setDoc(F.doc(db, "members", cred.user.uid), {name, invite, created: F.serverTimestamp()});
+      } catch(e){
+        try { await cred.user.delete(); } catch(_){ try { await A.signOut(auth); } catch(__){} }
+        user = null; memberName = null;
+        throw e;
+      }
+      user = cred.user; memberName = name; checked = true; ST.lbUser = name; save();
+    } finally { creating = false; }
+    await flush();
+  }
+  async function signIn(name, pass){
+    await init();
+    const cred = await A.signInWithEmailAndPassword(auth, emailOf(name), pass);
+    user = cred.user; await loadMember();
+  }
+  async function signOut(){ await init(); await A.signOut(auth); user = null; memberName = null; checked = false; ST.lbUser = null; save(); }
+
+  // round finished: queue the points, send when possible
+  function submit(subject, pts){
+    pts = Math.max(0, Math.round(pts || 0));
+    if (!pts || !ST.lbUser) return;
+    ST.lbPending = (ST.lbPending || []).concat([{s: subject, p: pts}]).slice(-50);
+    save();
+    init().then(flush).catch(() => {});
+  }
+  async function flush(){
+    if (busy || !user || !memberName) return;
+    const pend = (ST.lbPending || []).slice(0, 50);
+    if (!pend.length) return;
+    busy = true;
+    try {
+      const ref = F.doc(db, "scores", user.uid);
+      await F.runTransaction(db, async tx => {
+        const snap = await tx.get(ref);
+        const o = snap.exists() ? snap.data() : {total:0, vocab:0, math:0, rounds:0, best:0};
+        const add = (k) => pend.filter(x => x.s === k).reduce((a, x) => a + x.p, 0);
+        const sum = pend.reduce((a, x) => a + x.p, 0);
+        tx.set(ref, {name: memberName, total: (o.total || 0) + sum, vocab: (o.vocab || 0) + add("vocab"), math: (o.math || 0) + add("math"),
+                     rounds: (o.rounds || 0) + pend.length, best: Math.max(o.best || 0, ...pend.map(x => x.p)), updated: F.serverTimestamp()});
+      });
+      ST.lbPending = (ST.lbPending || []).slice(pend.length); save();
+    } catch(e){ /* stays queued; retried next time */ }
+    busy = false;
+  }
+  async function top(){
+    await init();
+    const q = F.query(F.collection(db, "scores"), F.orderBy("total", "desc"), F.limit(25));
+    const snap = await F.getDocs(q);
+    return snap.docs.map(d => ({uid: d.id, ...d.data()}));
+  }
+  // start in the background if this phone was signed in before (sends queued points)
+  if (cfg() && ST.lbUser) window.addEventListener("load", () => setTimeout(() => init().catch(() => {}), 1500));
+
+  return {cfg, init, signUp, signIn, signOut, submit, top, niceError, get user(){ return user; }, get name(){ return memberName; }, get checked(){ return checked; }};
+})();
+
+/* ---- settings screen ---- */
+function renderSettings(){
+  $("countSel").value = String(ST.settings.count);
+  $("secondChance").checked = !!ST.settings.second;
+  resetBackupUI();
+  renderAccount();
+  show("settings");
+}
+let acctTab = "in";
+function renderAccount(){
+  const box = $("acct");
+  if (!LB.cfg()){
+    box.innerHTML = `<div class="small">Not set up yet. Accounts need a free Firebase project (see SETUP.md in the repo). Everything else works without it.</div>`;
+    return;
+  }
+  if (LB.user && !LB.name && LB.checked){
+    box.innerHTML = `<div class="small">This account isn't on the club list (it was made without the club password).</div><button class="lbtoggle" id="acOut">Sign out</button>`;
+    $("acOut").onclick = async () => { await LB.signOut(); renderAccount(); };
+    return;
+  }
+  if (ST.lbUser && !LB.user && !LB.name){
+    box.innerHTML = `<div class="small">Connecting…</div>`;
+    LB.init().then(() => { if (!LB.user){ ST.lbUser = null; save(); } renderAccount(); }).catch(e => { box.innerHTML = `<div class="small">Offline. Your points will send next time you're online.</div>`; });
+    return;
+  }
+  if (LB.user && LB.name){
+    const pend = (ST.lbPending || []).reduce((a, x) => a + x.p, 0);
+    box.innerHTML = `<div class="acrow"><span>Signed in as <b>${LB.name}</b></span><button class="link" id="acOut">Sign out</button></div>
+      ${pend ? `<div class="small">${pend} pts waiting to send…</div>` : ""}
+      <button class="grow lbtoggle" id="lbShow">🏆 Show leaderboard</button><div id="lbList"></div>`;
+    $("acOut").onclick = async () => { await LB.signOut(); acctTab = "in"; renderAccount(); };
+    $("lbShow").onclick = showBoard;
+    return;
+  }
+  const up = acctTab === "up";
+  box.innerHTML = `<div class="small" style="margin-bottom:8px">Optional. Sign in to put your points on the leaderboard with friends.</div>
+    <div class="seg"><button id="tabIn" class="${up ? "" : "on"}">Sign in</button><button id="tabUp" class="${up ? "on" : ""}">Create account</button></div>
+    <form id="acForm" autocomplete="on">
+      <input id="acName" type="text" placeholder="Username" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="username">
+      <input id="acPass" type="password" placeholder="Password (6+ characters)" autocomplete="${up ? "new-password" : "current-password"}">
+      ${up ? `<input id="acInv" type="password" placeholder="Club password" autocomplete="off">` : ""}
+      <button type="submit" class="primary" id="acGo" style="width:100%">${up ? "Create account" : "Sign in"}</button>
+    </form>
+    <div class="acerr" id="acErr"></div>`;
+  $("tabIn").onclick = () => { acctTab = "in"; renderAccount(); };
+  $("tabUp").onclick = () => { acctTab = "up"; renderAccount(); };
+  $("acForm").onsubmit = async e => {
+    e.preventDefault();
+    const name = $("acName").value.trim(), pass = $("acPass").value, inv = up ? $("acInv").value.trim() : "";
+    const btn = $("acGo"); btn.disabled = true; btn.textContent = "One sec…"; $("acErr").textContent = "";
+    window.acctBusy = true;
+    try {
+      if (up) await LB.signUp(name, pass, inv); else await LB.signIn(name, pass);
+      window.acctBusy = false;
+      document.activeElement && document.activeElement.blur();
+      renderAccount();
+    } catch(err){
+      window.acctBusy = false;
+      $("acErr").textContent = err.code ? LB.niceError(err) : (err.message === "notset" ? "Not set up yet." : LB.niceError(err).startsWith("Something") ? err.message : LB.niceError(err));
+      btn.disabled = false; btn.textContent = up ? "Create account" : "Sign in";
+    }
+  };
+}
+async function showBoard(){
+  const box = $("lbList"); box.innerHTML = `<div class="small">Loading…</div>`;
+  try {
+    const rows = await LB.top();
+    if (!rows.length){ box.innerHTML = `<div class="small">No scores yet. Finish a round to get on the board.</div>`; return; }
+    box.innerHTML = `<ol class="lb">${rows.map((r, i) => `<li class="${LB.user && r.uid === LB.user.uid ? "me" : ""}">
+      <span class="lbr">${i + 1}</span><span class="lbn">${String(r.name).replace(/</g, "&lt;")}<span class="small">📚 ${r.vocab || 0} · 📐 ${r.math || 0} · best ${r.best || 0}</span></span><b>${r.total || 0}</b></li>`).join("")}</ol>`;
+    $("lbShow").textContent = "🔄 Refresh";
+  } catch(e){ box.innerHTML = `<div class="small">${LB.niceError(e)}</div>`; }
+}
 
 renderHome();
 
