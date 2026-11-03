@@ -1,7 +1,4 @@
-/* Paste your Firebase web config here to turn on accounts + the leaderboard (see SETUP.md).
-   Leave it as null and the app works normally, just without accounts. */
-window.FIREBASE_CONFIG = null;
-/* Example:
+
 window.FIREBASE_CONFIG = {
   apiKey: "AIzaSyCz2CGYlfdy7SwoPvvEbjLQ5exHHZCno6U",
   authDomain: "study-stuff-e390d.firebaseapp.com",
@@ -11,4 +8,4 @@ window.FIREBASE_CONFIG = {
   appId: "1:670844457988:web:b4831a33d99a5e1d2a1151",
   measurementId: "G-N966G3R8QN"
 };
-*/
+
