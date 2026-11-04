@@ -4,10 +4,6 @@
   --bg:#f6f4ef; --card:#ffffff; --ink:#1f2328; --muted:#6b6f76;
   --accent:#3b5bdb; --good:#2f9e44; --bad:#e03131; --warn:#e8590c; --line:#e3e0d8;
 }
-@media (prefers-color-scheme: dark){
-  :root{ --bg:#16181c; --card:#20232a; --ink:#e9e9ea; --muted:#9aa0a8;
-    --accent:#7c94ff; --good:#51cf66; --bad:#ff6b6b; --warn:#ffa94d; --line:#30343c; }
-}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 button,select,input{touch-action:manipulation}
 body{margin:0;background:var(--bg);color:var(--ink);
@@ -188,7 +184,7 @@ ul.mnotes{padding-left:18px;margin:6px 0 4px;line-height:1.8}
 .modes{gap:8px}
 .mode{min-height:0;padding:10px 12px}
 .mode span{font-size:.78rem}
-#toSettings{padding:10px 14px;font-size:1.05rem}
+
 .card{padding:16px}
 h1{margin-bottom:4px}
 input[type=password]{width:100%;font-size:16px;padding:11px 12px;border-radius:10px;border:2px solid var(--line);background:var(--bg);color:var(--ink);outline:none;-webkit-appearance:none}
@@ -217,13 +213,12 @@ ol.lb li.me{background:var(--bg);border-radius:8px}
   --rule:#E5484D; --hl:#FFD43B; --shadow:0 1px 0 rgba(26,34,50,.04), 0 6px 18px -10px rgba(26,34,50,.18);
   --font:"Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
-@media (prefers-color-scheme: dark){
-  :root{
+:root{color-scheme:light}
+:root[data-theme="dark"]{color-scheme:dark;
     --bg:#10151E; --grid:#1A2230; --card:#161D29; --ink:#E7ECF4; --muted:#8E9AB0;
     --accent:#7D9BFF; --accent-ink:#0E1424; --accent-soft:#1E2943;
     --good:#4CC38A; --bad:#FF6B6B; --warn:#FFA94D; --line:#263042;
     --rule:#FF6369; --hl:#FFD43B; --shadow:0 1px 0 rgba(0,0,0,.2), 0 8px 20px -12px rgba(0,0,0,.6);
-  }
 }
 
 /* graph paper */
@@ -530,3 +525,5 @@ body.noscroll{overflow:hidden}
 sub{font-size:.72em;line-height:0;vertical-align:-.28em}
 .chem{white-space:nowrap}
 .chem sup{font-size:.72em;line-height:0;vertical-align:.55em}
+.themerow{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px;padding-top:12px;border-top:1px solid var(--line);font-size:.92rem}
+.themerow .seg{width:180px}

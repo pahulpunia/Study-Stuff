@@ -62,7 +62,7 @@ const Shell = (() => {
       ${ring(strong / WORDS.length, `${strong}/${WORDS.length}`, "mastered")}
       <div class="cstats"><div><b>${tried.length}</b><span>tried</span></div><div><b>${ic("flame", "ic-s")}${ST.bestStreak || 0}</b><span>best streak</span></div></div>
       ${weak.length ? `<div class="clabel">Needs work</div><ul class="clist">${weak.map(w => `<li><span>${escHTML(w.w)}</span><em>${pct(wordAcc(w.w))}</em></li>`).join("")}</ul>
-        <button class="grow cbtn" id="ctxGo">${ic("target")}<span>Practice these</span></button>` : `<div class="cnote">${ic("check", "ic-s")} Every ${escHTML(L().itemLabel)} is at 80%+.</div>`}
+        <button class="grow cbtn" id="ctxGo">${ic("target")}<span>Practice these</span></button>` : (tried.length ? `<div class="cnote">${ic("check", "ic-s")} All 80%+</div>` : "")}
       ${bests.length ? `<div class="clabel">Best scores</div><ul class="clist">${bests.map(([m, v]) => `<li><span>${ic(m.icon, "ic-s")}${escHTML(fill(m.name))}</span><em>${v}</em></li>`).join("")}</ul>` : ""}`;
   }
   function summaryProblems(subj){
@@ -77,7 +77,7 @@ const Shell = (() => {
       ${ring(strong / items.length, `${strong}/${items.length}`, "mastered")}
       <div class="cstats"><div><b>${tried}</b><span>tried</span></div><div><b>${items.length - tried}</b><span>not yet</span></div></div>
       ${weak.length ? `<div class="clabel">Needs work</div><ul class="clist">${weak.map(q => `<li><span>${escHTML(q.src)}</span><em>${pct(mAcc(q.id))}</em></li>`).join("")}</ul>
-        <button class="grow cbtn" id="ctxGo">${ic("target")}<span>Practice these</span></button>` : tried ? `<div class="cnote">${ic("check", "ic-s")} Nothing below 80% here.</div>` : `<div class="cnote">Start a round and your progress shows up here.</div>`}
+        <button class="grow cbtn" id="ctxGo">${ic("target")}<span>Practice these</span></button>` : tried ? `<div class="cnote">${ic("check", "ic-s")} All 80%+</div>` : ""}
       ${bests.length ? `<div class="clabel">Best scores</div><ul class="clist">${bests.map(([m, v]) => `<li><span>${ic(m.icon, "ic-s")}${escHTML(m.name)}</span><em>${v}</em></li>`).join("")}</ul>` : ""}`;
   }
   function sessionView(){
@@ -93,7 +93,7 @@ const Shell = (() => {
       <div class="ctitle">This round</div>
       ${ring(frac, big, small)}
       <div class="cstats"><div><b>${R.score}</b><span>points</span></div><div><b>${ic("flame", "ic-s")}${R.streak}</b><span>streak</span></div><div><b>${n ? Math.round(ok / n * 100) : 0}%</b><span>right</span></div></div>
-      ${log.length ? `<div class="clabel">Answers</div><ul class="clist clog">${log.map(r => `<li class="${r.ok ? "ok" : "no"}">${ic(r.ok ? "check" : "close", "ic-s")}<span>${escHTML(screen === "quiz" ? r.w : r.src)}</span><em>${r.ok ? "+" + r.pts : ""}</em></li>`).join("")}</ul>` : `<div class="cnote">Your answers will show up here.</div>`}`;
+      ${log.length ? `<div class="clabel">Answers</div><ul class="clist clog">${log.map(r => `<li class="${r.ok ? "ok" : "no"}">${ic(r.ok ? "check" : "close", "ic-s")}<span>${escHTML(screen === "quiz" ? r.w : r.src)}</span><em>${r.ok ? "+" + r.pts : ""}</em></li>`).join("")}</ul>` : ""}`;
   }
   function ctx(){
     if (!xwide()) return;

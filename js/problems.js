@@ -23,10 +23,10 @@ function drillMake(sec){
 
 /* ========== HONORS MATH 3 UI ========== */
 const MMODES = {
-  practice:{name:"Practice", desc:"Problems from your notes, HW & review, shuffled.", icon:"sheet"},
-  mastery: {name:"Mastery", desc:"Missed problems come back until you get every one.", icon:"loop"},
-  drill:   {name:"Endless Drill", desc:"Brand-new random problems every time. Never runs out.", icon:"infinity", gen:true},
-  weak:    {name:"Weak Spots", desc:"The 8 problems you miss most in this section.", icon:"target"}
+  practice:{name:"Practice", desc:"Your notes and HW, shuffled", icon:"sheet"},
+  mastery: {name:"Mastery", desc:"Misses come back until they stick", icon:"loop"},
+  drill:   {name:"Endless Drill", desc:"New random problems, forever", icon:"infinity", gen:true},
+  weak:    {name:"Weak Spots", desc:"Your 8 most-missed", icon:"target"}
 };
 let PSUBJ = null;                       // current problems subject (from registry)
 const PB = () => Study.problems[PSUBJ.id] || {units: [], items: []};
@@ -157,9 +157,8 @@ function renderMathHome(subj){
     b.onclick = () => mStart(k);
     box.appendChild(b);
   });
-  if (!drillHas(mSec())) box.appendChild(el("div", "small", "No Endless Drill for this section (every problem is from your notes)."));
 }
-$("msecSel").onchange = e => { ST.sel[PSUBJ.id] = e.target.value; save(); renderMathHome(PSUBJ); };
+$("msecSel").onchange = e => { ST.sel[PSUBJ.id] = e.target.value; save(); renderMathHome(PSUBJ); Shell.update(); };
 
 /* ---- notes summary ---- */
 /* notes can be plain strings (bullets) or blocks:

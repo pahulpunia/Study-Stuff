@@ -200,7 +200,7 @@ function renderHome(){
   $("termsHome").classList.toggle("hidden", !isTerms);
   $("probHome").classList.toggle("hidden", isTerms);
   setLabel($("toStudy"), isTerms ? "book" : "notes", isTerms ? "Study list" : "Notes");
-  $("homeBlurb" + (isTerms ? "T" : "P")).textContent = subj.blurb || "";
+  const blurb = $("homeBlurb" + (isTerms ? "T" : "P")); blurb.textContent = subj.blurb || ""; blurb.classList.toggle("hidden", !subj.blurb);
   show("home");
   renderSubjBar();
   $("pageHead").innerHTML = `<span class="phico">${ic(subj.icon)}</span><span>${escHTML(subj.name)}</span>`;
@@ -211,7 +211,7 @@ function renderHome(){
     Study.engines[subj.type].home(subj);
     Shell.update();
   }).catch(err => {
-    box.innerHTML = `<div class="small">Couldn't load ${escHTML(subj.name)}. Check your internet and reopen the app. (${escHTML(err.message)})</div>`;
+    box.innerHTML = `<div class="small">Couldn't load ${escHTML(subj.name)}. Check your connection.</div>`;
   });
 }
 

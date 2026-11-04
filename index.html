@@ -3,9 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Vocab spelling and Honors Math 3 practice quizzes">
-<meta name="theme-color" content="#F6F8FB" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#10151E" media="(prefers-color-scheme: dark)">
+<meta name="description" content="Practice quizzes for vocab, math and chemistry">
+<meta name="theme-color" content="#10151E" id="themeColor">
+<script>/* theme before first paint: dark unless the user picked light */
+(function(){ var t = "dark"; try { t = (JSON.parse(localStorage.getItem("genVocabQuiz.v2") || "{}").settings || {}).theme || "dark"; } catch(e){}
+  document.documentElement.dataset.theme = t; document.getElementById("themeColor").content = t === "light" ? "#F6F8FB" : "#10151E"; })();</script>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Study Quiz">
@@ -128,20 +130,18 @@
   <!-- SETTINGS -->
   <section id="settings" class="hidden">
     <div class="topbar"><button class="link" data-home data-ic="back">Back</button></div>
-    <div class="card"><h2>Quiz settings</h2>
+    <div class="card"><h2>Settings</h2>
       <div class="settings">
         <label>Questions
           <select id="countSel"><option value="5">5</option><option value="10">10</option><option value="0">All</option></select>
         </label>
         <label><input type="checkbox" id="secondChance"> Second chance on misses</label>
       </div>
-      <div class="small" style="margin-top:8px">Applies to the regular practice modes (not Mastery, Weak, Blitz, or Drill).</div>
-    
+      <div class="themerow"><span>Theme</span><div class="seg" id="themeSeg" role="radiogroup" aria-label="Theme"><button data-t="dark" role="radio">Dark</button><button data-t="light" role="radio">Light</button></div></div>
     </div>
-    <div class="card"><h2>Account &amp; leaderboard</h2><div id="acct"></div></div>
+    <div class="card" id="acctCard"><h2>Leaderboard</h2><div id="acct"></div></div>
     <div class="card">
       <h2>Backup</h2>
-      <div class="small">One code saves your scores for every subject. Paste it back on a new phone or after clearing data.</div>
       <div class="row"><button class="grow" id="bkCopy"></button><button class="grow" id="bkRestore"></button></div>
       <textarea id="bkText" rows="3" class="hidden"></textarea>
     </div>

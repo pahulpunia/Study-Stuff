@@ -155,42 +155,54 @@ const LB = (() => {
 function renderSettings(){
   $("countSel").value = String(ST.settings.count);
   $("secondChance").checked = !!ST.settings.second;
+  paintTheme();
   resetBackupUI();
   renderAccount();
   show("settings");
 }
+/* theme: dark by default, light if picked (index.html applies it before first paint) */
+function applyTheme(t){
+  document.documentElement.dataset.theme = t;
+  const m = document.getElementById("themeColor"); if (m) m.content = t === "light" ? "#F6F8FB" : "#10151E";
+}
+function paintTheme(){
+  const t = ST.settings.theme || "dark";
+  $("themeSeg").querySelectorAll("button").forEach(b => { const on = b.dataset.t === t; b.classList.toggle("on", on); b.setAttribute("aria-checked", on); });
+}
+$("themeSeg").querySelectorAll("button").forEach(b => b.onclick = () => { ST.settings.theme = b.dataset.t; save(); applyTheme(b.dataset.t); paintTheme(); });
+applyTheme(ST.settings.theme || "dark");
+
 let acctTab = "in";
 function renderAccount(){
-  const box = $("acct");
+  const box = $("acct"); $("acctCard").classList.remove("hidden");
   if (!LB.cfg()){
-    box.innerHTML = `<div class="small">Not set up yet (see SETUP.md). Everything else works without it.</div>`;
+    $("acctCard").classList.add("hidden");
     return;
   }
   if (LB.user && !LB.name && LB.checked){
-    box.innerHTML = `<div class="small">This account isn't on the club list (it was made without the club password).</div><button class="lbtoggle" id="acOut">Sign out</button>`;
+    box.innerHTML = `<div class="small">This account isn't on the leaderboard.</div><button class="lbtoggle" id="acOut">Sign out</button>`;
     $("acOut").onclick = async () => { await LB.signOut(); renderAccount(); };
     return;
   }
   if (ST.lbUser && !LB.user && !LB.name){
     box.innerHTML = `<div class="small">Connecting…</div>`;
-    LB.init().then(() => { if (!LB.user){ ST.lbUser = null; save(); } renderAccount(); }).catch(e => { box.innerHTML = `<div class="small">Offline. Your points will send next time you're online.</div>`; });
+    LB.init().then(() => { if (!LB.user){ ST.lbUser = null; save(); } renderAccount(); }).catch(e => { box.innerHTML = `<div class="small">Offline</div>`; });
     return;
   }
   if (LB.user && LB.name){
     const pend = (ST.lbPending || []).reduce((a, x) => a + x.p, 0);
     box.innerHTML = `<div class="acrow"><span>Signed in as <b>${LB.name}</b></span><button class="link" id="acOut">Sign out</button></div>
-      ${pend ? `<div class="small">${pend} pts waiting to send…</div>` : ""}
+      ${pend ? `<div class="small">${pend} pts to send</div>` : ""}
       <button class="grow lbtoggle" id="lbShow">${ic("trophy")}<span>Show leaderboard</span></button><div id="lbList"></div>`;
     $("acOut").onclick = async () => { await LB.signOut(); acctTab = "in"; renderAccount(); };
     $("lbShow").onclick = showBoard;
     return;
   }
   const up = acctTab === "up";
-  box.innerHTML = `<div class="small" style="margin-bottom:8px">Optional: sign in to put your points on the leaderboard.</div>
-    <div class="seg"><button id="tabIn" class="${up ? "" : "on"}">Sign in</button><button id="tabUp" class="${up ? "on" : ""}">Create account</button></div>
+  box.innerHTML = `<div class="seg"><button id="tabIn" class="${up ? "" : "on"}">Sign in</button><button id="tabUp" class="${up ? "on" : ""}">Create account</button></div>
     <form id="acForm" autocomplete="on">
       <input id="acName" type="text" placeholder="Username" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="username">
-      <input id="acPass" type="password" placeholder="Password (6+ characters)" autocomplete="${up ? "new-password" : "current-password"}">
+      <input id="acPass" type="password" placeholder="Password" autocomplete="${up ? "new-password" : "current-password"}">
       ${up ? `<input id="acInv" type="password" placeholder="Club password" autocomplete="off">` : ""}
       <button type="submit" class="primary" id="acGo" style="width:100%">${up ? "Create account" : "Sign in"}</button>
     </form>
@@ -226,7 +238,7 @@ async function showBoard(){
   const box = $("lbList"); box.innerHTML = `<div class="small">Loading…</div>`;
   try {
     const rows = await LB.top();
-    if (!rows.length){ box.innerHTML = `<div class="small">No scores yet. Finish a round to get on the board.</div>`; return; }
+    if (!rows.length){ box.innerHTML = `<div class="small">No scores yet</div>`; return; }
     box.innerHTML = `<ol class="lb">${rows.map((r, i) => `<li class="${LB.user && r.uid === LB.user.uid ? "me" : ""}">
       <span class="lbr">${i + 1}</span><span class="lbn">${escHTML(r.name)}<span class="small">${lbSplit(r)}best ${r.best || 0}</span></span><b>${r.total || 0}</b></li>`).join("")}</ol>`;
     setLabel($("lbShow"), "refresh", "Refresh");

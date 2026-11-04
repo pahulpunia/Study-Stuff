@@ -4,13 +4,13 @@
    Labels come from the subject's entry in subjects/registry.js.
    ===================================================================== */
 const MODES = {
-  def:   {name:"Definition → {Item}", desc:"Read the definition, spell the {item}.", icon:"card"},
-  sent:  {name:"Fill in the Blank", desc:"Finish the example sentence.", icon:"pencil", needsSent:true},
-  bee:   {name:"Spelling Bee", desc:"Hear the {item} out loud, then spell it.", icon:"speaker", needsSpeech:true},
-  mixed: {name:"Mixed", desc:"Definitions and sentences, shuffled.", icon:"shuffle", needsSent:true},
-  learn: {name:"Mastery", desc:"Missed {item}s come back until you've gotten every one right.", icon:"loop"},
-  weak:  {name:"Weak {Item}s", desc:"Drills the 8 {item}s you miss most.", icon:"target"},
-  blitz: {name:"Blitz · 90s", desc:"Speed round. Faster answers earn bonus points.", icon:"bolt"}
+  def:   {name:"Definition → {Item}", desc:"Read it, spell it", icon:"card"},
+  sent:  {name:"Fill in the Blank", desc:"Finish the sentence", icon:"pencil", needsSent:true},
+  bee:   {name:"Spelling Bee", desc:"Hear it, spell it", icon:"speaker", needsSpeech:true},
+  mixed: {name:"Mixed", desc:"Definitions and sentences", icon:"shuffle", needsSent:true},
+  learn: {name:"Mastery", desc:"Misses come back until they stick", icon:"loop"},
+  weak:  {name:"Weak {Item}s", desc:"Your 8 most-missed", icon:"target"},
+  blitz: {name:"Blitz · 90s", desc:"Faster answers, more points", icon:"bolt"}
 };
 const BLITZ_MS = 90000;
 
@@ -52,7 +52,7 @@ function termsHome(subj){
     box.appendChild(b);
   });
 }
-$("chapSel").onchange = e => { setChapter(e.target.value); termsHome(TSUBJ); };
+$("chapSel").onchange = e => { setChapter(e.target.value); termsHome(TSUBJ); Shell.update(); };
 
 /* ---------- game ---------- */
 let S = null;
