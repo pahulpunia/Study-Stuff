@@ -78,6 +78,8 @@ const LB = (() => {
     if (c.includes("too-many-requests")) return "Too many tries. Wait a minute and try again.";
     if (c.includes("network") || c.includes("unavailable") || (e && /Failed to fetch|import/i.test(e.message || ""))) return "Can't reach the server. Check your internet.";
     if (c.includes("permission-denied")) return "Wrong club password.";
+    if (c.includes("operation-not-allowed")) return "Sign-in isn't turned on in Firebase yet.";
+    if (c.includes("failed-precondition") || c.includes("not-found") || /database.*does not exist/i.test((e && e.message) || "")) return "The leaderboard database isn't set up yet.";
     if (c.includes("unauthorized-domain")) return "This website isn't allowed yet: add it under Firebase → Authentication → Settings → Authorized domains.";
     return "Something went wrong (" + (c || (e && e.message) || "unknown") + ").";
   }
