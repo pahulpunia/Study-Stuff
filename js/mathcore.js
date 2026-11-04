@@ -122,8 +122,9 @@ const MC = (() => {
   const RAD = `<svg class="radsvg" viewBox="0 0 12 24" preserveAspectRatio="none" aria-hidden="true"><path d="M0.5 14.5 L3.2 13 L6.6 23.2 L11.6 0.8" vector-effect="non-scaling-stroke"/></svg>`;
   const esc = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;");
   const strip = n => n.k === "par" ? n.a : n;
-  function startsNum(n){ while (n.k === "mul" || n.k === "pow" || n.k === "add") n = n.a; return n.k === "num"; }
-  function endsNum(n){ while (n.k === "mul" || n.k === "add") n = n.b; return n.k === "num" || (n.k === "pow"); }
+  const digits = n => n.k === "num" && /^[0-9.]/.test(n.s);            // a written number, not π or e
+  function startsNum(n){ while (n.k === "mul" || n.k === "pow" || n.k === "add") n = n.a; return digits(n); }
+  function endsNum(n){ while (n.k === "mul" || n.k === "add") n = n.b; return digits(n) || (n.k === "pow"); }
   function R(n){
     switch (n.k){
       case "num": return `<span class="mn">${esc(n.s)}</span>`;
@@ -133,7 +134,8 @@ const MC = (() => {
       case "neg": return `<span class="mneg">−</span>` + R(n.a);
       case "par": return (n.a.k === "div" && !n.a.ob) ? R(n.a) : `<span class="mp">(</span>${R(n.a)}<span class="mp">)</span>`;
       case "mul": {
-        const needDot = n.ex || (endsNum(n.a) && startsNum(n.b)) || n.b.k === "neg";
+        // a dot only where juxtaposition would misread: 2·3, (x+3)·2, x·(−2). 3π and 2x stay as written.
+        const needDot = n.ex || (startsNum(n.b) && (endsNum(n.a) || n.a.k === "par" || n.a.k === "var")) || n.b.k === "neg";
         return R(n.a) + (needDot ? `<span class="mo">·</span>` : "") + R(n.b);
       }
       case "div":
@@ -250,6 +252,26 @@ const MC = (() => {
           let s = raw.replace(/^[a-z]\s*=/i, "").replace(/^f\(\s*0\s*\)\s*=/i, "");
           return {ok: close(numVal(s), numVal(a))};
         }
+        case "pf": {
+          // partial fractions: must equal the original AND be written as separate simple fractions
+          if (sp) return {ok:false};
+          const res = sameExpr(raw, field.a, ["x"]);
+          if (!res.ok) return {ok:false, why: res.why || "add your fractions back together. They should give the original"};
+          const terms = [], walk = n => { if (n.k === "add"){ walk(n.a); walk(n.b); } else terms.push(n); };
+          walk(parse(raw));
+          const ev = (n, x) => evaluate(n, {x});
+          const simple = t => {
+            while (t.k === "neg" || t.k === "par") t = t.a;
+            if (t.k !== "div") return false;
+            const N = t.a, D = t.b, c = [1.3, 2.1, 3.7].map(x => ev(N, x)), d = [1.3, 2.1, 3.7].map(x => ev(D, x));
+            const constTop = Math.abs(c[0] - c[1]) < 1e-9 && Math.abs(c[1] - c[2]) < 1e-9;
+            const s1 = (d[1] - d[0]) / 0.8, s2 = (d[2] - d[1]) / 1.6;
+            return constTop && Math.abs(s1 - s2) < 1e-9 && Math.abs(s1) > 1e-9;
+          };
+          if (terms.length !== (field.n || 2) || !terms.every(simple))
+            return {ok:false, equiv:true, why:"it's equal, but write it as separate fractions with a number on top, like A/(x+1) + B/(x−2)"};
+          return {ok:true};
+        }
         case "expr": case "rat": {
           if (field.a === "none") return {ok: sp === "none"};
           if (sp) return {ok:false};
@@ -325,7 +347,7 @@ const MC = (() => {
   function answerHTML(f){
     const show = a => a === "DNE" ? "DNE" : a === "inf" ? "∞" : a === "-inf" ? "−∞" : a === "none" ? "none" : render(a);
     switch (f.t){
-      case "num": case "expr": case "rat": return show(String(f.a));
+      case "num": case "expr": case "rat": case "pf": return show(String(f.a));
       case "set": return f.a.length ? f.a.map(render).join(", ") : "none";
       case "pts": return f.a.length ? f.a.map(([x,y]) => `(${render(x)}, ${render(y)})`).join(", ") : "none";
       case "text": return renderText([].concat(f.a)[0]);

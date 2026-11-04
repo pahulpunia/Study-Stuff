@@ -25,6 +25,7 @@ const Shell = (() => {
         <button data-p="stats" class="${screen === "stats" ? "on" : ""}">${ic("chart")}<span>Stats</span></button>
       </nav>
       <nav class="rnav rbottom">
+        ${LB.cfg() ? `<button data-p="board" class="${screen === "board" ? "on" : ""}">${ic("trophy")}<span>Leaderboard</span></button>` : ""}
         <button data-p="settings" class="${screen === "settings" ? "on" : ""}">${ic("gear")}<span>Settings</span></button>
       </nav>`;
     r.querySelectorAll("[data-s]").forEach(b => b.onclick = () => { if (inRound() && !confirmLeave()) return; ST.subject = b.dataset.s; save(); renderHome(); });
@@ -33,6 +34,7 @@ const Shell = (() => {
       const p = b.dataset.p, s = Study.subject();
       if (p === "home") renderHome();
       else if (p === "settings") renderSettings();
+      else if (p === "board") renderBoard();
       else Study.load(s).then(() => Study.engines[s.type][p](s));
     });
   }

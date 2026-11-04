@@ -303,8 +303,6 @@ Study.addUnit("math3", {
       ["{{2/(4-x)}} = {{-2/(x-4)}}", "{{(3-2)/(x-4)}} = {{1/(x-4)}}; x ≠ 4."], {text:k.QTEXT.one + " State any excluded values."});
     simp(["4.2","rev"], "Review #19", "(8x)/(3y-2x)+(12y)/(2x-3y)", "-4", null,
       ["{{(8x)/(3y-2x)}} = {{(-8x)/(2x-3y)}}", "{{(12y-8x)/(2x-3y)}} = {{(-4(2x-3y))/(2x-3y)}} = −4"], {v:["x","y"], text:k.QTEXT.one});
-    simp(["4.2","rev"], "Review #20", "1/(2m-4n)-1/(2m+4n)-m/(m^2-4n^2)", "-1/(m+2n)", null,
-      ["LCD = {{2(m-2n)(m+2n)}}", "Numerator: (m + 2n) − (m − 2n) − 2m = 4n − 2m = −2(m − 2n)", "→ {{-1/(m+2n)}}"], {v:["m","n"], r:[0.3,3], text:k.QTEXT.one});
     simp(["4.2","rev"], "Review #21", "(b^2+1)/(b^2-4)+1/(b+2)+1/(b-2)", "(b+1)^2/((b-2)(b+2))", ["2","-2"],
       ["LCD = (b − 2)(b + 2): numerator {{b^2+1+(b-2)+(b+2)}} = {{b^2+2b+1}}", "= {{(b+1)^2/((b-2)(b+2))}}; b ≠ ±2."], {v:["b"], text:k.QTEXT.one + " State any excluded values."});
     pf(["4.2"], "4.2 HW #23", "(5x-5)/(x^2-3x-4)", "x-4", "x+1", "3", "2",
@@ -327,10 +325,6 @@ Study.addUnit("math3", {
       ["{{f(x+h)-f(x)}} = {{2xh+h^2+2h}}", "Divide by h: {{2x+h+2}}"]);
     dq(["4.2","rev"], "Review #27", "2x^2-x+3", "4x+2h-1",
       ["{{f(x+h)-f(x)}} = {{4xh+2h^2-h}}", "Divide by h: {{4x+2h-1}}"]);
-    simp(["4.2","rev"], "Review #28", "((x+3)2(x^2-1)(2x)-(x^2-1)^2(1))/(x+3)^2", "((x^2-1)(3x^2+12x+1))/(x+3)^2", ["-3"],
-      ["Factor out {{(x^2-1)}}: {{(x^2-1)(4x(x+3)-(x^2-1))}}", "Inside: {{4x^2+12x-x^2+1}} = {{3x^2+12x+1}}", "→ {{((x^2-1)(3x^2+12x+1))/(x+3)^2}}; x ≠ −3."]);
-    simp(["4.2","rev"], "Review #29", "((2x-1)^2(3)(4x^2+4)^2(8x)-(4x^2+4)^3(2)(2x-1)(2))/((4x^2+4)^3)^2", "((2x-1)(4x^2-3x-2))/(32(x^2+1)^4)", null,
-      ["Factor out {{(2x-1)(4x^2+4)^2}}: {{(2x-1)(4x^2+4)^2(24x(2x-1)-4(4x^2+4))}}", "Inside: {{32x^2-24x-16}} = {{8(4x^2-3x-2)}}", "Divide by {{(4x^2+4)^6}} and use {{4x^2+4}} = {{4(x^2+1)}} → {{((2x-1)(4x^2-3x-2))/(32(x^2+1)^4)}}"]);
     txt(["4.2"], "4.2 Notes", "The expression (f(x + h) − f(x)) / h is called the ______.", ["difference quotient"],
       ["It's the difference quotient (the slope between x and x + h)."]);
 
@@ -410,7 +404,7 @@ Study.addUnit("math3", {
     lim(["4.4","rev"], "Review #42", "((x+3)(2x-5))/((4x-7)(x+1))", "x", "inf", "1/2", ["Top {{2x^2}}, bottom {{4x^2}} → {{1/2}}"]);
     lim(["4.4","rev"], "Review #51", "(9-3x^2+7x^4)/(8x^3+12x^2+6x+1)", "x", "inf", "inf", ["{{(7x^4)/(8x^3)}} = {{(7x)/8}} → ∞"]);
     lim(["4.4","rev"], "Review #52", "(3x^2+5x-2)/(4x^3+2x^2-12x)", "x", "inf", "0", ["Top degree 2 < bottom degree 3 → 0"]);
-    lim(["4.4","rev"], "Review #53", "(3+13x+4x^2)/(3x^2+x-2)", "x", "inf", "4/3", ["{{(4x^2)/(3x^2)}} = {{4/3}}"]);
+    lim(["4.4","rev"], "Review #53", "(4x^2+13x+3)/(3x^2+x-2)", "x", "inf", "4/3", ["{{(4x^2)/(3x^2)}} = {{4/3}}"]);
     lim(["4.4","rev"], "Review #54", "((5x-7)(2x+3)^2)/((6x-5)(x+4)^2)", "x", "inf", "10/3", ["Top {{5x·4x^2}} = {{20x^3}}; bottom {{6x·x^2}} = {{6x^3}} → {{10/3}}"]);
     txt(["4.4"], "4.4 Notes", "If the degree of the numerator is less than the degree of the denominator, the limit as x → ∞ is ______. (number)", ["0","zero"],
       ["Bottom-heavy → 0."]);
@@ -498,9 +492,9 @@ Study.addUnit("math3", {
         const [r1, r2] = distinct(2, -6, 6), A = nz(-6, 6), B = nz(-6, 6);
         const num = [A + B, -(A * r2 + B * r1)];
         return {src:"Random drill", kind:"pf", text:"Decompose into partial fractions.", math:`(${pstr(num)})/(${pstr(fromRoots([r1, r2]))})`,
-          pfForm:[fac(r1).replace(/[()]/g, ""), fac(r2).replace(/[()]/g, "")],
-          fields:[{l:"A", t:"num", a:String(A)}, {l:"B", t:"num", a:String(B)}],
-          steps:[`Factor the bottom: {{${facs([r1, r2])}}}`, `{{${pstr(num)}}} = A${fac(r2)} + B${fac(r1)}`, `x = ${r1} → A = ${A};  x = ${r2} → B = ${B}`]};
+          pf:{d1:fac(r1).replace(/[()]/g, ""), d2:fac(r2).replace(/[()]/g, ""), A:String(A), B:String(B)},
+          fields:[pfField(fac(r1).replace(/[()]/g, ""), fac(r2).replace(/[()]/g, ""), A, B)],
+          steps:[`Factor the bottom: {{${facs([r1, r2])}}}. Set up {{A/${fac(r1)}+B/${fac(r2)}}}`, `{{${pstr(num)}}} = A${fac(r2)} + B${fac(r1)}`, `x = ${r1} → A = ${A};  x = ${r2} → B = ${B}`]};
       },
       "4.3": () => {
         const [a, b, c] = distinct(3, -6, 6);

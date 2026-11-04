@@ -26,7 +26,9 @@ const MMODES = {
   practice:{name:"Practice", desc:"Questions from your notes, shuffled", icon:"sheet"},
   mastery: {name:"Mastery", desc:"Misses come back until they stick", icon:"loop"},
   drill:   {name:"Endless Drill", desc:"New random problems, forever", icon:"infinity", gen:true},
-  weak:    {name:"Weak Spots", desc:"Your 8 most-missed", icon:"target"}
+  weak:    {name:"Weak Spots", desc:"Your 8 most-missed", icon:"target"},
+  saq:     {name:"Short Answer", desc:"Write it, then compare to a model answer", icon:"quill", write:"saq"},
+  leq:     {name:"Essay Thesis", desc:"Build an LEQ thesis step by step", icon:"pencil", write:"leq"}
 };
 let PSUBJ = null;                       // current problems subject (from registry)
 const PB = () => Study.problems[PSUBJ.id] || {units: [], items: []};
@@ -152,9 +154,10 @@ function renderMathHome(subj){
   const box = $("mmodes"); box.innerHTML = "";
   Object.entries(MMODES).forEach(([k, m]) => {
     if (m.gen && !drillHas(mSec())) return;
+    if (m.write && !Write.has(m.write, mSec())) return;
     const b = el("button", "mode");
-    modeTile(b, m.icon, m.name, m.desc, ST.mbest[mBestKey(k)]);
-    b.onclick = () => mStart(k);
+    modeTile(b, m.icon, m.name, m.desc, m.write ? null : ST.mbest[mBestKey(k)]);
+    b.onclick = () => m.write ? Write.start(m.write) : mStart(k);
     box.appendChild(b);
   });
 }
@@ -241,7 +244,6 @@ function mStart(mode, override){
 function mPrompt(q){
   let html = "";
   if (q.lim) html = MC.renderLim(q.lim.v, q.lim.to, MC.render(q.math));
-  else if (q.pfForm) html = MC.render(q.math) + `<span class="mo">=</span>` + MC.render(`A/(${q.pfForm[0]})+B/(${q.pfForm[1]})`);
   else if (q.math) html = (q.pre ? `<span class="mpre">${q.pre.replace("x", "<i class='mv'>x</i>")}</span>` : "") + MC.render(q.math);
   return html;
 }
@@ -273,7 +275,7 @@ function mShow(){
   const q = M.queue[M.idx];
   Object.assign(M, {hint:0, attempt:1, answered:false, qStart:Date.now(), lastFocus:0});
   $("mSrc").textContent = q.src;
-  $("mText").innerHTML = MC.renderText(q.text);
+  $("mText").innerHTML = (q.stim ? `<figure class="stim"><blockquote>${MC.renderText(q.stim)}</blockquote>${q.cite ? `<figcaption>${MC.renderText(q.cite)}</figcaption>` : ""}</figure>` : "") + `<p>${MC.renderText(q.text)}</p>`;
   $("mMath").innerHTML = mPrompt(q);
   $("mMath").classList.toggle("hidden", !$("mMath").innerHTML);
   $("mGraph").innerHTML = q.graphBefore ? plotSVG(q.target, q.F) : "";
@@ -309,6 +311,8 @@ function mShow(){
       // tap-to-answer: buttons fill the (hidden) input
       inp.classList.add("vh"); inp.tabIndex = -1; lab.htmlFor = "";
       const ch = el("div", "chips"); ch.setAttribute("role", "radiogroup"); ch.setAttribute("aria-label", f.l);
+      // sentence-length options read better as a stacked list; short ones stay as side-by-side chips
+      if (f.opts.some(o => String(o).replace(/\[\[|\]\]|\{\{|\}\}/g, "").length > 24)) ch.classList.add("stack");
       const shown = f.shuffle ? shuffle(f.opts) : f.opts;
       shown.forEach((o, j) => {
         const b = el("button", "chip"); b.innerHTML = MC.renderText(o) + (f.opts.length <= 9 ? `<kbd>${j + 1}</kbd>` : ""); b.dataset.v = o; b.type = "button"; b.setAttribute("role", "radio");
@@ -326,7 +330,7 @@ function mShow(){
     box.appendChild(w);
   });
   // the math keypad only shows for math-style answers
-  const padNeeded = q.fields.some(f => ["expr","rat","set","pts"].includes(f.t)) || !!q.lim || !!q.pfForm;
+  const padNeeded = q.fields.some(f => ["expr","rat","set","pts","pf"].includes(f.t)) || !!q.lim;
   $("keypad").classList.toggle("hidden", !padNeeded);
   $("mLearn").classList.toggle("hidden", !hasNotes(questionSection(q).u, questionSection(q).sid));
   window.scrollTo(0, 0);
@@ -516,7 +520,7 @@ function renderMStats(subj){
   $("resetStats").dataset.armed = ""; $("resetStats").textContent = `Reset ${subj.name} stats`;
   const bl = $("bestList"); bl.innerHTML = "";
   $("statsTitle").textContent = mSecInfo().name + ": best scores";
-  Object.entries(MMODES).forEach(([k, m]) => {
+  Object.entries(MMODES).filter(([, m]) => !m.write && !(m.gen && !drillHas(mSec()))).forEach(([k, m]) => {
     const row = el("div"); row.style.cssText = "display:flex;justify-content:space-between;padding:4px 0";
     const nm = el("span", "srow"); nm.innerHTML = ic(m.icon, "ic-s") + escHTML(m.name); row.appendChild(nm); row.appendChild(el("b", null, ST.mbest[mBestKey(k)] ? ST.mbest[mBestKey(k)] + " pts" : "–"));
     bl.appendChild(row);

@@ -56,7 +56,7 @@ const LB = (() => {
         if (u){ await loadMember(); } else { memberName = null; checked = false; }
         const now = !!(user && memberName);
         // only redraw the account card when the signed-in state really changed
-        if (was !== now && !creating && !window.acctBusy && !$("settings").classList.contains("hidden")) renderAccount();
+        if (was !== now && !creating && !window.acctBusy && !$("board").classList.contains("hidden")) renderAccount();
       });
     })();
     ready.catch(() => { ready = null; });
@@ -159,7 +159,7 @@ function renderSettings(){
   $("secondChance").checked = !!ST.settings.second;
   paintTheme();
   resetBackupUI();
-  renderAccount();
+  $("toBoard").classList.toggle("hidden", !LB.cfg());
   show("settings");
 }
 /* theme: dark by default, light if picked (index.html applies it before first paint) */
@@ -173,6 +173,10 @@ function paintTheme(){
 }
 $("themeSeg").querySelectorAll("button").forEach(b => b.onclick = () => { ST.settings.theme = b.dataset.t; save(); applyTheme(b.dataset.t); paintTheme(); });
 applyTheme(ST.settings.theme || "dark");
+
+/* leaderboard page: account card + the board itself */
+function renderBoard(){ renderAccount(); show("board"); }
+$("toBoard").onclick = renderBoard;
 
 let acctTab = "in";
 function renderAccount(){
@@ -195,9 +199,10 @@ function renderAccount(){
     const pend = (ST.lbPending || []).reduce((a, x) => a + x.p, 0);
     box.innerHTML = `<div class="acrow"><span>Signed in as <b>${LB.name}</b></span><button class="link" id="acOut">Sign out</button></div>
       ${pend ? `<div class="small">${pend} pts to send</div>` : ""}
-      <button class="grow lbtoggle" id="lbShow">${ic("trophy")}<span>Show leaderboard</span></button><div id="lbList"></div>`;
+      <div id="lbList"></div><button class="grow lbtoggle" id="lbShow">${ic("refresh")}<span>Refresh</span></button>`;
     $("acOut").onclick = async () => { await LB.signOut(); acctTab = "in"; renderAccount(); };
     $("lbShow").onclick = showBoard;
+    showBoard();
     return;
   }
   const up = acctTab === "up";
@@ -243,6 +248,5 @@ async function showBoard(){
     if (!rows.length){ box.innerHTML = `<div class="small">No scores yet</div>`; return; }
     box.innerHTML = `<ol class="lb">${rows.map((r, i) => `<li class="${LB.user && r.uid === LB.user.uid ? "me" : ""}">
       <span class="lbr">${i + 1}</span><span class="lbn">${escHTML(r.name)}<span class="small">${lbSplit(r)}best ${r.best || 0}</span></span><b>${r.total || 0}</b></li>`).join("")}</ol>`;
-    setLabel($("lbShow"), "refresh", "Refresh");
   } catch(e){ box.innerHTML = `<div class="small">${LB.niceError(e)}</div>`; }
 }

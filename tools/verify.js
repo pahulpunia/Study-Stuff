@@ -49,7 +49,8 @@ function verifyItem(q){
       else if (!sameSet(got, q.fields[1].a.map(NV))) fail(q, `excluded: computed ${sortNums(got)} vs given ${q.fields[1].a}`);
     }
   }
-  if (q.kind === 'pf'){ const [d1, d2] = q.pfForm; const r = MC.sameExpr(`${q.fields[0].a}/(${d1})+${q.fields[1].a}/(${d2})`, q.math, ['x']); if (!r.ok) fail(q, 'pf mismatch'); }
+  if (q.kind === 'pf'){ const {d1, d2, A, B} = q.pf; const r = MC.sameExpr(`(${A})/(${d1})+(${B})/(${d2})`, q.math, ['x']); if (!r.ok) fail(q, 'pf mismatch');
+    if (MC.check(q.fields[0], q.math).ok) fail(q, 'typing the original fraction back should not count'); }
   if (q.kind === 'dq'){ const fxh = q.math.replace(/x/g, '(x+h)'); const r = MC.sameExpr(F0.a, `((${fxh})-(${q.math}))/h`, ['x','h'], [0.3, 3]); if (!r.ok) fail(q, 'dq mismatch'); }
   if (q.kind === 'lim'){
     const v = q.lim.v, fn = f1(P(q.math), v), ans = F0.a;
@@ -134,6 +135,17 @@ for (const s of subjects){
   for (const unit of ctx.Study.problems[s.id].units){
     unit.items.forEach(verifyItem); total += unit.items.length;
     verifyNotes(unit);
+    (unit.saq || []).forEach((q, i) => { const src = {src:`${unit.id} saq ${i}`};
+      if (!unit.sections.some(x => x.id === q.sec)) fail(src, 'unknown section ' + q.sec);
+      if (!q.parts || q.parts.length !== 3) fail(src, 'an SAQ needs parts a, b, c');
+      (q.parts || []).forEach((p, j) => { if (!p.q || !p.model || !(p.look || []).length) fail(src, `part ${j} needs q, model, look`);
+        if ((p.look || []).some(w => w !== w.toLowerCase())) fail(src, 'look words must be lowercase');
+        if (!(p.look || []).some(w => p.model.toLowerCase().includes(w))) fail(src, `part ${j}: the model answer should hit at least one look word`); }); });
+    (unit.leq || []).forEach((q, i) => { const src = {src:`${unit.id} leq ${i}`};
+      ['prompt','skill','context','counter','thesis'].forEach(k => { if (!q[k]) fail(src, 'missing ' + k); });
+      if (!(q.evidence || []).length) fail(src, 'missing evidence bank');
+      (q.secs || []).forEach(x => { if (!unit.sections.some(y => y.id === x)) fail(src, 'unknown section ' + x); }); });
+    if (unit.saq || unit.leq) console.log(`  ${unit.id}: ${(unit.saq || []).length} SAQs, ${(unit.leq || []).length} LEQ prompts`);
     unit.items.forEach(q => q.secs.forEach(sc => { const sid = sc.split(':')[1]; if (sid !== 'rev' && !unit.sections.some(s => s.id === sid)) fail(q, 'unknown section ' + sc); }));
     Object.values(unit.graphs || {}).flat().forEach(g => verifyItem({kind:"asy", src:"notes graph: " + g.cap.slice(0, 30), math:g.f, F:g.F, fields:[], steps:[], text:""}));
     for (const [sec, f] of Object.entries(unit.drills)){ for (let i = 0; i < 300; i++){ const q = f(unit.kit); q.src = `${unit.id} drill ${sec}`; verifyItem(q); } }

@@ -43,6 +43,12 @@ const F = {
   charge:  (l, a) => ({l, t:"charge", a:+a, ph:"e.g. 2+ or 3-"})
 };
 
+/* the answer for a partial-fraction problem, e.g. 3/(2x+1) + 1/(x+6) */
+const pfField = (d1, d2, A, B) => {
+  const b = String(B).trim(), sign = b.startsWith("-") ? "-" : "+";
+  return {l:"Partial fractions", t:"pf", n:2, a:`${A}/(${d1})${sign}${b.replace(/^-/, "")}/(${d2})`, v:["x"], ph:"e.g. 3/(x+1)+2/(x-4)"};
+};
+
 function makeKit(subjId, unit){
   let n = 0;
   const add = o => {
@@ -67,7 +73,7 @@ function makeKit(subjId, unit){
     {l:"y-int: y =", t:"num", a:F.yint, ph:"number or none"}
   ];
   const k = {
-    POLY, QTEXT, asyFields,
+    POLY, QTEXT, asyFields, pfField,
     /* generic: any prompt + any answer fields (see field types in ADDING-CONTENT.md) */
     ask(secs, src, text, fields, steps, o = {}){ return add(Object.assign({secs, src, text, fields, steps, kind: o.kind || "ask"}, o)); },
     simp(secs, src, math, ans, excl, steps, o = {}){
@@ -80,7 +86,7 @@ function makeKit(subjId, unit){
       return add({secs, src, text: o.text || QTEXT.lim, math, lim:{v, to}, fields:[{l:"Limit", t:"num", a:ans, ph:"number, ∞, −∞, or DNE"}], steps, kind:"lim", o});
     },
     pf(secs, src, math, d1, d2, A, B, steps){
-      return add({secs, src, text:"Decompose into partial fractions.", math, pfForm:[d1, d2], fields:[{l:"A", t:"num", a:A}, {l:"B", t:"num", a:B}], steps, kind:"pf"});
+      return add({secs, src, text:"Decompose into partial fractions.", math, pf:{d1, d2, A:String(A), B:String(B)}, fields:[pfField(d1, d2, A, B)], steps, kind:"pf"});
     },
     dq(secs, src, f, ans, steps){
       return add({secs, src, text:"Find the difference quotient {{(f(x+h)-f(x))/h}}", pre:"f(x) = ", math:f,
@@ -99,7 +105,7 @@ function makeKit(subjId, unit){
     },
     /* tap one option */
     choice(secs, src, text, opts, ans, steps, o = {}){
-      return add({secs, src, text, fields:[F.choice(o.label || "Answer", opts, ans, o.shuffle)], steps, kind:"choice", math:o.math, tip:o.tip});
+      return add({secs, src, text, fields:[F.choice(o.label || "Answer", opts, ans, o.shuffle)], steps, kind:"choice", math:o.math, tip:o.tip, stim:o.stim, cite:o.cite});
     },
     /* a plain number (count, charge size…) */
     num(secs, src, text, ans, steps, o = {}){

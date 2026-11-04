@@ -533,3 +533,53 @@ sub{font-size:.72em;line-height:0;vertical-align:-.28em}
   .chip{position:relative}
   .chip kbd{display:inline-block;margin-left:8px;font:700 .7rem var(--font);color:var(--muted);border:1px solid var(--line);border-radius:4px;padding:0 5px;vertical-align:.1em}
 }
+
+/* stacked answer list for sentence-length options */
+.chips.stack{flex-direction:column;gap:8px}
+.chips.stack .chip{flex:none;width:100%;text-align:left;font-weight:400;font-size:1rem;line-height:1.45;padding:12px 14px;display:flex;align-items:flex-start;gap:10px;min-height:0}
+.chips.stack .chip.sel{font-weight:600}
+@media (hover:hover) and (pointer:fine){ .chips.stack .chip kbd{order:-1;margin:2px 0 0 0;flex:none} }
+/* source excerpt above a question */
+.mtext p{margin:0}
+.stim{margin:0 0 12px;padding:12px 14px;border-left:3px solid var(--accent);background:var(--bg);border-radius:0 10px 10px 0}
+.stim blockquote{margin:0;font-size:.95rem;line-height:1.6}
+.stim figcaption{margin-top:6px;font-size:.8rem;color:var(--muted);font-weight:700}
+/* Settings → leaderboard link (phones; desktop uses the sidebar) */
+.rowbtn{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:14px 16px;font-weight:700}
+.rowbtn::after{content:"›";margin-left:auto;color:var(--muted);font-size:1.3rem;line-height:1}
+@media (min-width: 960px){ #toBoard{display:none} }
+#lbList + .lbtoggle{margin-top:10px}
+
+/* ================= writing practice (SAQ / LEQ) ================= */
+textarea{width:100%;box-sizing:border-box;font:inherit;font-size:1rem;line-height:1.5;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;resize:vertical;min-height:84px}
+.wlead{color:var(--muted);font-size:.92rem;margin:4px 0 10px}
+.wprompt{font-size:1.08rem;line-height:1.55;font-weight:700;margin:4px 0 12px}
+ol.saq{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:16px}
+.wq{margin-bottom:6px;line-height:1.5}
+.wfb{margin-top:8px}
+.wchecks{list-style:none;margin:0 0 8px;padding:0;display:flex;flex-direction:column;gap:4px;font-size:.92rem}
+.wchecks li{display:flex;gap:8px;align-items:flex-start;line-height:1.45}
+.wchecks .ic{flex:none;margin-top:.15em}
+.wchecks li.ok .ic{color:var(--good)}
+.wchecks li.todo .ic{color:var(--warn)}
+.wmodel{background:var(--accent-soft);border-radius:10px;padding:10px 12px;margin:8px 0;line-height:1.55;font-size:.95rem}
+.wlabel{font-size:.78rem;font-weight:700;color:var(--accent);margin-bottom:2px}
+.wself{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:.9rem;color:var(--muted)}
+.wself button{padding:6px 12px;font-size:.88rem}
+.wself button.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.wscore{display:flex;align-items:center;gap:10px;margin-top:14px;padding:12px 14px;border-radius:10px;background:var(--bg);border:1px solid var(--line)}
+.wbtns{margin-top:16px}
+.wideas{margin:0 0 6px;border:1px solid var(--line);border-radius:10px;padding:8px 12px;background:var(--bg)}
+.wideas summary{cursor:pointer;font-weight:700;font-size:.92rem;color:var(--accent);list-style:none;display:flex;align-items:center;gap:6px}
+.wideas summary::-webkit-details-marker{display:none}
+.wideas ul{margin:8px 0 2px;padding-left:18px;font-size:.92rem;line-height:1.6}
+.thb{display:flex;flex-direction:column;gap:8px}
+.thb label{display:flex;flex-direction:column;gap:3px;font-size:.85rem;font-weight:700;color:var(--muted)}
+.thb input{font-size:1rem}
+.thprev{margin-top:10px;padding:10px 12px;border-left:3px solid var(--accent);background:var(--bg);border-radius:0 10px 10px 0;line-height:1.55}
+#tMode{margin-top:4px;padding-left:0}
+.rubric{margin-top:10px;font-size:.9rem;line-height:1.55}
+.rubric ul{margin:4px 0 0;padding-left:18px}
+@media (min-width: 720px){ .thb{display:grid;grid-template-columns:1fr 1fr} }
+.chips.stack .chip{color:var(--ink)}
+@media (pointer:coarse){ .chip kbd{display:none !important} }

@@ -139,12 +139,24 @@
       </div>
       <div class="themerow"><span>Theme</span><div class="seg" id="themeSeg" role="radiogroup" aria-label="Theme"><button data-t="dark" role="radio">Dark</button><button data-t="light" role="radio">Light</button></div></div>
     </div>
-    <div class="card" id="acctCard"><h2>Leaderboard</h2><div id="acct"></div></div>
+    <button class="card rowbtn" id="toBoard" data-ic="trophy">Account &amp; leaderboard</button>
     <div class="card">
       <h2>Backup</h2>
       <div class="row"><button class="grow" id="bkCopy"></button><button class="grow" id="bkRestore"></button></div>
       <textarea id="bkText" rows="3" class="hidden"></textarea>
     </div>
+  </section>
+
+  <!-- WRITING (SAQ / LEQ) -->
+  <section id="write" class="hidden">
+    <div class="topbar"><button class="link" id="wBack" data-ic="close">Done</button><span class="chip" id="wCount"></span></div>
+    <div class="card qcard wcard" id="wCard"></div>
+  </section>
+
+  <!-- LEADERBOARD -->
+  <section id="board" class="hidden">
+    <div class="topbar"><button class="link" data-home data-ic="back">Back</button></div>
+    <div class="card" id="acctCard"><h2>Leaderboard</h2><div id="acct"></div></div>
   </section>
 
   <!-- MATH QUIZ -->
@@ -160,7 +172,7 @@
     <div class="card qcard mcard">
       <div class="mq-left">
         <div class="qtop"><span class="srcchip" id="mSrc"></span><button class="link learnbtn" id="mLearn" data-ic="book">Learn this</button></div>
-        <p class="mtext" id="mText"></p>
+        <div class="mtext" id="mText"></div>
         <div class="mdisplay" id="mMath"></div>
         <div class="mgraph" id="mGraph"></div>
       </div>
@@ -235,6 +247,7 @@
 <script src="js/terms.js"></script>
 <script src="js/kit.js"></script>
 <script src="js/problems.js"></script>
+<script src="js/writing.js"></script>
 <script src="js/account.js"></script>
 <script src="js/shell.js"></script>
 <script src="js/boot.js"></script>
