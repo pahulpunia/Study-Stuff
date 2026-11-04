@@ -38,7 +38,7 @@ const POLY = (() => {
 const F = {
   num:     (l, a) => ({l, t:"num", a:String(a), numeric:true, ph:"number"}),
   text:    (l, a) => ({l, t:"text", a:[].concat(a), ph:"type the word(s)"}),
-  choice:  (l, opts, a) => ({l, t:"choice", opts, a}),
+  choice:  (l, opts, a, shuffle) => ({l, t:"choice", opts, a, shuffle: !!shuffle}),   // shuffle: show options in random order
   formula: (l, a) => ({l, t:"formula", a, ph:"e.g. Al2O3"}),
   charge:  (l, a) => ({l, t:"charge", a:+a, ph:"e.g. 2+ or 3-"})
 };
@@ -99,7 +99,7 @@ function makeKit(subjId, unit){
     },
     /* tap one option */
     choice(secs, src, text, opts, ans, steps, o = {}){
-      return add({secs, src, text, fields:[F.choice(o.label || "Answer", opts, ans)], steps, kind:"choice", math:o.math, tip:o.tip});
+      return add({secs, src, text, fields:[F.choice(o.label || "Answer", opts, ans, o.shuffle)], steps, kind:"choice", math:o.math, tip:o.tip});
     },
     /* a plain number (count, charge size…) */
     num(secs, src, text, ans, steps, o = {}){

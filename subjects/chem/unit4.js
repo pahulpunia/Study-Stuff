@@ -259,6 +259,11 @@ Study.addUnit("hchem", {
     const PN = ["Polar", "Nonpolar"];
     const IMF4 = ["LDF only", "LDF + dipole-dipole", "LDF + dipole-dipole + H-bonding", "Ionic bonding"];
     const STRONG = ["LDF", "Dipole-dipole", "Hydrogen bonding", "Ionic"];
+    // shuffle answer order so the right one isn't always in the same spot (fixed lists keep their order)
+    const FIXED = [IOC, BT, PN, IMF4, STRONG, GEOS];
+    const choice0 = k.choice;
+    k = Object.assign({}, k, {choice: (secs, src, text, opts, ans, steps, o = {}) =>
+      choice0(secs, src, text, opts, ans, steps, Object.assign({shuffle: !FIXED.includes(opts)}, o))});
 
     /* ---- 4.1 ---- */
     const n41 = "4.1 Notes";

@@ -162,7 +162,8 @@ const MC = (() => {
   // text with {{math}} snippets
   function renderText(t){
     return esc(t).replace(/\{\{(.+?)\}\}/g, (_, m) => m === "lim" ? `<span class="mf">lim</span>` : `<span class="mi">${render(m.replace(/&lt;/g,"<").replace(/&amp;/g,"&"))}</span>`)
-      .replace(/\[\[(.+?)\]\]/g, (_, m) => `<span class="chem">${formulaHTML(m)}</span>`);   // [[Al2O3]] → Al₂O₃
+      .replace(/\[\[(.+?)\]\]/g, (_, m) => `<span class="chem">${formulaHTML(m)}</span>`)    // [[Al2O3]] → Al₂O₃
+      .replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");                                            // **term** → bold
   }
 
   /* ---- answers ---- */

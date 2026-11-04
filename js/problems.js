@@ -23,7 +23,7 @@ function drillMake(sec){
 
 /* ========== HONORS MATH 3 UI ========== */
 const MMODES = {
-  practice:{name:"Practice", desc:"Your notes and HW, shuffled", icon:"sheet"},
+  practice:{name:"Practice", desc:"Questions from your notes, shuffled", icon:"sheet"},
   mastery: {name:"Mastery", desc:"Misses come back until they stick", icon:"loop"},
   drill:   {name:"Endless Drill", desc:"New random problems, forever", icon:"infinity", gen:true},
   weak:    {name:"Weak Spots", desc:"Your 8 most-missed", icon:"target"}
@@ -309,8 +309,9 @@ function mShow(){
       // tap-to-answer: buttons fill the (hidden) input
       inp.classList.add("vh"); inp.tabIndex = -1; lab.htmlFor = "";
       const ch = el("div", "chips"); ch.setAttribute("role", "radiogroup"); ch.setAttribute("aria-label", f.l);
-      f.opts.forEach(o => {
-        const b = el("button", "chip"); b.innerHTML = MC.renderText(o) + (f.opts.length <= 9 ? `<kbd>${f.opts.indexOf(o) + 1}</kbd>` : ""); b.dataset.v = o; b.type = "button"; b.setAttribute("role", "radio");
+      const shown = f.shuffle ? shuffle(f.opts) : f.opts;
+      shown.forEach((o, j) => {
+        const b = el("button", "chip"); b.innerHTML = MC.renderText(o) + (f.opts.length <= 9 ? `<kbd>${j + 1}</kbd>` : ""); b.dataset.v = o; b.type = "button"; b.setAttribute("role", "radio");
         b.onclick = () => {
           if (M.answered || inp.dataset.ok === "1" || b.disabled) return;
           ch.querySelectorAll(".chip").forEach(c => { c.classList.toggle("sel", c === b); c.setAttribute("aria-checked", c === b); });

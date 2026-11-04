@@ -29,13 +29,10 @@ window.SUBJECTS = [
     id: "hchem", name: "Honors Chemistry", short: "Chem", icon: "flask", type: "problems",
     files: ["subjects/chem/unit4.js"],
     defaultSection: "u4:4.1"
+  },
+  {
+    id: "apwh", name: "AP World History", short: "AP World", icon: "globe", type: "problems",
+    files: ["subjects/apworld/unit3.js", "subjects/apworld/unit4.js"],
+    defaultSection: "u3:13"
   }
-
-  // Example for later (make the file first, then uncomment):
-  // {
-  //   id: "apwh", name: "AP World", short: "AP World", icon: "globe", type: "terms",
-  //   files: ["subjects/apworld/unit1.js"],
-  //   blurb: "Type the term from its description.",
-  //   setLabel: "Unit", groupLabel: "Topic", groupsLabel: "Topics", itemLabel: "term"
-  // },
 ];

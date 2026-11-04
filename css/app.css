@@ -341,7 +341,8 @@ input[type=text], input[type=password]{border-width:1.5px;border-radius:10px;bac
 .subj .ss{display:none}
 .subj.many{flex-wrap:wrap}
 .subj.many button{flex:1 1 0;min-width:calc(25% - 4px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-@media (max-width: 719px){ .subj.many .sl{display:none} .subj.many .ss{display:inline} }
+@media (max-width: 719px){ .subj.many .sl{display:none} .subj.many .ss{display:inline}
+  .subj.lots button{padding:10px 4px;font-size:.88rem} .subj.lots button .ic{display:none} }
 #msecSel optgroup{font-weight:700}
 
 /* ================= icons ================= */

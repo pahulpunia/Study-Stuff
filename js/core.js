@@ -168,6 +168,7 @@ function renderSubjBar(){
   }
   bar.querySelectorAll("button").forEach(b => { const on = b.dataset.id === ST.subject; b.classList.toggle("on", on); b.setAttribute("aria-selected", on); });
   bar.classList.toggle("many", list.length > 2);
+  bar.classList.toggle("lots", list.length > 3);
   movePill();
 }
 // the highlight slides to the chosen subject
