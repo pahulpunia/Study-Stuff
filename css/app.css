@@ -307,26 +307,25 @@ input[type=text], input[type=password]{border-width:1.5px;border-radius:10px;bac
   .modes{grid-template-columns:repeat(3, 1fr)}
 }
 
+/* ===== desktop shell: sidebar | content | progress panel ===== */
 @media (min-width: 960px){
-  .wrap{max-width:1060px}
-  h1{font-size:1.9rem}
-
-  /* home: setup on the left, modes on the right */
-  #home:not(.hidden){display:grid;grid-template-columns:360px 1fr;column-gap:36px;align-items:start}
-  #home > *{grid-column:1}
-  #home > #termsHome, #home > #probHome{display:contents}
-  #home .modes{grid-column:2;grid-row:1 / span 8;grid-template-columns:repeat(2, 1fr);margin-top:6px;align-content:start}
-  #home .mode{padding:16px;min-height:96px}
-  #home .mode b{font-size:1.05rem}
-  #home .mode span{font-size:.86rem}
-  #home .row{margin-top:4px}
-
-  /* reading screens stay a comfortable width */
-  #study, #stats, #settings, #mnotes, #end, #mend{max-width:720px;margin:0 auto}
-  #quiz{max-width:720px;margin:0 auto}
-  #mquiz{max-width:1000px;margin:0 auto}
-
-  /* math quiz: question left, answers right */
+  body{padding:0}
+  .shell{display:grid;grid-template-columns:232px minmax(0, 1fr);min-height:100vh;min-height:100dvh}
+  .wrap{max-width:none;width:100%;margin:0;padding:28px clamp(24px, 4vw, 56px) 48px;box-sizing:border-box;container-type:inline-size}
+  .wrap > section{max-width:860px;margin-left:auto;margin-right:auto}
+  .qhead{margin-left:calc(-1 * clamp(24px, 4vw, 56px));margin-right:calc(-1 * clamp(24px, 4vw, 56px));padding-left:clamp(24px, 4vw, 56px);padding-right:clamp(24px, 4vw, 56px);margin-top:-28px;padding-top:14px}
+  .qhead .bar{margin-left:calc(-1 * clamp(24px, 4vw, 56px));margin-right:calc(-1 * clamp(24px, 4vw, 56px))}
+  /* the sidebar already has subjects + pages, so hide the phone versions */
+  #home > h1, #home > .subj, #home > .row{display:none}
+  #home .modes{grid-template-columns:repeat(2, 1fr)}
+  #home .mode{padding:16px}
+  #mquiz{max-width:1040px !important}
+}
+@media (min-width: 1280px){
+  .shell{grid-template-columns:232px minmax(0, 1fr) 300px}
+}
+/* math quiz: question left, answers right, once the content area is wide enough */
+@container (min-width: 860px){
   #mquiz .mcard{display:grid;grid-template-columns:minmax(0, 1.05fr) minmax(0, 1fr);column-gap:32px;align-items:start;padding:26px 28px 24px}
   #mquiz .mq-left{position:sticky;top:76px}
   #mquiz .mdisplay{font-size:1.45rem;text-align:left;padding-left:0}
@@ -347,3 +346,124 @@ input[type=text], input[type=password]{border-width:1.5px;border-radius:10px;bac
 .subj.many{flex-wrap:wrap}
 .subj.many button{flex:1 1 calc(50% - 4px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #msecSel optgroup{font-weight:700}
+
+/* ================= icons ================= */
+.ic{width:1.25em;height:1.25em;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;vertical-align:-.25em}
+.ic-s{width:1.05em;height:1.05em;vertical-align:-.18em}
+button .ic + span{margin-left:.45em}
+button:has(> .ic){display:inline-flex;align-items:center;justify-content:center}
+.link .ic{margin-right:.15em}
+.hud .ic, .stat .ic, .srow .ic, .fbstreak .ic, .cstats .ic{margin-right:.2em}
+.srow{display:inline-flex;align-items:center;gap:.35em}
+.srow .ic{margin:0}
+.fbstreak{display:inline-flex;align-items:center;margin-left:.6em;background:var(--hl);color:#1A2232;border-radius:6px;padding:0 .4em;font-size:.88em}
+.hrow{display:flex;gap:.5em;align-items:flex-start}
+.hrow .ic{margin-top:.25em;color:var(--warn)}
+.fb .ic{margin-right:.3em}
+.say{display:inline-flex;align-items:center}
+
+/* ================= subject switch: sliding highlight ================= */
+.subj{position:relative}
+.subj .pill{position:absolute;left:0;top:0;width:0;height:0;border-radius:9px;background:var(--accent);z-index:0;pointer-events:none}
+.subj.ready .pill{transition:transform .3s cubic-bezier(.3,.7,.2,1), width .3s cubic-bezier(.3,.7,.2,1)}
+.subj button{position:relative;z-index:1;background:none !important;transition:color .2s}
+.subj button.on{color:var(--accent-ink)}
+
+/* ================= mode tiles ================= */
+.mode{position:relative;display:grid;grid-template-columns:auto 1fr;column-gap:12px;align-items:start;padding:12px;text-align:left}
+.mode .mico{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);transition:background-color .2s, color .2s, transform .2s}
+.mode .mico .ic{width:22px;height:22px}
+.mode .mtxt{display:flex;flex-direction:column;gap:1px;min-width:0;padding-right:28px}
+.mode .mtxt b{font-size:.98rem;line-height:1.25}
+.mode .mtxt span{font-size:.8rem;color:var(--muted);font-weight:400;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.mode .mbest{position:absolute;top:10px;right:10px;margin:0;font-style:normal;font-size:.72rem;font-weight:700;color:#1A2232;background:var(--hl);border-radius:6px;padding:1px 6px !important}
+.mode i:not(:empty)::before{content:none}
+@media (hover:hover) and (pointer:fine){
+  .mode{transition:transform .18s, box-shadow .18s, border-color .18s}
+  .mode:hover{transform:translateY(-2px);background:var(--card);border-color:var(--accent);box-shadow:0 10px 24px -14px color-mix(in srgb, var(--accent) 60%, transparent)}
+  .mode:hover .mico{background:var(--accent);color:var(--accent-ink);transform:rotate(-6deg)}
+}
+
+/* ================= less clutter on phones ================= */
+.cardnote{margin:8px 0 0;font-size:.82rem}
+.cardnote:empty{display:none}
+.roots{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+#home > .row{gap:8px}
+.ubtn{flex-direction:column;gap:2px;padding:9px 6px;font-size:.8rem;color:var(--muted)}
+.ubtn .ic{width:22px;height:22px;color:var(--accent)}
+.ubtn .ic + span{margin-left:0}
+
+/* correct answer: a quick stamp */
+.fb.good{animation:stamp .32s cubic-bezier(.2,.9,.3,1.3)}
+@keyframes stamp{from{transform:scale(.92);opacity:.3}to{transform:none;opacity:1}}
+
+/* ================= sidebar (desktop) ================= */
+.rail, .ctx{display:none}
+@media (min-width: 960px){
+  .rail{display:flex;flex-direction:column;position:sticky;top:0;height:100vh;height:100dvh;box-sizing:border-box;padding:22px 14px 18px;
+        background:var(--card);border-right:1px solid var(--line);overflow-y:auto}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.1rem;padding:0 8px 18px}
+  .logo svg{width:30px;height:30px;display:block}
+  .logo rect{fill:var(--accent)}
+  .logo path{fill:none;stroke:var(--accent-ink);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+  .rlabel{font-size:.78rem;font-weight:700;color:var(--muted);padding:14px 10px 6px}
+  .rnav{display:flex;flex-direction:column;gap:2px}
+  .rnav button{display:flex;align-items:center;justify-content:flex-start;gap:10px;border:0;background:none;padding:9px 10px;border-radius:8px;color:var(--ink);font-weight:600;text-align:left;position:relative}
+  .rnav button .ic{color:var(--muted)}
+  .rnav button .ic + span{margin-left:0}
+  .rnav button:hover{background:var(--bg)}
+  .rnav button.on{background:var(--accent-soft);color:var(--accent)}
+  .rnav button.on .ic{color:var(--accent)}
+  .rnav button.on::before{content:"";position:absolute;left:-14px;top:8px;bottom:8px;width:3px;border-radius:0 3px 3px 0;background:var(--rule)}
+  .rbottom{margin-top:auto;padding-top:12px;border-top:1px solid var(--line)}
+}
+
+/* ================= progress panel (wide desktop) ================= */
+@media (min-width: 1280px){
+  .ctx{display:block;position:sticky;top:0;height:100vh;height:100dvh;box-sizing:border-box;padding:28px 20px 20px 0;overflow-y:auto}
+  .cpanel{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:18px}
+  .ctitle{font-weight:700;font-size:.95rem;margin-bottom:12px}
+  .ring{position:relative;width:132px;height:132px;margin:4px auto 14px}
+  .ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+  .ring circle{fill:none;stroke-width:7}
+  .rbg{stroke:var(--line)}
+  .rfg{stroke:var(--accent);stroke-linecap:round;transition:stroke-dashoffset .6s cubic-bezier(.3,.7,.2,1)}
+  .rtxt{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .rtxt b{font-size:1.35rem;line-height:1.1}
+  .rtxt span{font-size:.75rem;color:var(--muted)}
+  .cstats{display:flex;gap:8px;margin-bottom:6px}
+  .cstats > div{flex:1;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 4px;text-align:center}
+  .cstats b{display:flex;align-items:center;justify-content:center;font-size:1rem}
+  .cstats span{font-size:.72rem;color:var(--muted)}
+  .clabel{font-size:.78rem;font-weight:700;color:var(--muted);margin:14px 0 4px}
+  .clist{list-style:none;margin:0;padding:0}
+  .clist li{display:flex;align-items:center;gap:8px;padding:6px 0;border-top:1px solid var(--line);font-size:.9rem}
+  .clist li:first-child{border-top:0}
+  .clist li > span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;align-items:center;gap:6px}
+  .clist em{font-style:normal;font-weight:700;font-size:.8rem;color:var(--muted)}
+  .clog li.ok .ic{color:var(--good)} .clog li.no .ic{color:var(--bad)}
+  .clog li{animation:slidein .25s ease-out}
+  @keyframes slidein{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+  .cbtn{width:100%;margin-top:10px}
+  .cnote{font-size:.85rem;color:var(--muted);margin-top:12px;display:flex;align-items:center;gap:6px}
+}
+
+/* ================= small fixes ================= */
+.mode .mtxt{color:var(--ink)}
+.brandh{display:flex;align-items:center;gap:10px;font-size:1.35rem}
+.brandh .logo svg, .brand .logo svg{width:30px;height:30px;display:block}
+.logo rect{fill:var(--accent)}
+.logo path{fill:none;stroke:var(--accent-ink);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.pagehead{display:none}
+/* phones: one tidy list of modes, one line each */
+@media (max-width: 719px){
+  .modes{grid-template-columns:1fr !important;gap:8px}
+  .mode{align-items:center;padding:10px 12px}
+  .mode .mico{width:36px;height:36px}
+  .mode .mtxt span{-webkit-line-clamp:1}
+}
+@media (min-width: 960px){
+  .pagehead{display:flex;align-items:center;gap:12px;font-size:1.6rem;font-weight:700;letter-spacing:-.01em;margin:4px 0 18px}
+  .phico{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:var(--accent);color:var(--accent-ink)}
+  .phico .ic{width:26px;height:26px}
+}

@@ -4,13 +4,13 @@
    Labels come from the subject's entry in subjects/registry.js.
    ===================================================================== */
 const MODES = {
-  def:   {name:"Definition → {Item}", desc:"Read the definition, spell the {item}.", icon:"📘"},
-  sent:  {name:"Fill in the Blank", desc:"Finish the example sentence.", icon:"✏️", needsSent:true},
-  bee:   {name:"Spelling Bee", desc:"Hear the {item} out loud, then spell it.", icon:"🐝", needsSpeech:true},
-  mixed: {name:"Mixed", desc:"Definitions and sentences, shuffled.", icon:"🔀", needsSent:true},
-  learn: {name:"Mastery", desc:"Missed {item}s come back until you've gotten every one right.", icon:"🧠"},
-  weak:  {name:"Weak {Item}s", desc:"Drills the 8 {item}s you miss most.", icon:"🎯"},
-  blitz: {name:"Blitz · 90s", desc:"Speed round. Faster answers earn bonus points.", icon:"⚡"}
+  def:   {name:"Definition → {Item}", desc:"Read the definition, spell the {item}.", icon:"card"},
+  sent:  {name:"Fill in the Blank", desc:"Finish the example sentence.", icon:"pencil", needsSent:true},
+  bee:   {name:"Spelling Bee", desc:"Hear the {item} out loud, then spell it.", icon:"speaker", needsSpeech:true},
+  mixed: {name:"Mixed", desc:"Definitions and sentences, shuffled.", icon:"shuffle", needsSent:true},
+  learn: {name:"Mastery", desc:"Missed {item}s come back until you've gotten every one right.", icon:"loop"},
+  weak:  {name:"Weak {Item}s", desc:"Drills the 8 {item}s you miss most.", icon:"target"},
+  blitz: {name:"Blitz · 90s", desc:"Speed round. Faster answers earn bonus points.", icon:"bolt"}
 };
 const BLITZ_MS = 90000;
 
@@ -47,9 +47,7 @@ function termsHome(subj){
     if (m.needsSpeech && !CAN_SPEAK) return;
     if (m.needsSent && !hasSentences()) return;
     const b = el("button", "mode");
-    b.appendChild(el("b", null, m.icon + " " + fill(m.name)));
-    b.appendChild(el("span", null, fill(m.desc)));
-    b.appendChild(el("i", null, ST.best[bestKey(key)] ? "Best: " + ST.best[bestKey(key)] + " pts" : ""));
+    modeTile(b, m.icon, fill(m.name), fill(m.desc), ST.best[bestKey(key)]);
     b.onclick = () => startMode(key);
     box.appendChild(b);
   });
@@ -87,9 +85,9 @@ function startMode(mode, override){
 function clearTimers(){ if (S){ clearInterval(S.timer); clearTimeout(S.adv); } }
 function tick(){
   const rem = S.end - Date.now();
-  $("hudTimer").textContent = "⏱ " + fmtTime(rem);
+  $("hudTimer").innerHTML = ic("clock", "ic-s") + fmtTime(rem);
   $("prog").style.width = (100 - rem / BLITZ_MS * 100) + "%";
-  if (rem <= 0) finish();
+  if (rem <= 0) finish(); else Shell.session();
 }
 
 function showQ(){
@@ -109,7 +107,7 @@ function showQ(){
     wrap.appendChild(p);
   } else {
     $("pos").textContent = "spelling bee · " + q.w.pos;
-    const b = el("button", "play primary", "🔊 Play " + L().itemLabel);
+    const b = el("button", "play primary"); setLabel(b, "speaker", "Play " + L().itemLabel);
     b.type = "button"; b.onclick = () => { say(q.w.w); $("answer").focus(); };
     wrap.appendChild(b);
     say(q.w.w);
@@ -127,7 +125,7 @@ function showQ(){
 
 function updateHud(){
   $("hudScore").textContent = S.score + " pts";
-  $("hudStreak").textContent = S.streak >= 2 ? "🔥" + S.streak : "";
+  $("hudStreak").innerHTML = S.streak >= 2 ? ic("flame", "ic-s") + S.streak : "";
   if (S.mode === "learn"){
     $("count").textContent = `Mastered ${S.mastered.size} of ${S.total}`;
     $("prog").style.width = (S.mastered.size / S.total * 100) + "%";
@@ -137,6 +135,7 @@ function updateHud(){
     $("count").textContent = `${cap(L().itemLabel)} ${S.idx + 1} of ${S.queue.length}`;
     $("prog").style.width = (S.idx / S.queue.length * 100) + "%";
   }
+  Shell.session();
 }
 
 function updateHintBtn(){
@@ -218,11 +217,11 @@ function reveal(ok, typed){
     pts = calcPoints(); S.score += pts;
     if (S.mode === "learn") S.mastered.add(w);
     a.className = "good"; fb.className = "fb good";
-    fb.textContent = `✓ Correct! +${pts}` + (S.streak >= 2 ? `  🔥${S.streak} streak` : "");
+    fb.innerHTML = `${ic("check", "ic-s")} Correct! +${pts}` + (S.streak >= 2 ? `<span class="fbstreak">${ic("flame", "ic-s")}${S.streak} in a row</span>` : "");
   } else {
     S.streak = 0;
     a.className = "bad"; fb.className = "fb bad";
-    fb.appendChild(document.createTextNode(typed ? "✗ Not quite. " : "Skipped. "));
+    fb.insertAdjacentHTML("beforeend", typed ? ic("close", "ic-s") + "Not quite. " : "Skipped. ");
     const n = el("span", "norm", `The ${L().itemLabel} is `); n.appendChild(el("b", null, w)); fb.appendChild(n);
     if (typed && diffOps(norm(typed), norm(w)).dist <= Math.ceil(w.length / 2)){
       fb.appendChild(document.createElement("br"));
@@ -272,14 +271,14 @@ function finish(){
   LB.submit(TSUBJ.id, S.score);
 
   const mname = fill(MODES[S.mode].name);
-  $("endMode").textContent = `${TSUBJ.name} · ${L().setLabel} ${CH.n} · ${MODES[S.mode].icon} ${mname}` + (S.override ? " · retry" : "");
-  $("endScore").textContent = S.score;
+  $("endMode").textContent = `${TSUBJ.name} · ${L().setLabel} ${CH.n} · ${mname}` + (S.override ? " · retry" : "");
+  countUp($("endScore"), S.score);
   $("newBest").classList.toggle("hidden", !newBest);
   $("endAcc").textContent = acc + "%";
-  $("endStreak").textContent = "🔥" + S.bestStreak;
+  $("endStreak").innerHTML = ic("flame", "ic-s") + S.bestStreak;
   $("endTime").textContent = fmtTime(elapsed);
   $("bragText").classList.add("hidden");
-  $("brag").textContent = "📋 Copy score to send";
+  setLabel($("brag"), "copy", "Copy score to send");
 
   const missed = [...new Set(S.results.filter(r => !r.ok).map(r => r.w))];
   $("retryMissed").classList.toggle("hidden", missed.length === 0);
@@ -291,7 +290,7 @@ function finish(){
   if (!answered) ul.appendChild(el("li", "small", "No answers this round."));
   S.results.forEach(r => {
     const li = el("li");
-    li.appendChild(el("span", r.ok ? "ok" : "no", r.ok ? "✓ " : "✗ "));
+    const mk = el("span", r.ok ? "ok" : "no"); mk.innerHTML = ic(r.ok ? "check" : "close", "ic-s"); li.appendChild(mk);
     li.appendChild(el("b", null, r.w));
     const notes = [];
     if (r.ok) notes.push("+" + r.pts);
@@ -303,7 +302,7 @@ function finish(){
     ul.appendChild(li);
   });
 
-  S.bragMsg = `${TSUBJ.name} ${L().setLabel} ${CH.n} (${mname}): ${S.score} pts, ${correct}/${answered} right, 🔥${S.bestStreak} streak. Beat that.`;
+  S.bragMsg = `${TSUBJ.name} ${L().setLabel} ${CH.n} (${mname}): ${S.score} pts, ${correct}/${answered} right, best streak ${S.bestStreak}. Beat that.`;
   show("end");
   if (newBest || (answered >= 5 && correct === answered)) confetti();
 }
@@ -321,7 +320,7 @@ function termsStudy(subj){
       const d = el("div", "word");
       const top = el("div"); top.appendChild(el("span", "w", w.w));
       top.appendChild(el("span", "small", "  " + w.pos));
-      if (CAN_SPEAK){ const b = el("button", "say", "🔊"); b.onclick = () => say(w.w); top.appendChild(b); }
+      if (CAN_SPEAK){ const b = el("button", "say"); b.innerHTML = ic("speaker", "ic-s"); b.setAttribute("aria-label", "Hear " + w.w); b.onclick = () => say(w.w); top.appendChild(b); }
       d.appendChild(top);
       d.appendChild(el("div", "d", w.d));
       if (w.s) d.appendChild(el("div", "s", sentPlain(w)));
@@ -341,11 +340,11 @@ function termsStats(subj){
     if (m.needsSpeech && !CAN_SPEAK) return;
     if (m.needsSent && !hasSentences()) return;
     const row = el("div", null); row.style.cssText = "display:flex;justify-content:space-between;padding:4px 0";
-    row.appendChild(el("span", null, m.icon + " " + fill(m.name)));
+    const nm = el("span", "srow"); nm.innerHTML = ic(m.icon, "ic-s") + escHTML(fill(m.name)); row.appendChild(nm);
     row.appendChild(el("b", null, ST.best[bestKey(k)] ? ST.best[bestKey(k)] + " pts" : "–"));
     bl.appendChild(row);
   });
-  const sr = el("div", "small", "Longest streak ever: 🔥" + (ST.bestStreak || 0)); sr.style.marginTop = "8px"; bl.appendChild(sr);
+  const sr = el("div", "small srow"); sr.innerHTML = "Longest streak ever: " + ic("flame", "ic-s") + (ST.bestStreak || 0); sr.style.marginTop = "8px"; bl.appendChild(sr);
   const al = $("accList"); al.innerHTML = "";
   WORDS.slice().sort((a, b) => { const x = wordAcc(a.w), y = wordAcc(b.w); return (x == null ? 2 : x) - (y == null ? 2 : y); }).forEach(w => {
     const r = ST.words[wkey(w.w)], acc = wordAcc(w.w);

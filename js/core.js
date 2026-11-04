@@ -73,7 +73,7 @@ function renderDiff(typed, correct){
 
 function copyText(text, btn, box){
   const fallback = () => { box.value = text; box.classList.remove("hidden"); box.select(); btn.textContent = "Select and copy below"; };
-  try { navigator.clipboard.writeText(text).then(() => btn.textContent = "✓ Copied!").catch(fallback); } catch(e){ fallback(); }
+  try { navigator.clipboard.writeText(text).then(() => setLabel(btn, "check", "Copied")).catch(fallback); } catch(e){ fallback(); }
 }
 
 /* ---------- confetti ---------- */
@@ -154,31 +154,61 @@ function loadScript(src){
 
 /* ---------- home ---------- */
 function renderSubjBar(){
-  const bar = $("subjBar"); bar.innerHTML = "";
-  Study.subjects().forEach(s => {
-    const b = el("button", s.id === ST.subject ? "on" : "", `${s.icon} ${s.name}`);
-    b.onclick = () => { ST.subject = s.id; save(); renderHome(); };
-    bar.appendChild(b);
-  });
-  bar.classList.toggle("many", Study.subjects().length > 2);
+  const bar = $("subjBar"), list = Study.subjects();
+  if (bar.dataset.n !== String(list.length)){
+    bar.innerHTML = '<span class="pill" aria-hidden="true"></span>';
+    list.forEach(s => {
+      const b = el("button"); b.dataset.id = s.id; b.setAttribute("role", "tab");
+      b.innerHTML = ic(s.icon) + `<span>${escHTML(s.name)}</span>`;
+      b.onclick = () => { ST.subject = s.id; save(); renderHome(); };
+      bar.appendChild(b);
+    });
+    bar.dataset.n = list.length;
+  }
+  bar.querySelectorAll("button").forEach(b => { const on = b.dataset.id === ST.subject; b.classList.toggle("on", on); b.setAttribute("aria-selected", on); });
+  bar.classList.toggle("many", list.length > 2);
+  movePill();
+}
+// the highlight slides to the chosen subject
+function movePill(){
+  const bar = $("subjBar"), on = bar.querySelector(".on"), pill = bar.querySelector(".pill");
+  if (!on || !pill || !on.offsetWidth) return;
+  pill.style.width = on.offsetWidth + "px"; pill.style.height = on.offsetHeight + "px";
+  pill.style.transform = `translate(${on.offsetLeft}px, ${on.offsetTop}px)`;
+  requestAnimationFrame(() => bar.classList.add("ready"));
+}
+
+/* a mode button: icon tile, name, one-line description, best score */
+function modeTile(b, icon, name, desc, best){
+  b.innerHTML = `<span class="mico">${ic(icon)}</span><span class="mtxt"><b>${escHTML(name)}</b><span>${escHTML(desc)}</span></span>` +
+                (best ? `<i class="mbest" title="Best score">${best}</i>` : "");
+}
+
+/* results score counts up (skipped if reduced motion is on) */
+function countUp(elm, v){
+  if (!v || (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)){ elm.textContent = v; return; }
+  const t0 = performance.now(), dur = 700;
+  (function step(t){ const k = Math.max(0, Math.min(1, (t - t0) / dur)), e = 1 - Math.pow(1 - k, 3); elm.textContent = Math.round(v * e); if (k < 1) requestAnimationFrame(step); })(t0);
 }
 
 function renderHome(){
   const list = Study.subjects(); if (!list.length) return;
   if (!list.some(s => s.id === ST.subject)) ST.subject = list[0].id;
   const subj = Study.subject();
-  renderSubjBar();
   const isTerms = subj.type === "terms";
   $("termsHome").classList.toggle("hidden", !isTerms);
   $("probHome").classList.toggle("hidden", isTerms);
-  $("toStudy").textContent = isTerms ? "📖 Study list" : "📖 Notes summary";
+  setLabel($("toStudy"), isTerms ? "book" : "notes", isTerms ? "Study list" : "Notes");
   $("homeBlurb" + (isTerms ? "T" : "P")).textContent = subj.blurb || "";
   show("home");
+  renderSubjBar();
+  $("pageHead").innerHTML = `<span class="phico">${ic(subj.icon)}</span><span>${escHTML(subj.name)}</span>`;
   const box = isTerms ? $("modes") : $("mmodes");
   if (!Study.loaded[subj.id] || !(isTerms ? Study.terms[subj.id] : Study.problems[subj.id])) box.innerHTML = `<div class="small">Loading ${escHTML(subj.name)}…</div>`;
   Study.load(subj).then(() => {
     if (ST.subject !== subj.id) return;
     Study.engines[subj.type].home(subj);
+    Shell.update();
   }).catch(err => {
     box.innerHTML = `<div class="small">Couldn't load ${escHTML(subj.name)}. Check your internet and reopen the app. (${escHTML(err.message)})</div>`;
   });

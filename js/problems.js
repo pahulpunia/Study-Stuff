@@ -23,10 +23,10 @@ function drillMake(sec){
 
 /* ========== HONORS MATH 3 UI ========== */
 const MMODES = {
-  practice:{name:"Practice", desc:"Problems from your notes, HW & review, shuffled.", icon:"📝"},
-  mastery: {name:"Mastery", desc:"Missed problems come back until you get every one.", icon:"🧠"},
-  drill:   {name:"Endless Drill", desc:"Brand-new random problems every time. Never runs out.", icon:"♾️", gen:true},
-  weak:    {name:"Weak Spots", desc:"The 8 problems you miss most in this section.", icon:"🎯"}
+  practice:{name:"Practice", desc:"Problems from your notes, HW & review, shuffled.", icon:"sheet"},
+  mastery: {name:"Mastery", desc:"Missed problems come back until you get every one.", icon:"loop"},
+  drill:   {name:"Endless Drill", desc:"Brand-new random problems every time. Never runs out.", icon:"infinity", gen:true},
+  weak:    {name:"Weak Spots", desc:"The 8 problems you miss most in this section.", icon:"target"}
 };
 let PSUBJ = null;                       // current problems subject (from registry)
 const PB = () => Study.problems[PSUBJ.id] || {units: [], items: []};
@@ -152,9 +152,7 @@ function renderMathHome(subj){
   Object.entries(MMODES).forEach(([k, m]) => {
     if (m.gen && !drillHas(mSec())) return;
     const b = el("button", "mode");
-    b.appendChild(el("b", null, m.icon + " " + m.name));
-    b.appendChild(el("span", null, m.desc));
-    b.appendChild(el("i", null, ST.mbest[mBestKey(k)] ? "Best: " + ST.mbest[mBestKey(k)] + " pts" : ""));
+    modeTile(b, m.icon, m.name, m.desc, ST.mbest[mBestKey(k)]);
     b.onclick = () => mStart(k);
     box.appendChild(b);
   });
@@ -262,7 +260,7 @@ $("mHintBtn").onclick = () => {
   const q = M.queue[M.idx], hs = mHints(q);
   if (M.answered || M.hint >= hs.length) return;
   M.hint++;
-  $("mHint").innerHTML = hs.slice(0, M.hint).map(h => `<div>💡 ${MC.renderText(h)}</div>`).join("");
+  $("mHint").innerHTML = hs.slice(0, M.hint).map(h => `<div class="hrow">${ic("bulb", "ic-s")}<span>${MC.renderText(h)}</span></div>`).join("");
   $("mHint").classList.remove("hidden");
   mHintBtn();
   $("mf" + M.lastFocus).focus();
@@ -270,10 +268,11 @@ $("mHintBtn").onclick = () => {
 
 function mHud(){
   $("mScore").textContent = M.score + " pts";
-  $("mStreak").textContent = M.streak >= 2 ? "🔥" + M.streak : "";
+  $("mStreak").innerHTML = M.streak >= 2 ? ic("flame", "ic-s") + M.streak : "";
   if (M.mode === "mastery"){ $("mCount").textContent = `Mastered ${M.mastered.size} of ${M.total}`; $("mProg").style.width = (M.mastered.size / M.total * 100) + "%"; }
   else if (M.mode === "drill"){ const c = M.results.filter(r => r.ok).length; $("mCount").textContent = `Drill #${M.idx + 1} · ${c} correct`; $("mProg").style.width = "100%"; }
   else { $("mCount").textContent = `Problem ${M.idx + 1} of ${M.queue.length}`; $("mProg").style.width = (M.idx / M.queue.length * 100) + "%"; }
+  Shell.session();
 }
 
 // keypad: keep focus in the field
@@ -344,8 +343,8 @@ function mReveal(res, vals, skipped){
   pts = Math.max(0, pts); M.score += pts;
   const fb = $("mFb");
   fb.className = "fb " + (all ? "good" : nOk ? "warn" : "bad");
-  fb.textContent = all ? `✓ Correct! +${pts}` + (M.streak >= 2 ? `  🔥${M.streak} streak` : "")
-                 : skipped ? "Skipped. Here's how it works:" : nOk ? `${nOk} of ${q.fields.length} parts right. +${pts}` : "✗ Not quite. Here's how it works:";
+  fb.innerHTML = all ? `${ic("check", "ic-s")} Correct! +${pts}` + (M.streak >= 2 ? `<span class="fbstreak">${ic("flame", "ic-s")}${M.streak} in a row</span>` : "")
+                 : skipped ? "Skipped. Here's how it works:" : nOk ? `${nOk} of ${q.fields.length} parts right. +${pts}` : ic("close", "ic-s") + "Not quite. Here's how it works:";
   const sol = $("mSol");
   sol.innerHTML = `<b>Solution</b><ol>${(q.steps || []).map(s => `<li>${MC.renderText(s)}</li>`).join("")}</ol>`;
   sol.classList.remove("hidden");
@@ -380,10 +379,10 @@ function mFinish(){
   save();
   LB.submit(PSUBJ.id, M.score);
   const secName = mSecInfo().name;
-  $("meMode").textContent = `${secName} · ${MMODES[M.mode].icon} ${MMODES[M.mode].name}` + (M.override ? " · retry" : "");
-  $("meScore").textContent = M.score;
+  $("meMode").textContent = `${secName} · ${MMODES[M.mode].name}` + (M.override ? " · retry" : "");
+  countUp($("meScore"), M.score);
   $("meBest").classList.toggle("hidden", !newBest);
-  $("meAcc").textContent = acc + "%"; $("meStreak").textContent = "🔥" + M.bestStreak; $("meTime").textContent = fmtTime(Date.now() - M.start);
+  $("meAcc").textContent = acc + "%"; $("meStreak").innerHTML = ic("flame", "ic-s") + M.bestStreak; $("meTime").textContent = fmtTime(Date.now() - M.start);
   const missed = M.results.filter(r => !r.ok && !r.q.gen).map(r => r.q).filter((q, i, a) => a.indexOf(q) === i);
   $("meRetry").classList.toggle("hidden", !missed.length);
   $("meRetry").onclick = () => mStart("practice", missed);
@@ -392,11 +391,11 @@ function mFinish(){
   if (!n) ul.appendChild(el("li", "small", "No answers this round."));
   M.results.forEach(r => {
     const li = el("li");
-    li.innerHTML = `<span class="${r.ok ? "ok" : "no"}">${r.ok ? "✓" : "✗"}</span> <b>${r.src}</b> <span class="small">${r.ok ? "+" + r.pts : r.skipped ? "skipped" : r.part + " parts"}${r.hints ? " · " + r.hints + " hint" + (r.hints > 1 ? "s" : "") : ""}</span><div class="mmini">${mPrompt(r.q) || MC.renderText(r.q.text)}</div>`;
+    li.innerHTML = `<span class="${r.ok ? "ok" : "no"}">${ic(r.ok ? "check" : "close", "ic-s")}</span> <b>${r.src}</b> <span class="small">${r.ok ? "+" + r.pts : r.skipped ? "skipped" : r.part + " parts"}${r.hints ? " · " + r.hints + " hint" + (r.hints > 1 ? "s" : "") : ""}</span><div class="mmini">${mPrompt(r.q) || MC.renderText(r.q.text)}</div>`;
     ul.appendChild(li);
   });
-  M.brag = `${PSUBJ.name} (${secName}, ${MMODES[M.mode].name}): ${M.score} pts, ${c}/${n} right, 🔥${M.bestStreak} streak. Beat that.`;
-  $("meBrag").textContent = "📋 Copy score to send"; $("meBragText").classList.add("hidden");
+  M.brag = `${PSUBJ.name} (${secName}, ${MMODES[M.mode].name}): ${M.score} pts, ${c}/${n} right, best streak ${M.bestStreak}. Beat that.`;
+  setLabel($("meBrag"), "copy", "Copy score to send"); $("meBragText").classList.add("hidden");
   show("mend");
   if (newBest || (n >= 5 && c === n)) confetti();
 }
@@ -404,7 +403,7 @@ $("meHome").onclick = renderHome;
 $("meBrag").onclick = () => {
   const t = M.brag, box = $("meBragText");
   const fallback = () => { box.value = t; box.classList.remove("hidden"); box.select(); $("meBrag").textContent = "Select and copy below"; };
-  try { navigator.clipboard.writeText(t).then(() => $("meBrag").textContent = "✓ Copied!").catch(fallback); } catch(e){ fallback(); }
+  try { navigator.clipboard.writeText(t).then(() => setLabel($("meBrag"), "check", "Copied")).catch(fallback); } catch(e){ fallback(); }
 };
 
 /* ---- stats ---- */
@@ -415,7 +414,7 @@ function renderMStats(subj){
   $("statsTitle").textContent = mSecInfo().name + ": best scores";
   Object.entries(MMODES).forEach(([k, m]) => {
     const row = el("div"); row.style.cssText = "display:flex;justify-content:space-between;padding:4px 0";
-    row.appendChild(el("span", null, m.icon + " " + m.name)); row.appendChild(el("b", null, ST.mbest[mBestKey(k)] ? ST.mbest[mBestKey(k)] + " pts" : "–"));
+    const nm = el("span", "srow"); nm.innerHTML = ic(m.icon, "ic-s") + escHTML(m.name); row.appendChild(nm); row.appendChild(el("b", null, ST.mbest[mBestKey(k)] ? ST.mbest[mBestKey(k)] + " pts" : "–"));
     bl.appendChild(row);
   });
   $("accTitle").innerHTML = "Accuracy by section";

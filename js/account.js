@@ -3,7 +3,7 @@
    ===================================================================== */
 /* ---- backup / restore (both subjects) ---- */
 function resetBackupUI(){
-  $("bkCopy").textContent = "📤 Copy backup code"; $("bkRestore").textContent = "📥 Restore";
+  setLabel($("bkCopy"), "upload", "Copy backup code"); setLabel($("bkRestore"), "download", "Restore");
   $("bkRestore").dataset.mode = ""; $("bkText").classList.add("hidden"); $("bkText").value = "";
   $("resetStats").dataset.armed = "";
   $("resetStats").textContent = `Reset ${Study.subject().name} stats`;
@@ -12,20 +12,20 @@ $("bkCopy").onclick = () => {
   const code = btoa(unescape(encodeURIComponent(JSON.stringify(ST))));
   const box = $("bkText"); box.value = code; box.readOnly = true; box.classList.remove("hidden"); box.select();
   $("bkRestore").dataset.mode = "";
-  try { navigator.clipboard.writeText(code).then(() => $("bkCopy").textContent = "✓ Code copied").catch(() => $("bkCopy").textContent = "Copy the code below"); }
+  try { navigator.clipboard.writeText(code).then(() => setLabel($("bkCopy"), "check", "Code copied")).catch(() => $("bkCopy").textContent = "Copy the code below"); }
   catch(e){ $("bkCopy").textContent = "Copy the code below"; }
 };
 $("bkRestore").onclick = () => {
   const box = $("bkText"), b = $("bkRestore");
   if (b.dataset.mode !== "paste"){
     box.value = ""; box.readOnly = false; box.placeholder = "Paste your backup code here, then tap Restore again";
-    box.classList.remove("hidden"); b.dataset.mode = "paste"; b.textContent = "📥 Tap to restore"; box.focus(); return;
+    box.classList.remove("hidden"); b.dataset.mode = "paste"; setLabel(b, "download", "Tap to restore"); box.focus(); return;
   }
   try {
     const data = JSON.parse(decodeURIComponent(escape(atob(box.value.trim()))));
     if (!data || typeof data !== "object" || !data.settings) throw new Error("bad");
     ST = Object.assign(ST, data); save();
-    b.textContent = "✓ Restored"; b.dataset.mode = ""; box.classList.add("hidden");
+    setLabel(b, "check", "Restored"); b.dataset.mode = ""; box.classList.add("hidden");
   } catch(e){ b.textContent = "That code didn't work"; b.dataset.mode = "paste"; }
 };
 
@@ -163,7 +163,7 @@ let acctTab = "in";
 function renderAccount(){
   const box = $("acct");
   if (!LB.cfg()){
-    box.innerHTML = `<div class="small">Not set up yet. Accounts need a free Firebase project (see SETUP.md in the repo). Everything else works without it.</div>`;
+    box.innerHTML = `<div class="small">Not set up yet (see SETUP.md). Everything else works without it.</div>`;
     return;
   }
   if (LB.user && !LB.name && LB.checked){
@@ -180,13 +180,13 @@ function renderAccount(){
     const pend = (ST.lbPending || []).reduce((a, x) => a + x.p, 0);
     box.innerHTML = `<div class="acrow"><span>Signed in as <b>${LB.name}</b></span><button class="link" id="acOut">Sign out</button></div>
       ${pend ? `<div class="small">${pend} pts waiting to send…</div>` : ""}
-      <button class="grow lbtoggle" id="lbShow">🏆 Show leaderboard</button><div id="lbList"></div>`;
+      <button class="grow lbtoggle" id="lbShow">${ic("trophy")}<span>Show leaderboard</span></button><div id="lbList"></div>`;
     $("acOut").onclick = async () => { await LB.signOut(); acctTab = "in"; renderAccount(); };
     $("lbShow").onclick = showBoard;
     return;
   }
   const up = acctTab === "up";
-  box.innerHTML = `<div class="small" style="margin-bottom:8px">Optional. Sign in to put your points on the leaderboard with friends.</div>
+  box.innerHTML = `<div class="small" style="margin-bottom:8px">Optional: sign in to put your points on the leaderboard.</div>
     <div class="seg"><button id="tabIn" class="${up ? "" : "on"}">Sign in</button><button id="tabUp" class="${up ? "on" : ""}">Create account</button></div>
     <form id="acForm" autocomplete="on">
       <input id="acName" type="text" placeholder="Username" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="username">
@@ -218,7 +218,7 @@ function lbSplit(r){
   // points per subject (uses icons from the registry)
   const parts = Study.subjects().map(s => {
     const p = (r.by && r.by[s.id] != null) ? r.by[s.id] : s.id === "vocab" ? (r.vocab || 0) : s.id === "math3" ? (r.math || 0) : 0;
-    return p ? `${s.icon} ${p}` : "";
+    return p ? `${ic(s.icon, "ic-s")} ${p}` : "";
   }).filter(Boolean);
   return parts.length ? parts.join(" · ") + " · " : "";
 }
@@ -229,6 +229,6 @@ async function showBoard(){
     if (!rows.length){ box.innerHTML = `<div class="small">No scores yet. Finish a round to get on the board.</div>`; return; }
     box.innerHTML = `<ol class="lb">${rows.map((r, i) => `<li class="${LB.user && r.uid === LB.user.uid ? "me" : ""}">
       <span class="lbr">${i + 1}</span><span class="lbn">${escHTML(r.name)}<span class="small">${lbSplit(r)}best ${r.best || 0}</span></span><b>${r.total || 0}</b></li>`).join("")}</ol>`;
-    $("lbShow").textContent = "🔄 Refresh";
+    setLabel($("lbShow"), "refresh", "Refresh");
   } catch(e){ box.innerHTML = `<div class="small">${LB.niceError(e)}</div>`; }
 }
