@@ -3,6 +3,7 @@
 
    id       short, unique, never rename it (your stats are saved under it)
    name     shown on the subject switcher
+   short    shorter name for the phone switcher when there are 3+ subjects ("Chem")
    icon     an icon name from js/icons.js: book, graph, globe, flask, atom, quill (or an emoji)
    type     "terms"    → type the word from its definition/sentence/audio (vocab, AP World terms…)
             "problems" → typed-answer problems with hints + solutions (math, chem calculations…)
@@ -14,21 +15,27 @@
    ===================================================================== */
 window.SUBJECTS = [
   {
-    id: "vocab", name: "English Vocab", icon: "book", type: "terms",
+    id: "vocab", name: "English Vocab", short: "Vocab", icon: "book", type: "terms",
     files: ["subjects/english/vocab.js"],
     blurb: "Pick a chapter, pick a mode. Exact spelling only (accents optional).",
     setLabel: "Chapter", groupLabel: "Root", groupsLabel: "Roots", itemLabel: "word", defaultSet: 2
   },
   {
-    id: "math3", name: "Honors Math 3", icon: "graph", type: "problems",
+    id: "math3", name: "Honors Math 3", short: "Math 3", icon: "graph", type: "problems",
     files: ["subjects/math3/unit4.js"],          // add "subjects/math3/unit5.js" etc. here
     blurb: "Type answers any equivalent way, e.g. (2x+1)/(x-2), 3/5, DNE, ∞, none.",
     defaultSection: "u4:4.3"
+  },
+  {
+    id: "hchem", name: "Honors Chemistry", short: "Chem", icon: "flask", type: "problems",
+    files: ["subjects/chem/unit4.js"],
+    blurb: "Tap or type your answer. Formulas can be typed plainly, like Al2O3.",
+    defaultSection: "u4:4.1"
   }
 
   // Example for later (make the file first, then uncomment):
   // {
-  //   id: "apwh", name: "AP World", icon: "globe", type: "terms",
+  //   id: "apwh", name: "AP World", short: "AP World", icon: "globe", type: "terms",
   //   files: ["subjects/apworld/unit1.js"],
   //   blurb: "Type the term from its description.",
   //   setLabel: "Unit", groupLabel: "Topic", groupsLabel: "Topics", itemLabel: "term"

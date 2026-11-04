@@ -34,6 +34,15 @@ const POLY = (() => {
   return {ri, pick, nz, gcd, frac, distinct, pmul, fromRoots, pstr, fac, facs, pdiv, evalRoots};
 })();
 
+/* field makers for k.ask (and drills) */
+const F = {
+  num:     (l, a) => ({l, t:"num", a:String(a), numeric:true, ph:"number"}),
+  text:    (l, a) => ({l, t:"text", a:[].concat(a), ph:"type the word(s)"}),
+  choice:  (l, opts, a) => ({l, t:"choice", opts, a}),
+  formula: (l, a) => ({l, t:"formula", a, ph:"e.g. Al2O3"}),
+  charge:  (l, a) => ({l, t:"charge", a:+a, ph:"e.g. 2+ or 3-"})
+};
+
 function makeKit(subjId, unit){
   let n = 0;
   const add = o => {
@@ -85,9 +94,26 @@ function makeKit(subjId, unit){
       return add({secs, src, text:QTEXT.write, target, F, graphBefore:true,
         fields:[{l:"f(x) =", t:"rat", a:target, v:["x"], holes:F.holes.map(h => +MC.numVal(h[0])), ph:"e.g. (x+3)(x+1)/((x+2)(x+1))"}], steps, kind:"write"});
     },
-    txt(secs, src, text, accepts, steps){
-      return add({secs, src, text, fields:[{l:"Answer", t:"text", a:accepts}], steps, kind:"text"});
-    }
+    txt(secs, src, text, accepts, steps, o = {}){
+      return add({secs, src, text, fields:[{l:o.label || "Answer", t:"text", a:accepts}], steps, kind:"text", tip:o.tip});
+    },
+    /* tap one option */
+    choice(secs, src, text, opts, ans, steps, o = {}){
+      return add({secs, src, text, fields:[F.choice(o.label || "Answer", opts, ans)], steps, kind:"choice", math:o.math, tip:o.tip});
+    },
+    /* a plain number (count, charge size…) */
+    num(secs, src, text, ans, steps, o = {}){
+      return add({secs, src, text, fields:[F.num(o.label || "Answer", ans)], steps, kind:"num", tip:o.tip});
+    },
+    /* a chemical formula like Al2O3 */
+    formula(secs, src, text, ans, steps, o = {}){
+      return add({secs, src, text, fields:[F.formula(o.label || "Formula", ans)], steps, kind:"formula", tip:o.tip});
+    },
+    /* an ion charge like 2+ or 3− */
+    charge(secs, src, text, ans, steps, o = {}){
+      return add({secs, src, text, fields:[F.charge(o.label || "Charge", ans)], steps, kind:"charge", tip:o.tip});
+    },
+    F
   };
   unit.kit = k;
   return k;

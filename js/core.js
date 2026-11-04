@@ -159,7 +159,8 @@ function renderSubjBar(){
     bar.innerHTML = '<span class="pill" aria-hidden="true"></span>';
     list.forEach(s => {
       const b = el("button"); b.dataset.id = s.id; b.setAttribute("role", "tab");
-      b.innerHTML = ic(s.icon) + `<span>${escHTML(s.name)}</span>`;
+      b.innerHTML = ic(s.icon) + `<span class="sl">${escHTML(s.name)}</span><span class="ss">${escHTML(s.short || s.name)}</span>`;
+      b.title = s.name;
       b.onclick = () => { ST.subject = s.id; save(); renderHome(); };
       bar.appendChild(b);
     });

@@ -30,14 +30,15 @@ const MMODES = {
 };
 let PSUBJ = null;                       // current problems subject (from registry)
 const PB = () => Study.problems[PSUBJ.id] || {units: [], items: []};
+// first hint for each kind of math problem: the method, explained
 const KIND_TIP = {
-  simp:"Factor everything first, then cancel. Excluded values come from the ORIGINAL denominators (and the top of a fraction you divide by).",
-  lim:"Try direct substitution first. 0/0 → factor and cancel, use the conjugate, or clear the little fractions.",
-  liminf:"Keep only the highest-degree term on the top and bottom, simplify, then plug in ∞ or −∞.",
-  pf:"Multiply both sides by the full denominator, then plug in each root to make one term vanish.",
-  dq:"Expand f(x + h), subtract f(x), and every term should have an h. Divide it out.",
-  asy:"Factor and reduce. Canceled factor → hole. Leftover denominator → VA. Compare degrees for the HA/SA.",
-  write:"VAs → the bottom. Holes → the top AND bottom. x-intercepts → the top. Then fix the leading coefficient using the HA or y-intercept."
+  simp:"Factor the top and the bottom completely: pull out a GCF first, then look for a difference of squares, a trinomial, cubes, or grouping. Write down the excluded values from the ORIGINAL denominators before you cancel anything (when dividing, the top of the second fraction counts too, since it gets flipped to the bottom). Then cancel factors that appear on both top and bottom.",
+  lim:"Plug the x-value in first. If you get a real number, that's the limit. If you get 0/0, there's a factor hiding that cancels: factor and cancel (or multiply by the conjugate when there's a square root, or by the LCD when there are little fractions), then plug in again. A nonzero number over 0 means a vertical asymptote: check both sides to decide ∞, −∞, or DNE.",
+  liminf:"When x gets huge, only the highest-power term on top and on bottom matters. Compare their degrees: top smaller → 0, same → divide the leading coefficients, top bigger → it grows forever (∞ or −∞; check the sign).",
+  pf:"Set it up as A over the first factor plus B over the second factor. Multiply both sides by the whole denominator so the fractions disappear. Then plug in the x that makes one factor zero: that wipes out one letter, so you can solve for the other. Repeat with the other factor.",
+  dq:"Replace every x in f with (x + h) to get f(x + h) and expand carefully, since (x + h)² = x² + 2xh + h². Subtract ALL of f(x): every original term cancels. Every term left has an h, so factor it out and cancel it with the h on the bottom.",
+  asy:"Factor the top and bottom, then cancel what you can. A factor that cancels makes a hole (plug its x into the reduced function for the y). What's left on the bottom gives vertical asymptotes. Compare degrees for the horizontal or slant asymptote. Reduced top = 0 gives x-intercepts; plugging in x = 0 gives the y-intercept.",
+  write:"Turn each feature into a factor. VA at x = d → (x − d) on the bottom. Hole at x = e → (x − e) on the top AND bottom. x-intercept at x = g → (x − g) on the top. Then put a number in front so the horizontal asymptote (or y-intercept) comes out right."
 };
 // section ids: "u4:4.1" (a section), "u4:rev" (unit review), "u4:all" (whole unit), "*all" (every unit)
 function mSections(){
@@ -161,6 +162,54 @@ function renderMathHome(subj){
 $("msecSel").onchange = e => { ST.sel[PSUBJ.id] = e.target.value; save(); renderMathHome(PSUBJ); };
 
 /* ---- notes summary ---- */
+/* notes can be plain strings (bullets) or blocks:
+   {h:"heading"} {p:"paragraph"} {steps:[…]} {tip:"…"} {warn:"…"} {ex:{q, a:[…]}} {table:{head:[…], rows:[[…]]}} */
+function notesHTML(u, sid){
+  const notes = (u.notes || {})[sid] || [], graphs = (u.graphs || {})[sid] || [];
+  const T = t => MC.renderText(String(t));
+  let out = "", ul = [];
+  const flush = () => { if (ul.length){ out += `<ul class="mnotes">${ul.map(t => `<li>${T(t)}</li>`).join("")}</ul>`; ul = []; } };
+  notes.forEach(n => {
+    if (typeof n === "string"){ ul.push(n); return; }
+    flush();
+    if (n.h) out += `<h3 class="nh">${T(n.h)}</h3>`;
+    if (n.p) out += `<p class="np">${T(n.p)}</p>`;
+    if (n.steps) out += `<ol class="nsteps">${n.steps.map(x => `<li>${T(x)}</li>`).join("")}</ol>`;
+    if (n.tip) out += `<div class="ncall ntip">${ic("bulb", "ic-s")}<span>${T(n.tip)}</span></div>`;
+    if (n.warn) out += `<div class="ncall nwarn">${ic("alert", "ic-s")}<span><b>Watch out:</b> ${T(n.warn)}</span></div>`;
+    if (n.ex) out += `<div class="nex"><div class="nexq"><b>Example:</b> ${T(n.ex.q)}</div>${(n.ex.a || []).map(x => `<div class="nexa">${T(x)}</div>`).join("")}</div>`;
+    if (n.table) out += `<div class="ntable"><table><thead><tr>${n.table.head.map(c => `<th>${T(c)}</th>`).join("")}</tr></thead><tbody>${n.table.rows.map(r => `<tr>${r.map(c => `<td>${T(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+  });
+  flush();
+  graphs.forEach(ex => {
+    out += `<div class="nfig"><div class="ncap">${T(ex.cap)}</div><div class="mdisplay nmath"><span class="mpre">f(<i class="mv">x</i>) =</span>${MC.render(ex.f)}</div><div class="mgraph">${plotSVG(ex.f, ex.F)}</div></div>`;
+  });
+  return out;
+}
+const hasNotes = (u, sid) => !!(u && (((u.notes || {})[sid] || []).length || ((u.graphs || {})[sid] || []).length));
+
+/* "Learn this" sheet: the notes for the current problem's section, without leaving the round */
+function questionSection(q){
+  const sec = (q.secs || []).find(s => !/:rev$|:all$/.test(s)) || "";
+  const [uid, sid] = sec.split(":");
+  const u = PB().units.find(x => x.id === (uid || q.unit));
+  return {u, sid, name: u && (u.sections.find(s => s.id === sid) || {}).name};
+}
+function openLearn(q){
+  const {u, sid, name} = questionSection(q);
+  if (!hasNotes(u, sid)) return;
+  $("sheetTitle").textContent = name || "Notes";
+  $("sheetBody").innerHTML = notesHTML(u, sid);
+  $("sheet").classList.remove("hidden"); document.body.classList.add("noscroll");
+  document.activeElement && document.activeElement.blur();
+  $("sheetBody").scrollTop = 0; $("sheetClose").focus();
+}
+function closeLearn(){ $("sheet").classList.add("hidden"); document.body.classList.remove("noscroll"); }
+$("sheetClose").onclick = closeLearn;
+$("sheet").addEventListener("click", e => { if (e.target === $("sheet")) closeLearn(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("sheet").classList.contains("hidden")) closeLearn(); });
+$("mLearn").onclick = () => openLearn(M.queue[M.idx]);
+
 function renderMNotes(subj){
   useProblems(subj);
   const box = $("mnotesBody"); box.innerHTML = "";
@@ -170,18 +219,11 @@ function renderMNotes(subj){
     if (cur.id === "*all" || (u.id === cu && (cs === "all" || cs === "rev" || cs === s.id))) list.push({u, s});
   }));
   list.forEach(({u, s}) => {
-    const notes = (u.notes || {})[s.id] || [], graphs = (u.graphs || {})[s.id] || [];
-    if (!notes.length && !graphs.length) return;
+    if (!hasNotes(u, s.id)) return;
     box.appendChild(el("div", "grouphead", s.name));
-    const ul = el("ul", "mnotes");
-    notes.forEach(t => { const li = el("li"); li.innerHTML = MC.renderText(t); ul.appendChild(li); });
-    box.appendChild(ul);
-    graphs.forEach(ex => {
-      const fig = el("div", "nfig");
-      fig.innerHTML = `<div class="ncap">${MC.renderText(ex.cap)}</div><div class="mdisplay nmath"><span class="mpre">f(<i class="mv">x</i>) =</span>${MC.render(ex.f)}</div><div class="mgraph">${plotSVG(ex.f, ex.F)}</div>`;
-      box.appendChild(fig);
-    });
+    const sec = el("div", "nsec"); sec.innerHTML = notesHTML(u, s.id); box.appendChild(sec);
   });
+  if (!box.children.length) box.appendChild(el("div", "small", "No notes for this section yet."));
   show("mnotes");
 }
 
@@ -222,13 +264,17 @@ function mShow(){
     const w = el("div", "mfield");
     const lab = el("label", null, f.l); lab.htmlFor = "mf" + i; w.appendChild(lab);
     const inp = el("input"); inp.type = "text"; inp.id = "mf" + i;
+    if (f.numeric) inp.setAttribute("inputmode", "decimal");
     Object.assign(inp, {autocomplete:"off", spellcheck:false});
     inp.setAttribute("autocapitalize", "none"); inp.setAttribute("autocorrect", "off");
     inp.setAttribute("enterkeyhint", i === q.fields.length - 1 ? "go" : "next");
     inp.placeholder = f.ph || (f.t === "text" ? "type the word(s)" : "type your answer");
     const pv = el("div", "mprev");
     // only show the pretty preview when it adds something (fractions, powers, roots)
-    inp.addEventListener("input", () => { if (f.t !== "text") pv.innerHTML = /[\/^]|sqrt|cbrt|pi|\*/i.test(inp.value) ? MC.preview(f, inp.value) : ""; });
+    inp.addEventListener("input", () => {
+      if (f.t === "formula") pv.innerHTML = /\d/.test(inp.value) ? MC.preview(f, inp.value) : "";
+      else if (f.t !== "text") pv.innerHTML = /[\/^]|sqrt|cbrt|pi|\*/i.test(inp.value) ? MC.preview(f, inp.value) : "";
+    });
     inp.addEventListener("focus", () => { M.lastFocus = i; setTimeout(() => keepVisible(inp), 350); });
     inp.addEventListener("keydown", e => {
       if (e.key !== "Enter") return; e.preventDefault();
@@ -236,10 +282,30 @@ function mShow(){
       const nxt = q.fields.findIndex((_, j) => j > i && !$("mf" + j).readOnly);
       if (nxt > 0) $("mf" + nxt).focus(); else mCheck();
     });
-    w.appendChild(inp); w.appendChild(pv); w.appendChild(el("div", "mans hidden"));
+    w.appendChild(inp); w.appendChild(pv);
+    if (f.t === "choice"){
+      // tap-to-answer: buttons fill the (hidden) input
+      inp.classList.add("vh"); inp.tabIndex = -1; lab.htmlFor = "";
+      const ch = el("div", "chips"); ch.setAttribute("role", "radiogroup"); ch.setAttribute("aria-label", f.l);
+      f.opts.forEach(o => {
+        const b = el("button", "chip"); b.innerHTML = MC.renderText(o); b.dataset.v = o; b.type = "button"; b.setAttribute("role", "radio");
+        b.onclick = () => {
+          if (M.answered || inp.dataset.ok === "1" || b.disabled) return;
+          ch.querySelectorAll(".chip").forEach(c => { c.classList.toggle("sel", c === b); c.setAttribute("aria-checked", c === b); });
+          inp.value = o; M.lastFocus = i;
+          if (q.fields.length === 1) mCheck();
+        };
+        ch.appendChild(b);
+      });
+      w.appendChild(ch);
+    }
+    w.appendChild(el("div", "mans hidden"));
     box.appendChild(w);
   });
-  $("keypad").classList.toggle("hidden", q.fields.every(f => f.t === "text"));
+  // the math keypad only shows for math-style answers
+  const padNeeded = q.fields.some(f => ["expr","rat","set","pts"].includes(f.t)) || !!q.lim || !!q.pfForm;
+  $("keypad").classList.toggle("hidden", !padNeeded);
+  $("mLearn").classList.toggle("hidden", !hasNotes(questionSection(q).u, questionSection(q).sid));
   window.scrollTo(0, 0);
   $("mCheck").textContent = "Check";
   $("mSkip").disabled = false;
@@ -248,7 +314,7 @@ function mShow(){
 }
 
 function mHints(q){
-  const tip = q.kind === "lim" && /inf/.test(q.lim.to) ? KIND_TIP.liminf : KIND_TIP[q.kind];
+  const tip = q.tip || (q.kind === "lim" && /inf/.test(q.lim.to) ? KIND_TIP.liminf : KIND_TIP[q.kind]);
   return (tip ? [tip] : []).concat((q.steps || []).slice(0, -1));
 }
 function mHintBtn(){
@@ -304,14 +370,21 @@ function mCheck(){
   const res = q.fields.map((f, i) => $("mf" + i).dataset.ok === "1" ? {ok:true} : MC.check(f, vals[i]));
   const nOk = res.filter(r => r.ok).length;
   if (nOk === q.fields.length) return mReveal(res, vals);
-  if (M.attempt === 1 && ST.settings.second){
+  // no second try on a two-option question (it would just give the answer away)
+  const twoWay = q.fields.length === 1 && q.fields[0].t === "choice" && q.fields[0].opts.length <= 2;
+  if (M.attempt === 1 && ST.settings.second && !twoWay){
     M.attempt = 2;
     res.forEach((r, i) => {
       const inp = $("mf" + i);
       const note = inp.parentNode.querySelector(".mans");
       if (r.ok){ inp.className = "good"; inp.readOnly = true; inp.dataset.ok = "1"; note.classList.add("hidden"); }
       else {
-        inp.className = "retry"; inp.classList.add("shake"); setTimeout(() => inp.classList.remove("shake"), 520);
+        if (q.fields[i].t === "choice"){
+          const picked = [...inp.parentNode.querySelectorAll(".chip")].find(c => c.classList.contains("sel"));
+          if (picked){ picked.classList.remove("sel"); picked.classList.add("wrong"); picked.disabled = true; }
+          inp.value = "";
+        }
+        inp.className = "retry" + (q.fields[i].t === "choice" ? " vh" : ""); inp.classList.add("shake"); setTimeout(() => inp.classList.remove("shake"), 520);
         if (r.why){ note.textContent = "↳ " + r.why.charAt(0).toUpperCase() + r.why.slice(1) + "."; note.className = "mans mwhy"; }
         else note.classList.add("hidden");
       }
@@ -331,7 +404,12 @@ function mReveal(res, vals, skipped){
   const q = M.queue[M.idx]; M.answered = true;
   const nOk = res.filter(r => r.ok).length, all = nOk === q.fields.length;
   q.fields.forEach((f, i) => {
-    const inp = $("mf" + i); inp.readOnly = true; inp.className = res[i].ok ? "good" : "bad";
+    const inp = $("mf" + i); inp.readOnly = true; inp.className = (res[i].ok ? "good" : "bad") + (f.t === "choice" ? " vh" : "");
+    if (f.t === "choice") inp.parentNode.querySelectorAll(".chip").forEach(c => {
+      c.disabled = true;
+      if (c.dataset.v === f.a) c.classList.add("right");
+      else if (c.classList.contains("sel")) c.classList.add("wrong");
+    });
     const a = inp.parentNode.querySelector(".mans"); a.className = "mans hidden";
     if (!res[i].ok){ a.innerHTML = "Answer: " + MC.answerHTML(f) + (res[i].why ? `<div class="mwhy">↳ ${res[i].why.charAt(0).toUpperCase() + res[i].why.slice(1)}.</div>` : ""); a.classList.remove("hidden"); }
     else if (res[i].note){ a.textContent = res[i].note; a.classList.remove("hidden"); }
@@ -346,7 +424,10 @@ function mReveal(res, vals, skipped){
   fb.innerHTML = all ? `${ic("check", "ic-s")} Correct! +${pts}` + (M.streak >= 2 ? `<span class="fbstreak">${ic("flame", "ic-s")}${M.streak} in a row</span>` : "")
                  : skipped ? "Skipped. Here's how it works:" : nOk ? `${nOk} of ${q.fields.length} parts right. +${pts}` : ic("close", "ic-s") + "Not quite. Here's how it works:";
   const sol = $("mSol");
-  sol.innerHTML = `<b>Solution</b><ol>${(q.steps || []).map(s => `<li>${MC.renderText(s)}</li>`).join("")}</ol>`;
+  const qs = questionSection(q);
+  sol.innerHTML = `<b>${q.kind === "choice" || q.kind === "text" ? "Why" : "Solution"}</b><ol>${(q.steps || []).map(s => `<li>${MC.renderText(s)}</li>`).join("")}</ol>` +
+    (hasNotes(qs.u, qs.sid) ? `<button class="link sollearn" id="solLearn">${ic("book")}<span>Learn this section</span></button>` : "");
+  if ($("solLearn")) $("solLearn").onclick = () => openLearn(q);
   sol.classList.remove("hidden");
   if (q.graphAfter) $("mGraph").innerHTML = plotSVG(q.math, q.F);
   if (q.kind === "write" && !all && vals[0].trim()){
