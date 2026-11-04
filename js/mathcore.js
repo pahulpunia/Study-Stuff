@@ -161,7 +161,8 @@ const MC = (() => {
   }
   // text with {{math}} snippets
   function renderText(t){
-    return esc(t).replace(/\{\{(.+?)\}\}/g, (_, m) => m === "lim" ? `<span class="mf">lim</span>` : `<span class="mi">${render(m.replace(/&lt;/g,"<").replace(/&amp;/g,"&"))}</span>`);
+    return esc(t).replace(/\{\{(.+?)\}\}/g, (_, m) => m === "lim" ? `<span class="mf">lim</span>` : `<span class="mi">${render(m.replace(/&lt;/g,"<").replace(/&amp;/g,"&"))}</span>`)
+      .replace(/\[\[(.+?)\]\]/g, (_, m) => `<span class="chem">${formulaHTML(m)}</span>`);   // [[Al2O3]] → Al₂O₃
   }
 
   /* ---- answers ---- */
@@ -213,6 +214,24 @@ const MC = (() => {
     }
     return {ok: good >= 4};
   }
+
+  // chemistry helpers: Al₂O₃ → Al2O3, ²⁺ → 2+
+  const SUBS = "₀₁₂₃₄₅₆₇₈₉", SUPS = "⁰¹²³⁴⁵⁶⁷⁸⁹";
+  const plainChem = t => String(t).replace(/[₀-₉]/g, d => SUBS.indexOf(d)).replace(/[⁰¹²³⁴-⁹]/g, d => SUPS.indexOf(d)).replace(/⁺/g, "+").replace(/[⁻−–]/g, "-");
+  const normFormula = t => plainChem(t).replace(/\s+/g, "").toLowerCase();
+  const normWords = t => plainChem(t).toLowerCase().replace(/[^a-z0-9+\- ]/g, " ").replace(/\b(a|an|the)\b/g, " ").replace(/\s+/g, " ").trim();
+  function parseCharge(raw){
+    const s = plainChem(raw).replace(/\s+/g, "");
+    const m = s.match(/^([+-])?(\d*)([+-])?$/);
+    if (!m || (!m[1] && !m[3]) || (m[1] && m[3])) return null;
+    return ((m[1] || m[3]) === "-" ? -1 : 1) * (m[2] ? +m[2] : 1);
+  }
+  // "NO3^-" → NO₃⁻, "SO4^2-" → SO₄²⁻; a bare trailing sign (typed "NO3-") also counts as the charge
+  const formulaHTML = f => {
+    const t = plainChem(f).trim(), m = t.match(/^(.*?)(?:\^(\d*[+-])|([+-]))$/);
+    const body = m ? m[1] : t, chg = m ? (m[2] || m[3]) : "";
+    return esc(body).replace(/([A-Za-z\)])(\d+)/g, "$1<sub>$2</sub>") + (chg ? `<sup>${chg.replace("-", "−")}</sup>` : "");
+  };
 
   // check one field; returns {ok, msg}
   function check(field, input){
@@ -281,8 +300,20 @@ const MC = (() => {
           return {ok:true};
         }
         case "text": {
-          const n = t => t.toLowerCase().replace(/[^a-z0-9 ]/g, " ").replace(/\b(a|an|the)\b/g, " ").replace(/\s+/g, " ").trim();
-          return {ok: field.a.some(x => n(x) === n(raw))};
+          return {ok: [].concat(field.a).some(x => normWords(x) === normWords(raw))};
+        }
+        case "choice": return {ok: raw === String(field.a).trim()};   // the value always comes from a tapped option
+        case "formula": {
+          const want = [].concat(field.a), got = normFormula(raw);
+          if (want.some(w => normFormula(w) === got)) return {ok:true};
+          const letters = t => t.replace(/[0-9]/g, "");
+          if (want.some(w => letters(normFormula(w)) === letters(got))) return {ok:false, why:"right elements, but the subscripts are off (did you reduce, and is it metal first?)"};
+          return {ok:false};
+        }
+        case "charge": {
+          const c = parseCharge(raw);
+          if (c === null) return {ok:false, why:"write a charge with its sign, like 2+ or 3−"};
+          return {ok: c === +field.a, why: Math.abs(c) === Math.abs(+field.a) && c !== +field.a ? "right size, wrong sign" : ""};
         }
       }
     } catch(e){ return {ok:false, why:"couldn't read that: " + e.message}; }
@@ -296,7 +327,10 @@ const MC = (() => {
       case "num": case "expr": case "rat": return show(String(f.a));
       case "set": return f.a.length ? f.a.map(render).join(", ") : "none";
       case "pts": return f.a.length ? f.a.map(([x,y]) => `(${render(x)}, ${render(y)})`).join(", ") : "none";
-      case "text": return esc(f.a[0]);
+      case "text": return renderText([].concat(f.a)[0]);
+      case "choice": return renderText(f.a);
+      case "formula": return formulaHTML([].concat(f.a)[0]);
+      case "charge": { const a = +f.a; return Math.abs(a) + (a < 0 ? "−" : "+"); }
     }
   }
   // live preview of what the student typed
@@ -304,7 +338,8 @@ const MC = (() => {
     const raw = (input || "").trim(); if (!raw) return "";
     const sp = SPECIAL(raw);
     if (sp) return sp === "inf" ? "∞" : sp === "-inf" ? "−∞" : sp;
-    if (f.t === "text") return "";
+    if (f.t === "text" || f.t === "choice" || f.t === "charge") return "";
+    if (f.t === "formula") return formulaHTML(raw);
     try {
       if (f.t === "set") return raw.replace(/[a-z]\s*(≠|!=|=)/gi, ",").split(/,|\band\b/).map(x => x.trim()).filter(Boolean).map(x => R(parse(x))).join(", ");
       if (f.t === "pts") return esc(raw);
@@ -313,6 +348,6 @@ const MC = (() => {
     } catch(e){ return `<span class="perr">can't read that yet</span>`; }
   }
 
-  return {parse, evaluate, render, renderLim, renderText, check, answerHTML, preview, sameExpr, numVal, vars};
+  return {parse, evaluate, render, renderLim, renderText, check, answerHTML, preview, sameExpr, numVal, vars, formulaHTML};
 })();
 if (typeof module !== "undefined") module.exports = MC;   // lets tools/verify.js use it in Node

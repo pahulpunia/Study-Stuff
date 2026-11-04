@@ -159,7 +159,7 @@
     </div>
     <div class="card qcard mcard">
       <div class="mq-left">
-        <span class="srcchip" id="mSrc"></span>
+        <div class="qtop"><span class="srcchip" id="mSrc"></span><button class="link learnbtn" id="mLearn" data-ic="book">Learn this</button></div>
         <p class="mtext" id="mText"></p>
         <div class="mdisplay" id="mMath"></div>
         <div class="mgraph" id="mGraph"></div>
@@ -218,6 +218,14 @@
 </div><!-- /wrap -->
 <aside class="ctx" id="ctx" aria-label="Progress"></aside>
 </div><!-- /shell -->
+
+<!-- LEARN SHEET (notes for the current problem) -->
+<div class="sheet hidden" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+  <div class="sheetbox">
+    <div class="sheethead"><h2 id="sheetTitle">Notes</h2><button class="link" id="sheetClose" data-ic="close">Close</button></div>
+    <div class="sheetbody" id="sheetBody"></div>
+  </div>
+</div>
 
 <script src="firebase-config.js"></script>
 <script src="subjects/registry.js"></script>

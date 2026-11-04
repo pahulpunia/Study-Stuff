@@ -38,42 +38,152 @@ Study.addUnit("math3", {
     {id:"4.6",   name:"4.6 Writing Rational Equations"}
   ],
 
-  // notes summary, by section ({{…}} = math)
+  // notes, by section ({{…}} = math). Block types: see ADDING-CONTENT.md
   notes: {
-    "4.1": ["Rational expression = polynomial ÷ polynomial.",
-            "Excluded value: an x that makes the denominator 0 (the expression is undefined there).",
-            "Factor everything first: GCF, difference of squares, cubic (sum/difference of cubes, grouping).",
-            "Factor out −1 to flip: {{(x-y)/(y-x)}} = −1.",
-            "Find excluded values from the ORIGINAL denominator, before canceling."],
-    "4.1.2":["Multiply: {{a/b * c/d}} = {{(ac)/(bd)}}.",
-             "Divide: flip the second fraction and multiply: {{a/b ÷ c/d}} = {{(ad)/(bc)}}.",
-             "When dividing, the numerator of the divisor also can't be 0, so its zeros are excluded too.",
-             "Complex fractions: multiply the top and bottom by the LCD of all the little fractions."],
-    "4.2": ["Add/subtract: factor the denominators, find the LCD, rewrite each fraction over it, combine the numerators, then simplify.",
-            "{{a/(x-2) - b/(2-x)}}: factor out −1 so the denominators match.",
-            "Partial fractions: {{(5x-5)/((x-4)(x+1))}} = {{A/(x-4) + B/(x+1)}}. Multiply through, then plug in each root (or match coefficients) to solve for A and B.",
-            "Difference quotient: {{(f(x+h)-f(x))/h}}. Expand, cancel, factor out h, then cancel h."],
-    "4.3": ["Try direct substitution first. If you get a real number, that's the limit.",
-            "{{0/0}} → factor and cancel, or multiply by the conjugate (for square roots), or clear the little fractions.",
-            "Nonzero ÷ 0 → the function blows up: the limit is ∞, −∞, or DNE.",
-            "The limit exists only if the left-hand and right-hand limits are equal.",
-            "Hole = removable discontinuity. Vertical asymptote = non-removable discontinuity."],
-    "4.4": ["{{lim}} of a constant b is b; {{lim}} of {{1/x}} as x → ±∞ is 0.",
-            "Quick method: keep only the highest-degree term on top and bottom, simplify, then plug in ∞ or −∞.",
-            "Degree on top < degree on bottom → 0.",
-            "Degrees equal → ratio of the leading coefficients.",
-            "Degree on top > degree on bottom → ±∞ (DNE). Watch the sign when x → −∞."],
-    "4.5": ["Factor and reduce first.",
-            "Hole: a factor that cancels. Plug its x into the REDUCED function to get the y.",
-            "VA: set the reduced denominator = 0. Odd multiplicity → branches go opposite ways; even → same way.",
-            "HA: evaluate {{lim}} as x → ∞ (compare degrees).",
-            "SA: numerator degree is exactly 1 more than the denominator's. Use long division and throw away the remainder.",
-            "x-intercepts: reduced numerator = 0. y-intercept: plug in x = 0."],
-    "4.6": ["VA at x = d → put (x − d) in the denominator.",
-            "Hole at x = e → put (x − e) in BOTH the numerator and denominator.",
-            "x-intercept at x = g → put (x − g) in the numerator.",
-            "HA y = h → adjust the leading coefficient so the limit at ∞ equals h.",
-            "Check the y-intercept. If there's an SA, the numerator's degree must be exactly 1 more than the denominator's."]
+    "4.1": [
+      {p:"A rational expression is a fraction with a polynomial on top and on bottom, like {{(x^2-4)/(x+2)}}. Simplifying it works just like reducing 6/8 to 3/4: you cancel factors that the top and bottom share. To see those shared factors, you have to factor first."},
+      {h:"How to simplify"},
+      {steps:[
+        "Factor the numerator and the denominator completely.",
+        "Find the excluded values now, from the ORIGINAL denominator: set each of its factors equal to 0 and solve.",
+        "Cancel any factor that appears on both the top and the bottom.",
+        "What's left is the simplified expression. Leaving it in factored form is fine."
+      ]},
+      {h:"Why excluded values come from the original"},
+      {p:"Dividing by zero is undefined, so any x that makes the original denominator 0 is not allowed. After you cancel a factor, the simplified version looks fine at that x, but the original expression still isn't. That's why canceled factors still count. On a graph, a canceled factor becomes a hole (removable), and a factor still left on the bottom becomes a vertical asymptote (non-removable)."},
+      {h:"Factoring toolkit (try them in this order)"},
+      {table:{head:["Pattern","What it looks like","Factors into"], rows:[
+        ["GCF","every term shares something","{{2x^3-8x}} = {{2x(x^2-4)}}"],
+        ["Difference of squares","{{a^2-b^2}}","(a − b)(a + b)"],
+        ["Trinomial","{{x^2+bx+c}}","two numbers that multiply to c and add to b"],
+        ["Difference of cubes","{{a^3-b^3}}","{{(a-b)(a^2+ab+b^2)}}"],
+        ["Sum of cubes","{{a^3+b^3}}","{{(a+b)(a^2-ab+b^2)}}"],
+        ["Grouping","4 terms","{{x^2(x+4)-9(x+4)}} = {{(x+4)(x^2-9)}}"]
+      ]}},
+      {warn:"Factors that are “backwards”, like (4 − x) and (x − 4), are opposites, not matches. Rewrite one as −1 times the other: {{4-x}} = {{-(x-4)}}. That's why {{(x-y)/(y-x)}} = −1."},
+      {warn:"You can only cancel factors (things multiplied), never terms (things added). In {{(x+3)/3}}, the 3s do NOT cancel."}
+    ],
+    "4.1.2": [
+      {p:"Multiplying and dividing rational expressions uses the same rules as regular fractions. The only extra step is factoring first so you can cancel."},
+      {h:"Multiplying"},
+      {steps:[
+        "Factor every numerator and denominator.",
+        "Cancel any factor on a top with a matching factor on any bottom, even if they're in different fractions.",
+        "Multiply what's left: tops together, bottoms together."
+      ]},
+      {h:"Dividing: keep, change, flip"},
+      {p:"Keep the first fraction, change ÷ to ×, and flip the second fraction (use its reciprocal). Now it's a multiplication problem: {{a/b ÷ c/d}} = {{a/b * d/c}}."},
+      {warn:"Excluded values when dividing come from three places: both original denominators AND the numerator of the second fraction. After you flip it, that numerator ends up on the bottom, so it can't be 0 either."},
+      {h:"Complex fractions (fractions inside a fraction)"},
+      {steps:[
+        "Find the LCD of all the little fractions inside.",
+        "Multiply the whole top and the whole bottom by that LCD. Every little fraction clears out.",
+        "Factor and simplify like normal."
+      ]},
+      {ex:{q:"{{(1/a-1/(2a))/(4/a)}}", a:["The LCD of the little fractions is 2a. Multiply top and bottom by 2a: {{(2-1)/8}} = {{1/8}}."]}}
+    ],
+    "4.2": [
+      {p:"You can only add or subtract fractions that have the same denominator, so the whole job is building a common denominator (the LCD)."},
+      {h:"Adding and subtracting"},
+      {steps:[
+        "Factor every denominator.",
+        "Build the LCD: use every different factor, as many times as it shows up in any one denominator.",
+        "Rewrite each fraction over the LCD by multiplying its top and bottom by whatever factors it's missing.",
+        "Add or subtract the numerators. Keep the LCD on the bottom.",
+        "Simplify: expand and combine the top, factor it, and cancel if you can."
+      ]},
+      {warn:"When subtracting, put the whole second numerator in parentheses. The minus sign applies to every term: {{(x)/(x-2)-(x+1)/(x-2)}} = {{(x-(x+1))/(x-2)}} = {{-1/(x-2)}}."},
+      {tip:"If two denominators are opposites, like (x − 2) and (2 − x), rewrite one: {{1/(2-x)}} = {{-1/(x-2)}}. The sign in front of that fraction flips."},
+      {h:"Partial fraction decomposition"},
+      {p:"This is adding fractions in reverse: you start with one fraction and split it into simpler pieces."},
+      {steps:[
+        "Factor the denominator into linear factors, like (x − 4)(x + 1).",
+        "Write it as {{A/(x-4)+B/(x+1)}}.",
+        "Multiply both sides by the whole denominator to clear the fractions: top = A(x + 1) + B(x − 4).",
+        "Plug in x = 4: the B term becomes 0, so you can solve for A. Plug in x = −1 to find B.",
+        "Check: adding your two fractions back together should give the original."
+      ]},
+      {h:"Difference quotient"},
+      {p:"{{(f(x+h)-f(x))/h}} is the slope between the points at x and x + h. It shows up again in calculus as the starting point for derivatives."},
+      {steps:[
+        "Find f(x + h): replace every x in f with (x + h).",
+        "Expand. Remember {{(x+h)^2}} = {{x^2+2xh+h^2}}, NOT {{x^2+h^2}}.",
+        "Subtract all of f(x). Every original term cancels out.",
+        "Every term left has an h in it. Factor out the h and cancel it with the h on the bottom."
+      ]}
+    ],
+    "4.3": [
+      {p:"The limit of f(x) as x → a asks: as x gets closer and closer to a (from both sides), what y-value is f(x) getting close to? It only cares about what happens NEAR a, not AT a. That's why a limit can exist at a hole, where f(a) itself is undefined."},
+      {h:"How to evaluate a limit"},
+      {steps:[
+        "Plug in a (direct substitution). If you get a real number, that's the answer.",
+        "If you get {{0/0}}, the expression is hiding a factor that cancels, so rewrite it: factor and cancel. If there's a square root, multiply the top and bottom by the conjugate. If there are little fractions, multiply by their LCD. Then plug in again.",
+        "If you get a nonzero number over 0, the graph has a vertical asymptote there and the function shoots off to infinity. If both sides go the same direction, the limit is ∞ or −∞. If they go opposite directions, it's DNE."
+      ]},
+      {h:"Conjugates (for square roots)"},
+      {p:"The conjugate of {{a-sqrt(b)}} is {{a+sqrt(b)}}. Multiplying them gives {{a^2-b}}, which gets rid of the square root so the factor that's causing 0/0 can cancel."},
+      {h:"One-sided limits"},
+      {p:"x → a⁻ means approaching from the left (x a little smaller than a), and x → a⁺ means from the right. The regular (two-sided) limit exists only if the left and right limits are equal."},
+      {h:"Reading limits from a graph or table"},
+      {p:"On a graph, trace the curve toward x = a from each side and see what height it's heading to. An open circle doesn't matter; a filled dot shows f(a), which can be different from the limit. In a table, use x-values closer and closer to a from both sides (like 1.9, 1.99, 1.999 and 2.1, 2.01, 2.001) and see what the y-values approach."},
+      {h:"Discontinuities"},
+      {p:"Removable: a hole. A factor canceled, and the limit exists there. Non-removable: a vertical asymptote (the limit is ∞, −∞, or DNE) or a jump (the left and right sides don't match)."}
+    ],
+    "4.4": [
+      {p:"Now x grows without bound (x → ∞) or heads to −∞. For huge x, only the highest-power term on top and on bottom matters. In {{(3x^2+5x)/(x^2-7)}} at x = 1,000,000, the 3x² term makes the 5x look tiny. So you decide the limit by comparing the degrees (highest exponents) of the top and bottom."},
+      {h:"The three cases"},
+      {table:{head:["Degrees","Limit as x → ±∞","Why"], rows:[
+        ["top < bottom","0","the bottom grows faster, so the fraction shrinks"],
+        ["top = bottom","ratio of the leading coefficients","the x's cancel and only the numbers out front remain"],
+        ["top > bottom","∞ or −∞ (DNE)","the top grows faster, so it never levels off"]
+      ]}},
+      {h:"Quick method"},
+      {steps:[
+        "Keep only the highest-degree term on the top and on the bottom.",
+        "Simplify that fraction.",
+        "Plug in ∞ or −∞ and see where it goes."
+      ]},
+      {warn:"For x → −∞, watch the signs. Odd powers of a negative number stay negative: {{x^3/x^2}} = x, which goes to −∞."},
+      {tip:"With factors multiplied together, multiply their leading terms: {{4(x-2)^3(2x+1)^2}} behaves like 4 · x³ · 4x² = 16x⁵."},
+      {tip:"With roots, {{sqrt(9x^2)}} acts like 3x when x → ∞, and {{cbrt(8x^3)}} acts like 2x."},
+      {p:"This limit is the horizontal asymptote, the height the graph levels off to on the far left and right. That connects straight to 4.5."}
+    ],
+    "4.5": [
+      {p:"Asymptotes, holes, and intercepts are the skeleton of a rational graph: once you have them, the sketch nearly draws itself. Always factor and reduce first, since what cancels and what doesn't decides almost everything."},
+      {h:"Each feature, and how to find it"},
+      {table:{head:["Feature","How to find it","Why"], rows:[
+        ["Hole","a factor that cancels; plug its x into the REDUCED function to get y","undefined there, but it doesn't blow up"],
+        ["Vertical asymptote","set the reduced denominator = 0","the bottom is 0 but the top isn't, so it shoots to ±∞"],
+        ["Horizontal asymptote","the limit as x → ∞ (compare degrees)","where the graph levels off at the far ends"],
+        ["Slant asymptote","top degree is exactly 1 more than the bottom: long division, ignore the remainder","the graph hugs that line at the far ends"],
+        ["x-intercepts","set the reduced numerator = 0","the fraction is 0 when its top is 0"],
+        ["y-intercept","plug in x = 0","that's where the graph crosses the y-axis"]
+      ]}},
+      {h:"Which way do the branches go at a VA?"},
+      {p:"Look at the power (multiplicity) of the factor on the bottom. Odd power (like (x − 1)): the graph goes up on one side and down on the other. Even power (like (x − 1)²): it goes the same way on both sides."},
+      {warn:"A graph can't have both a horizontal and a slant asymptote. It's one or the other (or neither). A graph CAN cross a horizontal asymptote in the middle: the HA only describes the far ends."},
+      {h:"Graphing steps"},
+      {steps:["Factor and reduce.","Mark holes and asymptotes (dashed lines).","Plot the intercepts.","Sketch each piece, following the asymptotes at the ends and the multiplicity rules at each VA."]}
+    ],
+    "4.6": [
+      {p:"This is 4.5 in reverse: read the features off the graph, turn each one into a factor, and assemble the equation."},
+      {h:"Turning features into factors"},
+      {steps:[
+        "Vertical asymptote at x = d → put (x − d) in the denominator, since that makes the bottom 0 there.",
+        "Hole at x = e → put (x − e) in BOTH the numerator and the denominator, so it cancels.",
+        "x-intercept at x = g → put (x − g) in the numerator, since that makes the top 0 there.",
+        "Horizontal asymptote y = h → put a number in front so the leading coefficients divide to h.",
+        "Check the y-intercept: plug in x = 0 and make sure it matches the graph. If not, adjust the number in front."
+      ]},
+      {h:"Reading powers off the graph"},
+      {table:{head:["What the graph does","Power of the factor"], rows:[
+        ["crosses the x-axis straight through","1"],
+        ["touches the x-axis and turns back","2"],
+        ["flattens out as it crosses","3"],
+        ["same direction on both sides of a VA","2 (on the bottom)"]
+      ]}},
+      {tip:"If the graph has a slant asymptote, the top's degree must be exactly 1 more than the bottom's. Count your factors to check."}
+    ]
   },
 
   // example graphs shown in the notes summary

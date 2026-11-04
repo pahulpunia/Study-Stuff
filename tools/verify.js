@@ -82,20 +82,72 @@ function verifyItem(q){
   }
   // self-check: correct answer passes the checker
   q.fields.forEach(f => {
-    let a = f.t === 'set' ? (f.a.length ? f.a.join(', ') : 'none') : f.t === 'pts' ? (f.a.length ? f.a.map(p => `(${p[0]}, ${p[1]})`).join(', ') : 'none') : f.t === 'text' ? f.a[0] : String(f.a);
+    let a = f.t === 'set' ? (f.a.length ? f.a.join(', ') : 'none') : f.t === 'pts' ? (f.a.length ? f.a.map(p => `(${p[0]}, ${p[1]})`).join(', ') : 'none')
+      : f.t === 'text' ? f.a[0] : f.t === 'formula' ? [].concat(f.a)[0] : f.t === 'charge' ? `${Math.abs(f.a)}${f.a < 0 ? '-' : '+'}` : String(f.a);
+    if (f.t === 'choice'){
+      if (!Array.isArray(f.opts) || f.opts.length < 2) fail(q, 'choice needs 2+ options');
+      else if (f.opts.filter(o => o === f.a).length !== 1) fail(q, `choice answer "${f.a}" is not exactly one of the options`);
+      if (new Set(f.opts).size !== f.opts.length) fail(q, 'duplicate choice options');
+      const wrong = f.opts.find(o => o !== f.a); if (wrong && MC.check(f, wrong).ok) fail(q, 'a wrong option passes the checker');
+    }
+    if (f.t === 'formula') checkFormula(q, [].concat(f.a)[0]);
+    if (f.t === 'charge' && !Number.isInteger(f.a)) fail(q, 'charge must be an integer');
     if (a === 'inf') a = '∞'; if (a === '-inf') a = '-∞';
     const r = MC.check(f, a); if (!r.ok) fail(q, `answer "${a}" fails checker for field ${f.l}: ${r.why || ''}`);
   });
+}
+
+/* chemistry: an ionic formula's charges must cancel and be reduced */
+const ION_Q = {Li:1, Na:1, K:1, Rb:1, Cs:1, Mg:2, Ca:2, Sr:2, Ba:2, Al:3, F:-1, Cl:-1, Br:-1, I:-1, O:-2, S:-2, N:-3, P:-3};
+function checkFormula(q, f){
+  const parts = [...String(f).matchAll(/([A-Z][a-z]?)(\d*)/g)].map(m => [m[1], m[2] ? +m[2] : 1]);
+  if (parts.map(p => p[0] + (p[1] > 1 ? p[1] : '')).join('') !== f) { fail(q, 'formula has unexpected characters: ' + f); return; }
+  if (parts.length !== 2 || !parts.every(p => p[0] in ION_Q)) return;   // only binary ionic compounds are checked
+  const [[c, nc], [a, na]] = parts;
+  if (ION_Q[c] <= 0 || ION_Q[a] >= 0) { fail(q, 'metal should come first: ' + f); return; }
+  if (ION_Q[c] * nc + ION_Q[a] * na !== 0) fail(q, `charges don't cancel in ${f}`);
+  const g = (x, y) => y ? g(y, x % y) : x; if (g(nc, na) !== 1) fail(q, `${f} isn't reduced`);
+}
+/* notes: every {{math}} snippet must parse */
+function verifyNotes(unit){
+  const texts = [];
+  Object.entries(unit.notes || {}).forEach(([sid, blocks]) => blocks.forEach(b => {
+    if (typeof b === 'string') return texts.push([sid, b]);
+    ['h','p','tip','warn'].forEach(k => b[k] && texts.push([sid, b[k]]));
+    (b.steps || []).forEach(t => texts.push([sid, t]));
+    if (b.ex) [b.ex.q].concat(b.ex.a || []).forEach(t => texts.push([sid, t]));
+    if (b.table){ b.table.head.forEach(t => texts.push([sid, t])); b.table.rows.forEach(r => r.forEach(t => texts.push([sid, t])));
+      if (b.table.rows.some(r => r.length !== b.table.head.length)) fail({src:`${unit.id} notes ${sid}`}, 'table row length != header length'); }
+    const known = ['h','p','tip','warn','steps','ex','table'];
+    Object.keys(b).forEach(k => { if (!known.includes(k)) fail({src:`${unit.id} notes ${sid}`}, 'unknown notes block key: ' + k); });
+  }));
+  texts.forEach(([sid, t]) => (String(t).match(/\{\{(.+?)\}\}/g) || []).forEach(m => {
+    const inner = m.slice(2, -2); if (/^lim$|f\(x\+h\)|\(f\/g\)|f\(x\)/.test(inner)) return;
+    try { P(inner); } catch(e){ fail({src:`${unit.id} notes ${sid}`}, 'notes math parse: ' + inner); }
+  }));
+  Object.keys(unit.notes || {}).forEach(sid => { if (!unit.sections.some(s => s.id === sid)) fail({src:unit.id}, 'notes for unknown section ' + sid); });
+  return texts.length;
 }
 
 let total = 0;
 for (const s of subjects){
   for (const unit of ctx.Study.problems[s.id].units){
     unit.items.forEach(verifyItem); total += unit.items.length;
+    verifyNotes(unit);
+    unit.items.forEach(q => q.secs.forEach(sc => { const sid = sc.split(':')[1]; if (sid !== 'rev' && !unit.sections.some(s => s.id === sid)) fail(q, 'unknown section ' + sc); }));
     Object.values(unit.graphs || {}).flat().forEach(g => verifyItem({kind:"asy", src:"notes graph: " + g.cap.slice(0, 30), math:g.f, F:g.F, fields:[], steps:[], text:""}));
     for (const [sec, f] of Object.entries(unit.drills)){ for (let i = 0; i < 300; i++){ const q = f(unit.kit); q.src = `${unit.id} drill ${sec}`; verifyItem(q); } }
     console.log(`${s.id} / ${unit.id}: ${unit.items.length} problems, ${Object.keys(unit.drills).length} drill types`);
   }
 }
+/* answer-checker spot checks for the chemistry field types */
+[[{t:'charge', a:2}, ['2+', '+2', '²⁺', ' 2 + '], ['2-', '2', '3+']], [{t:'charge', a:-1}, ['-', '1-', '−1', '-1', '⁻'], ['+', '1']],
+ [{t:'formula', a:'Al2O3'}, ['Al2O3', 'al2o3', 'Al₂O₃', 'AL2O3'], ['Al3O2', 'AlO', 'Al2O']],
+ [{t:'choice', a:'C≡C', opts:['C–C','C=C','C≡C']}, ['C≡C'], ['C=C', 'C–C']],
+ [{t:'text', a:['electrostatic', 'electrostatic attraction']}, ['Electrostatic', 'electrostatic attraction', 'the electrostatic'], ['static']]
+].forEach(([f, good, badA]) => {
+  good.forEach(x => { if (!MC.check(f, x).ok) { bad++; console.log('✗ checker rejects', JSON.stringify(x), 'for', JSON.stringify(f)); } });
+  badA.forEach(x => { if (MC.check(f, x).ok) { bad++; console.log('✗ checker accepts', JSON.stringify(x), 'for', JSON.stringify(f)); } });
+});
 console.log(bad ? `✗ ${bad} problem(s) failed` : `✓ all ${total} problems check out`);
 process.exit(bad ? 1 : 0);

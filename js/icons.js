@@ -40,7 +40,8 @@ const ICONS = {
   logout:   '<path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4M10 16l-4-4 4-4M6 12h10"/>',
   clock:    '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
   home:     '<path d="M4 11 12 4l8 7"/><path d="M6.2 9.4V20h11.6V9.4"/>',
-  arrow:    '<path d="M5 12h14M13 6l6 6-6 6"/>'
+  arrow:    '<path d="M5 12h14M13 6l6 6-6 6"/>',
+  alert:    '<path d="M12 4 2.8 19.5h18.4z"/><path d="M12 10v4.2M12 17.2v.1"/>'
 };
 function ic(name, cls = ""){
   if (!ICONS[name]) return escHTML(name || "");

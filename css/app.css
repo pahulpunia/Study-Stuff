@@ -343,8 +343,10 @@ input[type=text], input[type=password]{border-width:1.5px;border-radius:10px;bac
 
 
 /* subject switcher wraps into rows of two when there are 3+ subjects */
+.subj .ss{display:none}
 .subj.many{flex-wrap:wrap}
-.subj.many button{flex:1 1 calc(50% - 4px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.subj.many button{flex:1 1 0;min-width:calc(25% - 4px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width: 719px){ .subj.many .sl{display:none} .subj.many .ss{display:inline} }
 #msecSel optgroup{font-weight:700}
 
 /* ================= icons ================= */
@@ -467,3 +469,64 @@ button:has(> .ic){display:inline-flex;align-items:center;justify-content:center}
   .phico{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:var(--accent);color:var(--accent-ink)}
   .phico .ic{width:26px;height:26px}
 }
+
+/* ================= tap-to-answer chips ================= */
+.vh{display:none}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:2px}
+.chip{padding:10px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--bg);font-weight:600;min-height:44px;flex:1 1 auto;text-align:center}
+.chip.sel{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.chip.right{border-color:var(--good);background:color-mix(in srgb, var(--good) 14%, var(--card));color:var(--ink)}
+.chip.wrong{border-color:var(--bad);background:color-mix(in srgb, var(--bad) 10%, var(--card));color:var(--muted);text-decoration:line-through}
+.chip:disabled{opacity:1}
+.chip:disabled:not(.right):not(.wrong){opacity:.5}
+@media (hover:hover) and (pointer:fine){ .chip:not(:disabled):hover{border-color:var(--accent);background:var(--accent-soft)} }
+
+/* question top line: source + Learn this */
+.qtop{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.qtop .srcchip{margin-bottom:0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.learnbtn{flex:none;font-size:.85rem;padding:4px 2px}
+.sollearn{margin-top:10px;font-size:.9rem;padding:4px 0}
+
+/* ================= Learn sheet: bottom sheet on phones, dialog on desktop ================= */
+body.noscroll{overflow:hidden}
+.sheet{position:fixed;inset:0;z-index:60;background:rgba(16,21,30,.45);display:flex;align-items:flex-end;justify-content:center}
+.sheetbox{background:var(--card);width:100%;max-width:680px;max-height:86vh;max-height:86dvh;display:flex;flex-direction:column;
+  border-radius:16px 16px 0 0;border:1px solid var(--line);border-bottom:0;box-shadow:0 -10px 30px -12px rgba(0,0,0,.35);
+  padding-bottom:env(safe-area-inset-bottom);animation:sheetup .22s cubic-bezier(.3,.7,.2,1)}
+.sheethead{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px 10px;border-bottom:1px solid var(--line)}
+.sheethead h2{margin:0;font-size:1.05rem;min-width:0}
+.sheetbody{overflow-y:auto;-webkit-overflow-scrolling:touch;padding:6px 16px 22px;overscroll-behavior:contain}
+@keyframes sheetup{from{transform:translateY(24px);opacity:.4}to{transform:none;opacity:1}}
+@media (min-width: 720px){
+  .sheet{align-items:center;padding:24px}
+  .sheetbox{border-radius:14px;border-bottom:1px solid var(--line);max-height:84vh;animation:none}
+  .sheethead{padding:16px 20px 12px}
+  .sheetbody{padding:8px 20px 24px}
+}
+
+/* ================= notes blocks ================= */
+.nsec{margin-bottom:6px}
+.nh{font-size:1rem;margin:18px 0 6px;font-weight:700}
+.nh:first-child{margin-top:8px}
+.np{margin:8px 0;line-height:1.65;max-width:68ch}
+.nsteps{margin:6px 0 8px;padding-left:0;list-style:none;counter-reset:st}
+.nsteps li{counter-increment:st;position:relative;padding:5px 0 5px 34px;line-height:1.6}
+.nsteps li::before{content:counter(st);position:absolute;left:0;top:6px;width:24px;height:24px;border-radius:7px;background:var(--accent-soft);color:var(--accent);font-weight:700;font-size:.82rem;display:grid;place-items:center}
+.ncall{display:flex;gap:10px;align-items:flex-start;border-radius:10px;padding:10px 12px;margin:10px 0;line-height:1.6;font-size:.95rem}
+.ncall .ic{flex:none;margin-top:.28em}
+.ntip{background:var(--accent-soft)}
+.ntip .ic{color:var(--accent)}
+.nwarn{background:color-mix(in srgb, var(--hl) 22%, var(--card));border-left:3px solid var(--hl)}
+.nwarn .ic{color:var(--warn)}
+.nex{border:1px dashed var(--line);border-radius:10px;padding:10px 12px;margin:10px 0;line-height:1.6;background:var(--bg)}
+.nexa{margin-top:4px;color:var(--ink)}
+.ntable{overflow-x:auto;margin:8px 0;-webkit-overflow-scrolling:touch}
+.ntable table{border-collapse:collapse;width:100%;font-size:.9rem;line-height:1.45}
+.ntable th{text-align:left;font-weight:700;color:var(--muted);font-size:.8rem;padding:6px 8px;border-bottom:1.5px solid var(--line);white-space:nowrap}
+.ntable td{padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+.ntable td:first-child{font-weight:700}
+.ntable tr:last-child td{border-bottom:0}
+@media (max-width: 479px){ .ntable table{font-size:.85rem} .ntable td, .ntable th{padding:6px 6px} }
+sub{font-size:.72em;line-height:0;vertical-align:-.28em}
+.chem{white-space:nowrap}
+.chem sup{font-size:.72em;line-height:0;vertical-align:.55em}
