@@ -105,7 +105,7 @@ function makeKit(subjId, unit){
     },
     /* tap one option */
     choice(secs, src, text, opts, ans, steps, o = {}){
-      return add({secs, src, text, fields:[F.choice(o.label || "Answer", opts, ans, o.shuffle)], steps, kind:"choice", math:o.math, tip:o.tip, stim:o.stim, cite:o.cite});
+      return add({secs, src, text, fields:[F.choice(o.label || "Answer", opts, ans, o.shuffle)], steps, kind:"choice", math:o.math, tip:o.tip, stim:o.stim, cite:o.cite, img:o.img, svg:o.svg});
     },
     /* a plain number (count, charge size…) */
     num(secs, src, text, ans, steps, o = {}){

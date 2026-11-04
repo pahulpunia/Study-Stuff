@@ -142,14 +142,26 @@ function plotSVG(src, F, userSrc){
 /* ---- home ---- */
 function renderMathHome(subj){
   useProblems(subj);
-  const sel = $("msecSel"); sel.innerHTML = "";
+  const sel = $("msecSel"), usel = $("munitSel"); sel.innerHTML = ""; usel.innerHTML = "";
   if (!PB().units.length){ $("mmodes").innerHTML = `<div class="small">No units yet.</div>`; return; }
-  PB().units.forEach(u => {
-    const og = document.createElement("optgroup"); og.label = u.name;
-    mSections().filter(s => s.unit === u).forEach(s => { const o = el("option", null, `${s.name} (${mItems(s.id).length})`); o.value = s.id; og.appendChild(o); });
-    sel.appendChild(og);
+  // two pickers once a subject has several units: Unit, then Section within it
+  const units = PB().units, many = units.length > 1;
+  if (!mSections().some(x => x.id === mSec())) ST.sel[PSUBJ.id] = mSections()[0].id;
+  const curU = mSec() === "*all" ? "*all" : mSec().split(":")[0];
+  $("munitPick").classList.toggle("hidden", !many);
+  if (many){
+    units.forEach(u => { const o = el("option", null, u.name); o.value = u.id; usel.appendChild(o); });
+    const o = el("option", null, `All units mixed (${PB().items.length})`); o.value = "*all"; usel.appendChild(o);
+    usel.value = curU;
+  }
+  $("msecPick").classList.toggle("hidden", curU === "*all");
+  (curU === "*all" ? [] : mSections().filter(x => x.unit && x.unit.id === curU)).forEach(x => {
+    const label = x.id.endsWith(":all") ? `Whole unit, mixed` : x.name;
+    const o = el("option", null, `${label} (${mItems(x.id).length})`); o.value = x.id; sel.appendChild(o);
   });
-  if (PB().units.length > 1){ const o = el("option", null, `All units mixed (${PB().items.length})`); o.value = "*all"; sel.appendChild(o); }
+  if (!many){ /* one unit: keep its sections grouped under its name */
+    const og = document.createElement("optgroup"); og.label = units[0].name; [...sel.children].forEach(c => og.appendChild(c)); sel.appendChild(og);
+  }
   sel.value = mSec();
   const box = $("mmodes"); box.innerHTML = "";
   Object.entries(MMODES).forEach(([k, m]) => {
@@ -161,7 +173,13 @@ function renderMathHome(subj){
     box.appendChild(b);
   });
 }
-$("msecSel").onchange = e => { ST.sel[PSUBJ.id] = e.target.value; save(); renderMathHome(PSUBJ); Shell.update(); };
+$("msecSel").onchange = e => { ST.sel[PSUBJ.id] = e.target.value; ST.lastSec = ST.lastSec || {}; ST.lastSec[PSUBJ.id + "|" + e.target.value.split(":")[0]] = e.target.value; save(); renderMathHome(PSUBJ); Shell.update(); };
+$("munitSel").onchange = e => {
+  const u = e.target.value, last = (ST.lastSec || {})[PSUBJ.id + "|" + u];
+  const first = mSections().find(x => x.unit && x.unit.id === u);
+  ST.sel[PSUBJ.id] = u === "*all" ? "*all" : (last && mSections().some(x => x.id === last) ? last : first.id);
+  save(); renderMathHome(PSUBJ); Shell.update();
+};
 
 /* ---- notes summary ---- */
 /* notes can be plain strings (bullets) or blocks:
@@ -271,11 +289,23 @@ document.addEventListener("keydown", e => {
   }
 });
 
+/* the source above a question: a passage, a picture (public-domain, from Wikimedia), or a drawn chart */
+const commonsURL = (file, w) => `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(file)}?width=${w}`;
+function stimHTML(q){
+  const cap = q.cite ? `<figcaption>${MC.renderText(q.cite)}</figcaption>` : "";
+  if (q.img) return `<figure class="stim simg"><a href="https://commons.wikimedia.org/wiki/File:${encodeURIComponent(q.img.file)}" target="_blank" rel="noopener">
+      <img src="${commonsURL(q.img.file, 900)}" alt="${escHTML(q.img.alt)}" loading="eager" onerror="this.closest('figure').classList.add('noimg')"></a>
+      <div class="imgalt"><b>Image description:</b> ${escHTML(q.img.alt)}</div>${cap}</figure>`;
+  if (q.svg) return `<figure class="stim schart">${q.svg}${cap}</figure>`;
+  if (q.stim) return `<figure class="stim"><blockquote>${MC.renderText(q.stim)}</blockquote>${cap}</figure>`;
+  return "";
+}
+
 function mShow(){
   const q = M.queue[M.idx];
   Object.assign(M, {hint:0, attempt:1, answered:false, qStart:Date.now(), lastFocus:0});
   $("mSrc").textContent = q.src;
-  $("mText").innerHTML = (q.stim ? `<figure class="stim"><blockquote>${MC.renderText(q.stim)}</blockquote>${q.cite ? `<figcaption>${MC.renderText(q.cite)}</figcaption>` : ""}</figure>` : "") + `<p>${MC.renderText(q.text)}</p>`;
+  $("mText").innerHTML = stimHTML(q) + `<p>${MC.renderText(q.text)}</p>`;
   $("mMath").innerHTML = mPrompt(q);
   $("mMath").classList.toggle("hidden", !$("mMath").innerHTML);
   $("mGraph").innerHTML = q.graphBefore ? plotSVG(q.target, q.F) : "";

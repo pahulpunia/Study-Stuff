@@ -19,7 +19,8 @@ self.addEventListener("fetch", e => {
   if (req.method !== "GET") return;
   const url = new URL(req.url);
   // fonts: keep a copy so the app looks the same offline
-  if (url.hostname === "fonts.googleapis.com" || url.hostname === "fonts.gstatic.com"){
+  // fonts + question images (Wikimedia): keep a copy once seen, so they work offline too
+  if (url.hostname === "fonts.googleapis.com" || url.hostname === "fonts.gstatic.com" || /(^|\.)wikimedia\.org$/.test(url.hostname)){
     e.respondWith(caches.open(CACHE).then(async c => (await c.match(req)) || fetch(req).then(res => { c.put(req, res.clone()); return res; })));
     return;
   }

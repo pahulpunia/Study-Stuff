@@ -2,6 +2,11 @@
    Sources: 4.1–4.6 notes, 4.2 + 4.3 HW, Unit 4 Review. Every answer was checked numerically (tools/verify.js). */
 (() => {
 const {ri, pick, nz, frac, distinct, fromRoots, pstr, fac, facs, pdiv, evalRoots} = POLY;
+// [[coef, "x"], [coef, "h"], [coef, ""]] → "2x-h+3" (drops zero terms and 1s, fixes signs)
+const lin = terms => terms.filter(([c]) => c !== 0).map(([c, v], i) => {
+  const mag = Math.abs(c) === 1 && v ? "" : String(Math.abs(c));
+  return (c < 0 ? "-" : i ? "+" : "") + mag + v;
+}).join("") || "0";
 
   function ratBuild(){
     const shape = pick([[1,1],[1,1],[2,2],[1,2],[0,1],[2,1],[2,1]]);
@@ -247,7 +252,7 @@ Study.addUnit("math3", {
       ["Rewrite as {{(y^2+6y+8)/(y^2+y-2)}} ÷ {{(y+4)/(2y+4)}} and flip: × {{(2y+4)/(y+4)}}", "Factor: {{((y+2)(y+4))/((y+2)(y-1))}} · {{(2(y+2))/(y+4)}}", "→ {{(2(y+2))/(y-1)}}; y ≠ −2, 1, and −4 (the divisor's top can't be 0)."], {v:["y"]});
     simp(["4.1.2"], "4.1 Notes #9", "(y+4)/(y^2+5y+6) ÷ (3y^2+12y)/(2y^2+5y-3)", "(2y-1)/(3y(y+2))", ["-2","-3","1/2","0","-4"],
       ["Flip and multiply: {{(y+4)/((y+2)(y+3))}} · {{((2y-1)(y+3))/(3y(y+4))}}", "Cancel (y + 4), (y + 3) → {{(2y-1)/(3y(y+2))}}", "Excluded: y ≠ −2, −3, 1/2 (original bottoms) and 0, −4 (the divisor's top)."], {v:["y"]});
-    simp(["4.1.2"], "4.1 Notes #10", "(x^3-3x^2-x+3)/(28-3x-x^2) ÷ (x^2-4x+3)/(x^2-9x+20)", "-((x+1)(x-5))/(x+7)", ["-7","4","5","3","1"],
+    simp(["4.1.2"], "4.1 Notes #10", "(x^3-3x^2-x+3)/(-x^2-3x+28) ÷ (x^2-4x+3)/(x^2-9x+20)", "-((x+1)(x-5))/(x+7)", ["-7","4","5","3","1"],
       ["Top: {{x^2(x-3)-1(x-3)}} = {{(x-3)(x-1)(x+1)}}. Bottom: {{-(x+7)(x-4)}}", "Divisor: {{((x-3)(x-1))/((x-4)(x-5))}}, so flip it", "Cancel → {{-((x+1)(x-5))/(x+7)}}; x ≠ −7, 4, 5, 3, 1."]);
     simp(["4.1.2"], "4.1 Notes #11", "(x^2/(3xy))*((6xy)/(x^2y^2))", "2/y^2", null,
       ["Multiply: {{(6x^3y)/(3x^3y^3)}}", "Simplify: {{2/y^2}}; x ≠ 0, y ≠ 0."], {v:["x","y"], r:[0.5,3]});
@@ -259,7 +264,7 @@ Study.addUnit("math3", {
       ["Flip: {{(d+c)/(c^2+d^2)}} · {{(d(d-c))/((c-d)(c+d))}}", "{{(d-c)/(c-d)}} = −1, so → {{-d/(c^2+d^2)}}"], {v:["c","d"], r:[0.5,4]});
     simp(["4.1.2","rev"], "Review #6", "(12a^2-7ab+b^2)/(9a^2-b^2) ÷ (16a^2-b^2)/(3ab+b^2)", "b/(4a+b)", null,
       ["Factor: {{((3a-b)(4a-b))/((3a-b)(3a+b))}} · {{(b(3a+b))/((4a-b)(4a+b))}}", "Cancel → {{b/(4a+b)}}"], {v:["a","b"], r:[0.5,4]});
-    simp(["4.1.2","rev"], "Review #7", "((6x^2-11x-10)/(6x^2-5x-6))*((6-4x)/(25-20x+4x^2))", "-2/(2x-5)", ["-2/3","3/2","5/2"],
+    simp(["4.1.2","rev"], "Review #7", "((6x^2-11x-10)/(6x^2-5x-6))*((6-4x)/(4x^2-20x+25))", "-2/(2x-5)", ["-2/3","3/2","5/2"],
       ["Factor: {{((3x+2)(2x-5))/((3x+2)(2x-3))}} · {{(-2(2x-3))/(2x-5)^2}}", "Cancel → {{-2/(2x-5)}}; x ≠ −2/3, 3/2, 5/2."]);
     simp(["4.1.2","rev"], "Review #8", "((x^2+2x-3)/(x^2+3x-4))/((x^2+x-6)/(x+4))", "1/(x-2)", ["-4","1","-3","2"],
       ["Top fraction: {{((x+3)(x-1))/((x+4)(x-1))}}. Bottom: {{((x+3)(x-2))/(x+4)}}", "Flip and multiply → {{1/(x-2)}}", "Excluded: −4, 1 (inner bottoms) and −3, 2 (the bottom fraction's top)."]);
@@ -306,15 +311,15 @@ Study.addUnit("math3", {
     simp(["4.2","rev"], "Review #21", "(b^2+1)/(b^2-4)+1/(b+2)+1/(b-2)", "(b+1)^2/((b-2)(b+2))", ["2","-2"],
       ["LCD = (b − 2)(b + 2): numerator {{b^2+1+(b-2)+(b+2)}} = {{b^2+2b+1}}", "= {{(b+1)^2/((b-2)(b+2))}}; b ≠ ±2."], {v:["b"], text:k.QTEXT.one + " State any excluded values."});
     pf(["4.2"], "4.2 HW #23", "(5x-5)/(x^2-3x-4)", "x-4", "x+1", "3", "2",
-      ["{{5x-5}} = A(x + 1) + B(x − 4)", "x = 4: 15 = 5A → A = 3.  x = −1: −10 = −5B → B = 2", "{{3/(x-4)+2/(x+1)}}"]);
+      ["{{5x-5}} = A(x + 1) + B(x − 4)", "x = 4: 15 = 5A → A = 3; x = −1: −10 = −5B → B = 2", "{{3/(x-4)+2/(x+1)}}"]);
     pf(["4.2"], "4.2 HW #25", "(4x+14)/(x^2+x-2)", "x+2", "x-1", "-2", "6",
-      ["{{4x+14}} = A(x − 1) + B(x + 2)", "x = 1: 18 = 3B → B = 6.  x = −2: 6 = −3A → A = −2", "{{-2/(x+2)+6/(x-1)}}"]);
+      ["{{4x+14}} = A(x − 1) + B(x + 2)", "x = 1: 18 = 3B → B = 6; x = −2: 6 = −3A → A = −2", "{{-2/(x+2)+6/(x-1)}}"]);
     pf(["4.2","rev"], "Review #22", "(2x)/(x^2+9x+18)", "x+3", "x+6", "-2", "4",
-      ["{{x^2+9x+18}} = (x + 3)(x + 6); 2x = A(x + 6) + B(x + 3)", "x = −3: −6 = 3A → A = −2.  x = −6: −12 = −3B → B = 4"]);
+      ["{{x^2+9x+18}} = (x + 3)(x + 6); 2x = A(x + 6) + B(x + 3)", "x = −3: −6 = 3A → A = −2; x = −6: −12 = −3B → B = 4"]);
     pf(["4.2","rev"], "Review #23", "(5x+7)/(x^2+4x-5)", "x+5", "x-1", "3", "2",
-      ["{{x^2+4x-5}} = (x + 5)(x − 1); 5x + 7 = A(x − 1) + B(x + 5)", "x = 1: 12 = 6B → B = 2.  x = −5: −18 = −6A → A = 3"]);
+      ["{{x^2+4x-5}} = (x + 5)(x − 1); 5x + 7 = A(x − 1) + B(x + 5)", "x = 1: 12 = 6B → B = 2; x = −5: −18 = −6A → A = 3"]);
     pf(["4.2","rev"], "Review #24", "(5x+19)/(2x^2+13x+6)", "2x+1", "x+6", "3", "1",
-      ["{{2x^2+13x+6}} = (2x + 1)(x + 6); 5x + 19 = A(x + 6) + B(2x + 1)", "x = −6: −11 = −11B → B = 1.  x = −1/2: 16.5 = 5.5A → A = 3"]);
+      ["{{2x^2+13x+6}} = (2x + 1)(x + 6); 5x + 19 = A(x + 6) + B(2x + 1)", "x = −6: −11 = −11B → B = 1; x = −1/2: 16.5 = 5.5A → A = 3"]);
     dq(["4.2"], "4.2 HW #27", "3x^2+2x-4", "6x+3h+2",
       ["{{f(x+h)}} = {{3(x+h)^2+2(x+h)-4}} = {{3x^2+6xh+3h^2+2x+2h-4}}", "Subtract f(x): {{6xh+3h^2+2h}}", "Divide by h: {{6x+3h+2}}"]);
     dq(["4.2"], "4.2 HW #28", "1-x^2", "-2x-h",
@@ -351,8 +356,6 @@ Study.addUnit("math3", {
       ["Multiply the top and bottom by (x + 2): {{(x-2(x+2))/((x+4)(x+2))}} = {{(-(x+4))/((x+4)(x+2))}}", "→ {{-1/(x+2)}} → {{-1/-2}} = {{1/2}}"]);
     lim(["4.3","rev"], "Review #30", "(x^3-8)/(x-2)", "x", "2", "12",
       ["Factor: {{((x-2)(x^2+2x+4))/(x-2)}}", "Plug in 2 → 4 + 4 + 4 = 12"]);
-    lim(["4.3","rev"], "Review #32", "3pi", "x", "7", "3pi",
-      ["The limit of a constant is the constant: 3π."]);
     lim(["4.3","rev"], "Review #33", "(x^2+6)/(x-3)", "x", "2", "-10",
       ["Direct substitution: {{(4+6)/(2-3)}} = −10"]);
     lim(["4.3","rev"], "Review #34", "(x^2+3x-28)/(x-4)", "x", "4", "11",
@@ -388,12 +391,12 @@ Study.addUnit("math3", {
     lim(["4.4"], "4.4 Notes #2a", "x^3", "x", "inf", "inf", ["x³ grows without bound → ∞."]);
     lim(["4.4"], "4.4 Notes #2b", "x^3", "x", "-inf", "-inf", ["Odd power of a huge negative number → −∞."]);
     lim(["4.4"], "4.4 Notes #3", "(3x+11)/(5x-7)", "x", "inf", "3/5", ["Degrees equal → leading coefficients: {{3/5}}"]);
-    lim(["4.4"], "4.4 Notes #4", "(4x^2-2x+5)/(2x-3x^2-1)", "x", "-inf", "-4/3", ["Highest terms: {{(4x^2)/(-3x^2)}} = {{-4/3}}"]);
+    lim(["4.4"], "4.4 Notes #4", "(4x^2-2x+5)/(-3x^2+2x-1)", "x", "-inf", "-4/3", ["Highest terms: {{(4x^2)/(-3x^2)}} = {{-4/3}}"]);
     lim(["4.4"], "4.4 Notes #5", "(x^3+7x)/(-x^2+1)", "x", "inf", "-inf", ["{{x^3/(-x^2)}} = −x → −∞ as x → ∞"]);
     lim(["4.4"], "4.4 Notes #6", "(6x^2-2x+5)/(2x^2-3x-1)", "x", "inf", "3", ["{{(6x^2)/(2x^2)}} = 3"]);
     lim(["4.4"], "4.4 Notes #7", "(8x^2-3x+1)/(2x-1)", "x", "inf", "inf", ["{{(8x^2)/(2x)}} = 4x → ∞ (your notes also accept DNE)"]);
     lim(["4.4"], "4.4 Notes #8", "(4x+6)/(3x^2+8x-1)", "x", "inf", "0", ["{{(4x)/(3x^2)}} = {{4/(3x)}} → 0"]);
-    lim(["4.4"], "4.4 Notes #9", "(4x^3+x^2-7)/(x-4x^3-1)", "x", "-inf", "-1", ["{{(4x^3)/(-4x^3)}} = −1"]);
+    lim(["4.4"], "4.4 Notes #9", "(4x^3+x^2-7)/(-4x^3+x-1)", "x", "-inf", "-1", ["{{(4x^3)/(-4x^3)}} = −1"]);
     lim(["4.4"], "4.4 Notes #10", "(4(x-2)^3(2x+1)^2)/((x^3-27)(3x-4)^2)", "x", "inf", "16/9", ["Top: {{4·x^3·4x^2}} = {{16x^5}}. Bottom: {{x^3·9x^2}} = {{9x^5}}", "→ {{16/9}}"]);
     lim(["4.4"], "4.4 Notes #11", "(-3x^2+7x-4)/((2x-5)^2(x+4))", "x", "inf", "0", ["Top {{-3x^2}}, bottom {{4x^3}} → {{-3/(4x)}} → 0"]);
     lim(["4.4"], "4.4 Notes #12", "(7-2x)/sqrt(9x^2-x+1)", "x", "inf", "-2/3", ["{{sqrt(9x^2)}} = 3x for x > 0, so {{(-2x)/(3x)}} = {{-2/3}}"]);
@@ -402,7 +405,7 @@ Study.addUnit("math3", {
     lim(["4.4","rev"], "Review #40", "(5x)/(x^2-4)", "x", "inf", "0", ["{{(5x)/x^2}} = {{5/x}} → 0"]);
     lim(["4.4","rev"], "Review #41", "(5x+7)/(3x-2)", "x", "inf", "5/3", ["Degrees equal → {{5/3}}"]);
     lim(["4.4","rev"], "Review #42", "((x+3)(2x-5))/((4x-7)(x+1))", "x", "inf", "1/2", ["Top {{2x^2}}, bottom {{4x^2}} → {{1/2}}"]);
-    lim(["4.4","rev"], "Review #51", "(9-3x^2+7x^4)/(8x^3+12x^2+6x+1)", "x", "inf", "inf", ["{{(7x^4)/(8x^3)}} = {{(7x)/8}} → ∞"]);
+    lim(["4.4","rev"], "Review #51", "(7x^4-3x^2+9)/(8x^3+12x^2+6x+1)", "x", "inf", "inf", ["{{(7x^4)/(8x^3)}} = {{(7x)/8}} → ∞"]);
     lim(["4.4","rev"], "Review #52", "(3x^2+5x-2)/(4x^3+2x^2-12x)", "x", "inf", "0", ["Top degree 2 < bottom degree 3 → 0"]);
     lim(["4.4","rev"], "Review #53", "(4x^2+13x+3)/(3x^2+x-2)", "x", "inf", "4/3", ["{{(4x^2)/(3x^2)}} = {{4/3}}"]);
     lim(["4.4","rev"], "Review #54", "((5x-7)(2x+3)^2)/((6x-5)(x+4)^2)", "x", "inf", "10/3", ["Top {{5x·4x^2}} = {{20x^3}}; bottom {{6x·x^2}} = {{6x^3}} → {{10/3}}"]);
@@ -486,15 +489,15 @@ Study.addUnit("math3", {
           const a = nz(-4, 4), b = ri(-6, 6), c = ri(-9, 9);
           const f = pstr([a, b, c]);
           return {src:"Random drill", kind:"dq", text:"Find the difference quotient {{(f(x+h)-f(x))/h}}", pre:"f(x) = ", math:f,
-            fields:[{l:"Difference quotient", t:"expr", a:`${2*a}x+${a}h+${b}`.replace(/\+-/g, "-"), v:["x","h"], simp:true, mustDefine:[{x:1.37, h:0}]}],
-            steps:[`{{f(x+h)-f(x)}} = {{${2*a}xh+${a}h^2+${b}h}}`.replace(/\+-/g, "-"), `Divide by h: {{${2*a}x+${a}h+${b}}}`.replace(/\+-/g, "-")]};
+            fields:[{l:"Difference quotient", t:"expr", a:lin([[2*a, "x"], [a, "h"], [b, ""]]), v:["x","h"], simp:true, mustDefine:[{x:1.37, h:0}]}],
+            steps:[`{{f(x+h)-f(x)}} = {{${lin([[2*a, "xh"], [a, "h^2"], [b, "h"]])}}}`, `Divide by h: {{${lin([[2*a, "x"], [a, "h"], [b, ""]])}}}`]};
         }
         const [r1, r2] = distinct(2, -6, 6), A = nz(-6, 6), B = nz(-6, 6);
         const num = [A + B, -(A * r2 + B * r1)];
         return {src:"Random drill", kind:"pf", text:"Decompose into partial fractions.", math:`(${pstr(num)})/(${pstr(fromRoots([r1, r2]))})`,
           pf:{d1:fac(r1).replace(/[()]/g, ""), d2:fac(r2).replace(/[()]/g, ""), A:String(A), B:String(B)},
           fields:[pfField(fac(r1).replace(/[()]/g, ""), fac(r2).replace(/[()]/g, ""), A, B)],
-          steps:[`Factor the bottom: {{${facs([r1, r2])}}}. Set up {{A/${fac(r1)}+B/${fac(r2)}}}`, `{{${pstr(num)}}} = A${fac(r2)} + B${fac(r1)}`, `x = ${r1} → A = ${A};  x = ${r2} → B = ${B}`]};
+          steps:[`Factor the bottom: {{${facs([r1, r2])}}}. Set up {{A/${fac(r1)}+B/${fac(r2)}}}`, `{{${pstr(num)}}} = A${fac(r2)} + B${fac(r1)}`, `x = ${r1} → A = ${A}; x = ${r2} → B = ${B}`]};
       },
       "4.3": () => {
         const [a, b, c] = distinct(3, -6, 6);

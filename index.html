@@ -43,8 +43,10 @@
     </div>
     <div id="probHome" class="hidden">
       <div class="card chapcard">
-        <label class="chaplabel" for="msecSel">Section</label>
-        <select id="msecSel" class="chapsel"></select>
+        <div class="pickrow">
+          <div class="pick hidden" id="munitPick"><label class="chaplabel" for="munitSel">Unit</label><select id="munitSel" class="chapsel"></select></div>
+          <div class="pick grow" id="msecPick"><label class="chaplabel" for="msecSel">Section</label><select id="msecSel" class="chapsel"></select></div>
+        </div>
         <p class="sub cardnote" id="homeBlurbP"></p>
       </div>
       <div class="modes" id="mmodes"></div>

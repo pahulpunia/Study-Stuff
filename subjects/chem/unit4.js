@@ -277,11 +277,11 @@ Study.addUnit("hchem", {
     k.choice(["4.1"], n41, "In an IONIC bond, what happens to the electrons?", E3, E3[0], ["The metal loses electrons (becoming a cation) and the nonmetal gains them (becoming an anion)."]);
     k.choice(["4.1"], n41, "In a COVALENT bond, what happens to the electrons?", E3, E3[1], ["Each shared pair counts toward both atoms' octets."]);
     k.choice(["4.1"], n41, "In METALLIC bonding, what happens to the electrons?", E3, E3[2], ["The valence electrons move freely around all of the metal atoms. That's the “sea of electrons” model."]);
-    k.choice(["4.1"], n41, "When does an ionic compound conduct electricity?", ["Only when melted or dissolved in water", "As a solid", "Never"], "Only when melted or dissolved in water",
+    k.choice(["4.1"], n41, "When does an ionic compound conduct electricity?", ["Only when melted or dissolved in water", "As a solid, since its ions are charged", "Never, because its electrons are shared"], "Only when melted or dissolved in water",
       ["Electricity needs moving charges. In a solid the ions are locked in place, but melted or dissolved, they're free to move."]);
     k.choice(["4.1"], n41, "Do covalent compounds conduct electricity?", ["No", "Yes, when dissolved", "Yes, as a solid"], "No",
       ["Molecules are neutral, with no ions or free electrons, so they don't conduct even when dissolved."]);
-    k.choice(["4.1"], n41, "Do metals conduct electricity?", ["Yes, even as a solid", "Only when melted", "No"], "Yes, even as a solid",
+    k.choice(["4.1"], n41, "Do metals conduct electricity?", ["Yes, even as a solid", "Only when melted into a liquid", "No, its electrons are locked in place"], "Yes, even as a solid",
       ["The sea of electrons moves freely through the metal, so current can flow through a solid wire."]);
     k.choice(["4.1"], n41, "Do metallic compounds dissolve in water?", ["No", "Yes"], "No", ["Metals are not soluble in water."]);
     k.choice(["4.1"], n41, "A metal LOSES electrons. It becomes a:", ["Cation (+)", "Anion (−)"], "Cation (+)", ["Losing negative electrons leaves more protons than electrons, so the charge is positive."]);
@@ -290,9 +290,9 @@ Study.addUnit("hchem", {
       ["Opposite charges attract. Between ions, that's called electrostatic attraction."]);
     k.num(["4.1"], n41, "Hydrogen is an exception to the octet rule. How many electrons does it need?", 2,
       ["Hydrogen only has one energy level, which holds 2 electrons."]);
-    k.choice(["4.1"], n41, "Why do metals bend instead of shattering?", ["No fixed bonds: atoms can slide and the electron sea still holds them", "Their atoms are tiny", "They have very strong ionic bonds"],
-      "No fixed bonds: atoms can slide and the electron sea still holds them", ["There aren't specific bonds between individual atoms, so shifting the atoms doesn't break anything."]);
-    k.choice(["4.1"], n41, "What roughly decides how hard a metal is and how high its melting point is?", ["The number of valence electrons in the sea", "How shiny it is", "Its number of neutrons"],
+    k.choice(["4.1"], n41, "Why do metals bend instead of shattering?", ["No fixed bonds, so atoms slide while the electron sea holds them", "Their atoms are smaller than the atoms in ionic solids", "They are held together by very strong ionic bonds"],
+      "No fixed bonds, so atoms slide while the electron sea holds them", ["There aren't specific bonds between individual atoms, so shifting the atoms doesn't break anything."]);
+    k.choice(["4.1"], n41, "What roughly decides how hard a metal is and how high its melting point is?", ["The number of valence electrons in the sea", "How many neutrons are in each nucleus", "How shiny and reflective its surface is"],
       "The number of valence electrons in the sea", ["More electrons in the sea hold the atoms together more strongly."]);
     [["NaCl", "Ionic", "Na is a metal and Cl is a nonmetal."], ["CO2", "Covalent", "C and O are both nonmetals."], ["MgO", "Ionic", "Mg is a metal and O is a nonmetal."],
      ["H2O", "Covalent", "H and O are both nonmetals."], ["CH4", "Covalent", "C and H are both nonmetals."], ["KBr", "Ionic", "K is a metal and Br is a nonmetal."]].forEach(([f, a, why]) =>
@@ -309,7 +309,7 @@ Study.addUnit("hchem", {
     [["Mg", 2], ["F", -1], ["Na", 1], ["S", -2], ["Li", 1], ["K", 1], ["P", -3], ["Al", 3]].forEach(([e, q]) =>
       k.charge(["4.2"], n42, `What charge does a ${NAME[e]} (${e}) ion have?`, q,
         [`${e} has ${VE(e)} valence electron${VE(e) > 1 ? "s" : ""}.`, q > 0 ? `It's a metal, so it loses ${q === 1 ? "that one" : `all ${q}`} → ${q}+.` : `It's a nonmetal, so it gains ${-q} to reach 8 → ${-q}−.`]));
-    k.choice(["4.2"], n42, "How do you show that a dot structure is an ion?", ["Brackets around it, with the charge outside", "Circle the shared pairs", "Draw it in red"], "Brackets around it, with the charge outside",
+    k.choice(["4.2"], n42, "How do you show that a dot structure is an ion?", ["Brackets around it, with the charge outside", "Circles around each pair of shared electrons", "Lines connecting it to the other atoms"], "Brackets around it, with the charge outside",
       ["Example: Mg becomes [Mg]²⁺ with no dots left, and F becomes [F]⁻ with a full 8."]);
     k.choice(["4.2"], n42, "When you draw an ionic compound, the arrows show electrons moving from:", ["The metal to the nonmetal", "The nonmetal to the metal"], "The metal to the nonmetal",
       ["Metals lose electrons and nonmetals gain them."]);
@@ -354,9 +354,9 @@ Study.addUnit("hchem", {
     /* ---- 4.4 ---- */
     const n44 = "4.4 Notes";
     k.num(["4.4"], n44, "How many elements exist as diatomic molecules?", 7, ["They're H₂, N₂, O₂, F₂, Cl₂, Br₂, and I₂."]);
-    k.choice(["4.4"], n44, "A diatomic element is a molecule made of:", ["Two of the same atom bonded together", "Two different atoms", "Two ions"], "Two of the same atom bonded together",
+    k.choice(["4.4"], n44, "A diatomic element is a molecule made of:", ["Two of the same atom bonded together", "Two different atoms sharing electrons", "A positive ion and a negative ion"], "Two of the same atom bonded together",
       ["These elements never exist as single atoms, always in pairs: [[O2]], [[N2]], …"]);
-    k.choice(["4.4"], n44, "Which of these elements exists as a diatomic molecule?", ["Nitrogen", "Neon", "Sodium", "Carbon"], "Nitrogen", ["The 7 diatomics are H, N, O, F, Cl, Br, I."]);
+    k.choice(["4.4"], n44, "Which of these elements exists as a diatomic molecule?", ["Nitrogen", "Neon", "Potassium", "Carbon"], "Nitrogen", ["The 7 diatomics are H, N, O, F, Cl, Br, I."]);
     k.num(["4.4"], n44, "How many hydrogen atoms are in one molecule of glucose, [[C6H12O6]]?", 12, ["The subscript after H is 12."]);
     k.choice(["4.4"], n44, "Should you reduce a molecular formula like [[C6H12O6]] to [[CH2O]]?", ["No, it shows the actual atoms in one molecule", "Yes, always reduce"], "No, it shows the actual atoms in one molecule",
       ["Only ionic formulas get reduced. Molecular formulas show exactly what's in the molecule."]);
@@ -379,7 +379,7 @@ Study.addUnit("hchem", {
 
     /* ---- 4.5 ---- */
     const n45 = "4.5 Notes";
-    k.choice(["4.5"], n45, "VSEPR stands for:", ["Valence Shell Electron Pair Repulsion", "Valence Shared Electron Pair Rule", "Very Small Electron Pair Rotation"], "Valence Shell Electron Pair Repulsion",
+    k.choice(["4.5"], n45, "VSEPR stands for:", ["Valence Shell Electron Pair Repulsion", "Valence Shared Electron Pair Rotation", "Variable Shape Electron Position Rule"], "Valence Shell Electron Pair Repulsion",
       ["Electron pairs repel each other, and that repulsion sets the shape."]);
     k.choice(["4.5"], n45, "According to VSEPR, electron domains arrange themselves:", ["As far apart as possible", "As close together as possible", "In a flat line every time"], "As far apart as possible",
       ["Electrons repel, so they spread out as much as they can around the central atom."]);
@@ -395,7 +395,7 @@ Study.addUnit("hchem", {
 
     /* ---- 4.6 ---- */
     const n46 = "4.6 Notes";
-    k.choice(["4.6"], n46, "Electronegativity is:", ["An atom's ability to attract electrons", "The number of valence electrons", "The size of an atom"], "An atom's ability to attract electrons",
+    k.choice(["4.6"], n46, "Electronegativity is:", ["An atom's ability to attract electrons", "The number of valence electrons it has", "The energy stored in one of its bonds"], "An atom's ability to attract electrons",
       ["Higher EN = pulls shared electrons harder."]);
     k.choice(["4.6"], n46, "In a polar bond, the shared electrons are closer to the:", ["More electronegative atom", "Less electronegative atom"], "More electronegative atom", ["It wins the tug of war."]);
     k.choice(["4.6"], n46, "The MOST electronegative atom in a bond gets a partial ______ charge.", ["Negative (δ−)", "Positive (δ+)"], "Negative (δ−)", ["Electrons are negative, and they spend more time near it."]);
@@ -421,8 +421,8 @@ Study.addUnit("hchem", {
     k.choice(["4.7"], n47, "Asymmetrical molecules are:", PN, "Polar", ["The electrons are spread unevenly, so one side is more negative."]);
     k.choice(["4.7"], n47, "Can a nonpolar molecule have polar bonds?", ["Yes, if the bonds are symmetrical and cancel", "No, never"], "Yes, if the bonds are symmetrical and cancel",
       ["[[CO2]] has two polar C=O bonds pulling in opposite directions, so the molecule is nonpolar."]);
-    k.choice(["4.7"], n47, "A molecule can only be nonpolar if:", ["No lone pairs on the central atom AND all surrounding atoms are the same", "It has only single bonds", "It has an even number of atoms"],
-      "No lone pairs on the central atom AND all surrounding atoms are the same", ["Break either condition and the molecule is lopsided, so it's polar."]);
+    k.choice(["4.7"], n47, "A molecule can only be nonpolar if:", ["No lone pairs on the central atom AND identical outer atoms", "It has only single bonds and no double or triple bonds", "It has an even number of atoms and of electrons"],
+      "No lone pairs on the central atom AND identical outer atoms", ["Break either condition and the molecule is lopsided, so it's polar."]);
     ["CO2", "H2O", "NH3", "CH4", "BF3", "SO2", "CH2O", "CCl4", "CH3Cl"].forEach(f => { const m = M(f), p = isPolar(m);
       k.choice(["4.7"], "4.7 Practice", `Is [[${f}]] polar or nonpolar?`, PN, p ? "Polar" : "Nonpolar",
         [`Central ${m.c}: ${m.lp ? `${m.lp} lone pair${m.lp > 1 ? "s" : ""}` : "no lone pairs"}; surrounding atoms: ${listSur(m)}.`,
@@ -437,7 +437,7 @@ Study.addUnit("hchem", {
     const n48 = "4.8 Notes";
     k.choice(["4.8"], n48, "Intermolecular forces act:", ["Between molecules", "Inside a molecule, holding its atoms together"], "Between molecules",
       ["“Inter” means between. The bonds inside a molecule are intRAmolecular."]);
-    k.choice(["4.8"], n48, "IMFs are loosened or broken during a:", ["Phase change (melting, boiling)", "Nuclear reaction", "Color change"], "Phase change (melting, boiling)",
+    k.choice(["4.8"], n48, "IMFs are loosened or broken during a:", ["Phase change (melting, boiling)", "Chemical reaction (burning)", "Nuclear reaction (decay)"], "Phase change (melting, boiling)",
       ["Melting and boiling pull molecules away from each other without breaking the molecules."]);
     k.choice(["4.8"], n48, "London dispersion forces exist between:", ["All molecules", "Only polar molecules", "Only ions"], "All molecules", ["Every molecule has electrons that can shift, so every molecule has LDF."]);
     k.choice(["4.8"], n48, "Nonpolar molecules have:", ["Only LDFs", "LDFs and dipole-dipole", "Hydrogen bonding"], "Only LDFs", ["No dipoles, so the only attraction is LDF."]);

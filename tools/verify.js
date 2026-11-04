@@ -152,6 +152,86 @@ for (const s of subjects){
     console.log(`${s.id} / ${unit.id}: ${unit.items.length} problems, ${Object.keys(unit.drills).length} drill types`);
   }
 }
+/* ===== formatting lint: catch odd-looking problems before they ship ===== */
+let warnN = 0; const warn = (q, m) => { warnN++; console.log('⚠', q.src || '', '→', m); };
+const RENDER_BAD = /NaN|undefined|\[object|Infinity|\{\{|\}\}|\*\*/;
+function polyDegree(n, v = 'x'){             // degree of a monomial term in v, or null if not a simple monomial
+  if (n.k === 'neg' || n.k === 'par') return polyDegree(n.a, v);
+  if (n.k === 'num') return 0;
+  if (n.k === 'var') return n.n === v ? 1 : 0;
+  if (n.k === 'pow' && n.a.k === 'var' && n.b.k === 'num') return n.a.n === v ? n.b.v : 0;
+  if (n.k === 'mul'){ const a = polyDegree(n.a, v), b = polyDegree(n.b, v); return a == null || b == null ? null : a + b; }
+  return null;
+}
+function addTerms(n, out = [], sign = '+'){ if (n.k === 'add'){ addTerms(n.a, out, sign); addTerms(n.b, out, n.op); } else out.push({n, op: sign}); return out; }
+function walk(n, f){ if (!n || typeof n !== 'object') return; f(n); ['a','b'].forEach(k => n[k] && walk(n[k], f)); }
+function lintExpr(q, src, label, subj){
+  if (!src || typeof src !== 'string' || /^(none|DNE|inf|-inf)$/.test(src)) return;
+  if (/\+\s*-|-\s*-|\+\s*\+|-\s*\+/.test(src)) warn(q, `${label}: doubled sign in "${src}"`);
+  if (/(^|[^\d.a-z])1[a-z(]/i.test(src) && !/(^|[^\d.a-z])1\(/.test(src.replace(/1\(f/g, ''))) warn(q, `${label}: coefficient 1 written out in "${src}"`);
+  if (/\^1(?![\d.])/.test(src)) warn(q, `${label}: exponent 1 in "${src}"`);
+  if (/(^|[^\d.])0[a-z]/i.test(src) || /[+-]0(?![\d.])/.test(src)) warn(q, `${label}: zero term in "${src}"`);
+  if (subj === 'math3' && /pi|π|sin|cos|tan/.test(src)) warn(q, `${label}: π/trig isn't used in this class: "${src}"`);
+  let ast; try { ast = P(src); } catch(e){ return; }
+  const html = MC.render(src);
+  if (RENDER_BAD.test(html.replace(/<[^>]+>/g, ''))) warn(q, `${label}: renders badly: "${src}"`);
+  if (/·<\/span><span class="mn">[πe]/.test(html)) warn(q, `${label}: dot before a constant in "${src}"`);
+  walk(ast, n => {
+    if (n.k !== 'add' ) return;
+    if (n.__seen) return;
+    const terms = addTerms(n); terms.forEach(t => walk(t.n, m => { if (m.k === 'add') m.__seen = true; }));
+    // polynomials in standard (descending) order: flag 3+ term sums that climb in degree, like 3+13x+4x^2
+    const d = terms.map(t => polyDegree(t.n));
+    if (terms.length >= 3 && d.every(x => x != null) && d.some((x, i) => i && x > d[i - 1])) warn(q, `${label}: polynomial not in standard order in "${src}"`);
+    // three or more fractions with two subtractions reads oddly for this class
+    const fr = terms.filter(t => { let m = t.n; while (m.k === 'neg' || m.k === 'par') m = m.a; return m.k === 'div'; });
+    if (terms.length >= 3 && fr.length === terms.length && terms.filter(t => t.op === '-').length >= 2) warn(q, `${label}: subtracts three fractions in "${src}"`);
+  });
+}
+const TEXT_ODD = [[/ {2,}/, 'double space'], [/ [,.;:?!](?!\d)/, 'space before punctuation'], [/\b(\w+) \1\b/i, 'repeated word'], [/\[\[(?![^\]]*\]\])|\{\{(?![^}]*\}\})/, 'unclosed [[ or {{']];
+function lintText(q, t, label){
+  if (t == null) return; t = String(t);
+  TEXT_ODD.forEach(([re, m]) => { const hit = t.replace(/\{\{.*?\}\}/g, 'X').replace(/\[\[.*?\]\]/g, 'X').match(re); if (hit && !/^(ha ha|that that)$/i.test(hit[0])) warn(q, `${label}: ${m} in "${t.slice(0, 60)}"`); });
+  const bal = (o, c) => (t.split(o).length - 1) === (t.split(c).length - 1);
+  if (!bal('(', ')')) warn(q, `${label}: unbalanced parentheses in "${t.slice(0, 60)}"`);
+  if (/NaN|\[object|\{\{|\}\}|\*\*|\[\[|\]\]/.test(MC.renderText(t).replace(/<[^>]+>/g, ''))) warn(q, `${label}: renders badly: "${t.slice(0, 60)}"`);
+}
+function lintItem(q, subj){
+  lintExpr(q, q.math, 'prompt', subj); lintExpr(q, q.target, 'target', subj);
+  lintText(q, q.text, 'question'); (q.steps || []).forEach(s => lintText(q, s, 'step')); lintText(q, q.stim, 'source'); lintText(q, q.cite, 'citation');
+  q.fields.forEach(f => {
+    if (['expr','rat','num','pf'].includes(f.t)) lintExpr(q, String(f.a), 'answer', subj);
+    if (f.t === 'choice') f.opts.forEach(o => lintText(q, o, 'option'));
+  });
+  if (q.img && (!/\.(jpe?g|png|gif|svg)$/i.test(q.img.file) || !q.img.alt || q.img.alt.length < 40)) warn(q, 'image needs a file name and a real description');
+}
+const lintSubj = {};
+for (const s of subjects){
+  for (const unit of ctx.Study.problems[s.id].units){
+    unit.items.forEach(q => lintItem(q, s.id));
+    for (const [sec, f] of Object.entries(unit.drills)) for (let i = 0; i < 300; i++){ const q = f(unit.kit); q.src = `${unit.id} drill ${sec}`; lintItem(q, s.id); }
+    Object.entries(unit.notes || {}).forEach(([sid, bl]) => bl.forEach(b => { const q = {src:`${unit.id} notes ${sid}`};
+      [].concat(typeof b === 'string' ? b : [b.h, b.p, b.tip, b.warn, ...(b.steps || [])]).forEach(t => lintText(q, t, 'notes')); }));
+    // answer-length giveaway: on multiple choice, the right answer shouldn't usually be the longest option
+    const mc = unit.items.filter(q => q.fields[0].t === 'choice' && q.fields[0].opts.length >= 3);
+    const L = lintSubj[s.id] || (lintSubj[s.id] = {n:0, longest:0, much:0});
+    const optUse = {}; mc.forEach(q => { const k = q.fields[0].opts.slice().sort().join('|'); optUse[k] = (optUse[k] || 0) + 1; });
+    // skip shared category lists (shapes, bond types…): their lengths are fixed and not a giveaway
+    mc.filter(q => optUse[q.fields[0].opts.slice().sort().join('|')] < 3).forEach(q => { const f = q.fields[0], len = f.opts.map(o => o.length), mine = len[f.opts.indexOf(f.a)], others = len.filter((_, i) => f.opts[i] !== f.a), top = Math.max(...others);
+      L.n++; if (mine > top) L.longest++; if (mine > top * 1.12 && mine - top >= 8) L.much++; });
+    // AP-style source sets come in threes
+    const bySrc = {}; unit.items.filter(q => q.stim || q.img || q.svg).forEach(q => { const k = q.stim || (q.img && q.img.file) || q.svg; bySrc[k] = (bySrc[k] || 0) + 1; });
+    Object.entries(bySrc).forEach(([k, n]) => { if (n !== 3) warn({src:unit.id}, `source has ${n} questions (AP sets use 3): "${String(k).slice(0, 40)}"`); });
+  }
+}
+for (const [id, L] of Object.entries(lintSubj)) if (L.n){
+  const pct = Math.round(100 * L.longest / L.n);
+  console.log(`  ${id}: right answer is the longest option in ${pct}% of multiple-choice questions (chance ≈ 25–33%), clearly longest in ${L.much}`);
+  if (pct > 45 || L.much > L.n * 0.1){ bad++; console.log(`✗ ${id}: right answers are too easy to spot by length`); }
+}
+console.log(warnN ? `⚠ ${warnN} formatting warning(s)` : '✓ formatting lint clean');
+if (warnN) bad++;
+
 /* answer-checker spot checks for the chemistry field types */
 [[{t:'charge', a:2}, ['2+', '+2', '²⁺', ' 2 + '], ['2-', '2', '3+']], [{t:'charge', a:-1}, ['-', '1-', '−1', '-1', '⁻'], ['+', '1']],
  [{t:'formula', a:'Al2O3'}, ['Al2O3', 'al2o3', 'Al₂O₃', 'AL2O3'], ['Al3O2', 'AlO', 'Al2O']],
