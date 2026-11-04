@@ -246,6 +246,29 @@ function mPrompt(q){
   return html;
 }
 
+/* short name for a problem in lists: its source ("4.3 HW #22") when that's unique, otherwise the question itself */
+function qLabel(q){
+  const u = PB().units.find(x => x.id === q.unit);
+  if (u && !u._srcN){ u._srcN = {}; u.items.forEach(i => u._srcN[i.src] = (u._srcN[i.src] || 0) + 1); }
+  if (!q.gen && u && u._srcN[q.src] === 1) return q.src;
+  const t = String(q.text || "").replace(/\[\[(.+?)\]\]/g, (_, f) => f.replace(/\^/g, "")).replace(/\{\{(.+?)\}\}/g, "$1").replace(/\s+/g, " ").trim();
+  return t.length > 48 ? t.slice(0, 46).trim() + "…" : t;
+}
+
+/* keyboard: 1–9 taps an option, Enter checks / goes next (desktop) */
+document.addEventListener("keydown", e => {
+  if ($("mquiz").classList.contains("hidden") || !$("sheet").classList.contains("hidden") || !M) return;
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  const tag = (e.target.tagName || "").toLowerCase(), typing = (tag === "input" && !e.target.classList.contains("vh")) || tag === "textarea" || tag === "select";
+  if (typing) return;
+  if (/^[1-9]$/.test(e.key) && !M.answered){
+    const ch = $("mFields").querySelector(".chips"); if (!ch) return;
+    const b = ch.querySelectorAll(".chip")[+e.key - 1]; if (b && !b.disabled){ e.preventDefault(); b.click(); }
+  } else if (e.key === "Enter" && !(tag === "button" && !e.target.classList.contains("chip"))){
+    e.preventDefault(); M.answered ? mNext() : mCheck();
+  }
+});
+
 function mShow(){
   const q = M.queue[M.idx];
   Object.assign(M, {hint:0, attempt:1, answered:false, qStart:Date.now(), lastFocus:0});
@@ -287,7 +310,7 @@ function mShow(){
       inp.classList.add("vh"); inp.tabIndex = -1; lab.htmlFor = "";
       const ch = el("div", "chips"); ch.setAttribute("role", "radiogroup"); ch.setAttribute("aria-label", f.l);
       f.opts.forEach(o => {
-        const b = el("button", "chip"); b.innerHTML = MC.renderText(o); b.dataset.v = o; b.type = "button"; b.setAttribute("role", "radio");
+        const b = el("button", "chip"); b.innerHTML = MC.renderText(o) + (f.opts.length <= 9 ? `<kbd>${f.opts.indexOf(o) + 1}</kbd>` : ""); b.dataset.v = o; b.type = "button"; b.setAttribute("role", "radio");
         b.onclick = () => {
           if (M.answered || inp.dataset.ok === "1" || b.disabled) return;
           ch.querySelectorAll(".chip").forEach(c => { c.classList.toggle("sel", c === b); c.setAttribute("aria-checked", c === b); });
@@ -433,7 +456,7 @@ function mReveal(res, vals, skipped){
     const us = vals[0].replace(/^(y|f\s*\(\s*x\s*\))\s*=/i, "");
     $("mGraph").innerHTML = plotSVG(q.target, q.F, us);
   }
-  M.results.push({id:q.id, src:q.src, q, ok:all, part:nOk + "/" + q.fields.length, pts, hints:M.hint, attempt:M.attempt, skipped:!!skipped});
+  M.results.push({id:q.id, src:q.src, label:qLabel(q), q, ok:all, part:nOk + "/" + q.fields.length, pts, hints:M.hint, attempt:M.attempt, skipped:!!skipped});
   save(); mHud();
   const last = M.mode !== "drill" && M.idx >= M.queue.length - 1;
   $("mCheck").textContent = last ? "See results" : "Next →";

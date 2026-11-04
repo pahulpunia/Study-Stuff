@@ -527,3 +527,8 @@ sub{font-size:.72em;line-height:0;vertical-align:-.28em}
 .chem sup{font-size:.72em;line-height:0;vertical-align:.55em}
 .themerow{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px;padding-top:12px;border-top:1px solid var(--line);font-size:.92rem}
 .themerow .seg{width:180px}
+.chip kbd{display:none}
+@media (hover:hover) and (pointer:fine){
+  .chip{position:relative}
+  .chip kbd{display:inline-block;margin-left:8px;font:700 .7rem var(--font);color:var(--muted);border:1px solid var(--line);border-radius:4px;padding:0 5px;vertical-align:.1em}
+}
