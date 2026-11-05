@@ -240,10 +240,6 @@ Study.addUnit("math3", {
       ["Group the top: {{x^2(x+4)-9(x+4)}} = {{(x+4)(x-3)(x+3)}}", "Bottom: {{x(2x^2+7x-4)}} = {{x(2x-1)(x+4)}}", "Cancel (x + 4) → {{((x-3)(x+3))/(x(2x-1))}}; x ≠ 0, 1/2, −4."]);
     simp(["4.1"], "4.1 Notes", "(x-y)/(y-x)", "-1", null,
       ["Factor −1 out of the bottom: {{y-x}} = {{-1(x-y)}}", "{{(x-y)/(-1(x-y))}} = −1"], {v:["x","y"]});
-    txt(["4.1"], "4.1 Notes", "A value of x that makes the denominator equal zero (so the expression is undefined) is called a(n) ______.", ["excluded value","excluded values"],
-      ["Excluded value: it makes the denominator 0."]);
-    txt(["4.1"], "4.1 Notes", "A rational expression is a ratio of two ______.", ["polynomials","polynomial"],
-      ["Rational expression = polynomial ÷ polynomial."]);
 
     /* ===== 4.1.2 Multiplying & Dividing ===== */
     simp(["4.1.2"], "4.1 Notes #7", "((x^3-8)/(4-x^2))*((x^2+5x+6)/(x^2+3x))", "-(x^2+2x+4)/x", ["2","-2","0","-3"],
@@ -330,8 +326,6 @@ Study.addUnit("math3", {
       ["{{f(x+h)-f(x)}} = {{2xh+h^2+2h}}", "Divide by h: {{2x+h+2}}"]);
     dq(["4.2","rev"], "Review #27", "2x^2-x+3", "4x+2h-1",
       ["{{f(x+h)-f(x)}} = {{4xh+2h^2-h}}", "Divide by h: {{4x+2h-1}}"]);
-    txt(["4.2"], "4.2 Notes", "The expression (f(x + h) − f(x)) / h is called the ______.", ["difference quotient"],
-      ["It's the difference quotient (the slope between x and x + h)."]);
 
     /* ===== 4.3 Limits ===== */
     lim(["4.3"], "4.3 HW #8", "(3x^2-9x)/(x-3)", "x", "3", "9",
@@ -378,12 +372,6 @@ Study.addUnit("math3", {
       ["Conjugate: bottom becomes {{25-(x+21)}} = {{4-x}}", "→ {{-(5+sqrt(x+21))}} → −10"]);
     lim(["4.3","rev"], "Review #50", "(2-x)/(1/4-1/(2+x))", "x", "2", "-16",
       ["Bottom: {{(2+x-4)/(4(2+x))}} = {{(x-2)/(4(2+x))}}", "→ {{-4(2+x)}} → −16"]);
-    txt(["4.3"], "4.3 HW", "A hole in a graph is a ______ discontinuity.", ["removable","removeable"],
-      ["Holes are removable; vertical asymptotes and jumps are non-removable."]);
-    txt(["4.3"], "4.3 HW", "A vertical asymptote is a ______ discontinuity.", ["non-removable","nonremovable","non removable","non-removeable"],
-      ["Vertical asymptotes are non-removable."]);
-    txt(["4.3"], "4.3 HW", "If the left-hand limit and the right-hand limit are different, the limit ______. (Answer with the abbreviation.)", ["DNE","does not exist"],
-      ["The limit exists only when both one-sided limits agree."]);
 
     /* ===== 4.4 Limits to infinity ===== */
     lim(["4.4"], "4.4 Notes #1a", "1/x", "x", "inf", "0", ["As x grows, 1/x shrinks toward 0."]);
@@ -409,10 +397,6 @@ Study.addUnit("math3", {
     lim(["4.4","rev"], "Review #52", "(3x^2+5x-2)/(4x^3+2x^2-12x)", "x", "inf", "0", ["Top degree 2 < bottom degree 3 → 0"]);
     lim(["4.4","rev"], "Review #53", "(4x^2+13x+3)/(3x^2+x-2)", "x", "inf", "4/3", ["{{(4x^2)/(3x^2)}} = {{4/3}}"]);
     lim(["4.4","rev"], "Review #54", "((5x-7)(2x+3)^2)/((6x-5)(x+4)^2)", "x", "inf", "10/3", ["Top {{5x·4x^2}} = {{20x^3}}; bottom {{6x·x^2}} = {{6x^3}} → {{10/3}}"]);
-    txt(["4.4"], "4.4 Notes", "If the degree of the numerator is less than the degree of the denominator, the limit as x → ∞ is ______. (number)", ["0","zero"],
-      ["Bottom-heavy → 0."]);
-    txt(["4.4"], "4.4 Notes", "If the degrees of the numerator and denominator are equal, the limit as x → ∞ is the ratio of the ______.", ["leading coefficients","leading coefficient","coefficients of the leading terms"],
-      ["Equal degrees → divide the leading coefficients."]);
 
     /* ===== 4.5 Asymptotes, holes, intercepts ===== */
     asy(["4.5"], "4.5 Notes #1", "(x-5)/(x+3)", {va:["-3"], ha:"1", sa:N, holes:[], xint:["5"], yint:"-5/3"},
@@ -451,14 +435,6 @@ Study.addUnit("math3", {
       ["Factor: {{(x+1)^2/(x(x^2+4))}}. {{x^2+4}} is never 0", "VA x = 0; HA y = 0; x-int −1", "No y-intercept (x = 0 is an asymptote)."]);
     asy(["4.5","rev"], "Review #63", "(2x^3-7x^2-14x-5)/(x^2-4x-5)", {va:[], ha:N, sa:N, holes:[["5","11"],["-1","-1"]], xint:["-1/2"], yint:"1"},
       ["Factor: {{((x+1)(2x+1)(x-5))/((x-5)(x+1))}} = 2x + 1", "Holes at x = 5 → (5, 11) and x = −1 → (−1, −1)", "The graph is the line y = 2x + 1 with two holes: no asymptotes. x-int −1/2; y-int 1"]);
-    txt(["4.5"], "4.5 Notes", "A vertical asymptote with ODD multiplicity: the branches go the ______ direction(s) on each side.", ["opposite"],
-      ["Odd → opposite; even → same."]);
-    txt(["4.5"], "4.5 Notes", "A vertical asymptote with EVEN multiplicity: the branches go the ______ direction on each side.", ["same"],
-      ["Even multiplicity → same direction (both up or both down)."]);
-    txt(["4.5"], "4.5 Notes", "To find a slant asymptote, use polynomial ______ division (and throw away the remainder).", ["long"],
-      ["Polynomial long division."]);
-    txt(["4.5"], "4.5 Notes", "A slant asymptote happens when the numerator's degree is exactly ______ more than the denominator's. (number)", ["1","one"],
-      ["Exactly one degree higher."]);
 
     /* ===== 4.6 Writing rational equations ===== */
     write(["4.6"], "4.6 Notes #1", "((x+3)(x+1))/((x+2)(x+1))", {va:["-2"], ha:"1", sa:N, holes:[["-1","2"]], xint:["-3"], yint:"3/2"},

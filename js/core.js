@@ -40,6 +40,7 @@ const escHTML = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;");
 
 const SCREENS = ["home","quiz","end","study","stats","mquiz","mend","mnotes","settings", "write", "board"];
 function show(id){
+  if (id !== "mquiz" && typeof Tools !== "undefined") Tools.close();
   SCREENS.forEach(s => $(s).classList.toggle("hidden", s !== id));
   window.scrollTo(0, 0);
 }

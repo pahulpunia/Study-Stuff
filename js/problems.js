@@ -242,6 +242,7 @@ $("sheetClose").onclick = closeLearn;
 $("sheet").addEventListener("click", e => { if (e.target === $("sheet")) closeLearn(); });
 document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("sheet").classList.contains("hidden")) closeLearn(); });
 $("mLearn").onclick = () => openLearn(M.queue[M.idx]);
+$("mTools").onclick = () => Tools.toggle();
 
 function renderMNotes(subj){
   useProblems(subj);
@@ -319,6 +320,7 @@ function mShow(){
   const q = M.queue[M.idx];
   Object.assign(M, {hint:0, attempt:1, answered:false, qStart:Date.now(), lastFocus:0});
   $("mSrc").textContent = q.src;
+  Tools.forQuestion(q, PSUBJ.id);
   $("mText").innerHTML = stimHTML(q) + `<p>${MC.renderText(q.text)}</p>`;
   $("mMath").innerHTML = mPrompt(q);
   $("mMath").classList.toggle("hidden", !$("mMath").innerHTML);

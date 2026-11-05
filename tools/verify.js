@@ -196,6 +196,8 @@ function lintText(q, t, label){
   if (!bal('(', ')')) warn(q, `${label}: unbalanced parentheses in "${t.slice(0, 60)}"`);
   if (/NaN|\[object|\{\{|\}\}|\*\*|(^|[^_])__[^_]|\[\[|\]\]/.test(MC.renderText(t).replace(/<[^>]+>/g, ''))) warn(q, `${label}: renders badly: "${t.slice(0, 60)}"`);
 }
+// Math 3: no "type the word" questions — answers are math
+function noWordAnswers(subj, q){ return subj === "math3" && q.fields.some(f => f.t === "text") ? ["math question with a word answer (no vocab fill-ins in math)"] : []; }
 function lintItem(q, subj){
   lintExpr(q, q.math, 'prompt', subj); lintExpr(q, q.target, 'target', subj);
   lintText(q, q.text, 'question'); (q.steps || []).forEach(s => lintText(q, s, 'step')); lintText(q, q.stim, 'source'); lintText(q, q.cite, 'citation');
@@ -203,6 +205,7 @@ function lintItem(q, subj){
     if (['expr','rat','num','pf'].includes(f.t)) lintExpr(q, String(f.a), 'answer', subj);
     if (f.t === 'choice') f.opts.forEach(o => lintText(q, o, 'option'));
   });
+  noWordAnswers(subj, q).forEach(m => warn(q, m));
   if (q.img && (!/\.(jpe?g|png|gif|svg)$/i.test(q.img.file) || !q.img.alt || q.img.alt.length < 40)) warn(q, 'image needs a file name and a real description');
 }
 const lintSubj = {};
