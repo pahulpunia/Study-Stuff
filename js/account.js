@@ -176,6 +176,9 @@ applyTheme(ST.settings.theme || "dark");
 
 /* leaderboard page: account card + the board itself */
 function renderBoard(){ renderAccount(); show("board"); }
+/* "Create account" shortcut (sidebar + home): opens the leaderboard page on the sign-up tab */
+function openJoin(){ if (!LB.user) acctTab = "up"; renderBoard(); setTimeout(() => { const n = $("acName"); if (n && matchMedia("(pointer:fine)").matches) n.focus(); }, 50); }
+function paintJoin(){ const b = $("toJoin"); if (b) b.classList.toggle("hidden", !LB.cfg() || !!ST.lbUser); }
 $("toBoard").onclick = renderBoard;
 
 let acctTab = "in";
@@ -200,7 +203,7 @@ function renderAccount(){
     box.innerHTML = `<div class="acrow"><span>Signed in as <b>${LB.name}</b></span><button class="link" id="acOut">Sign out</button></div>
       ${pend ? `<div class="small">${pend} pts to send</div>` : ""}
       <div id="lbList"></div><button class="grow lbtoggle" id="lbShow">${ic("refresh")}<span>Refresh</span></button>`;
-    $("acOut").onclick = async () => { await LB.signOut(); acctTab = "in"; renderAccount(); };
+    $("acOut").onclick = async () => { await LB.signOut(); acctTab = "in"; renderAccount(); paintJoin(); Shell.update(); };
     $("lbShow").onclick = showBoard;
     showBoard();
     return;
@@ -225,7 +228,7 @@ function renderAccount(){
       if (up) await LB.signUp(name, pass, inv); else await LB.signIn(name, pass);
       window.acctBusy = false;
       document.activeElement && document.activeElement.blur();
-      renderAccount();
+      renderAccount(); paintJoin(); Shell.update();
     } catch(err){
       window.acctBusy = false;
       $("acErr").textContent = err.code ? LB.niceError(err) : (err.message === "notset" ? "Not set up yet." : LB.niceError(err).startsWith("Something") ? err.message : LB.niceError(err));

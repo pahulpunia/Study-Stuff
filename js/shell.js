@@ -25,6 +25,7 @@ const Shell = (() => {
         <button data-p="stats" class="${screen === "stats" ? "on" : ""}">${ic("chart")}<span>Stats</span></button>
       </nav>
       <nav class="rnav rbottom">
+        ${LB.cfg() && !ST.lbUser ? `<button data-p="join" class="rjoin">${ic("join")}<span>Create account</span></button>` : ""}
         ${LB.cfg() ? `<button data-p="board" class="${screen === "board" ? "on" : ""}">${ic("trophy")}<span>Leaderboard</span></button>` : ""}
         <button data-p="settings" class="${screen === "settings" ? "on" : ""}">${ic("gear")}<span>Settings</span></button>
       </nav>`;
@@ -35,6 +36,7 @@ const Shell = (() => {
       if (p === "home") renderHome();
       else if (p === "settings") renderSettings();
       else if (p === "board") renderBoard();
+      else if (p === "join") openJoin();
       else Study.load(s).then(() => Study.engines[s.type][p](s));
     });
   }

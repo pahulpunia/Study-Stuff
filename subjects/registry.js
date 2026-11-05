@@ -20,6 +20,11 @@ window.SUBJECTS = [
     setLabel: "Chapter", groupLabel: "Root", groupsLabel: "Roots", itemLabel: "word", defaultSet: 2
   },
   {
+    id: "grammar", name: "English Grammar", short: "Grammar", icon: "quill", type: "problems",
+    files: ["subjects/grammar/basics.js", "subjects/grammar/phrases.js", "subjects/grammar/clauses.js", "subjects/grammar/sentences.js", "subjects/grammar/mechanics.js"],
+    defaultSection: "ph:ger"
+  },
+  {
     id: "math3", name: "Honors Math 3", short: "Math 3", icon: "graph", type: "problems",
     files: ["subjects/math3/unit4.js"],          // add "subjects/math3/unit5.js" etc. here
     blurb: "Any equivalent form works, like (2x+1)/(x-2) or DNE",

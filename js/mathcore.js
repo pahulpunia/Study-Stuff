@@ -165,7 +165,8 @@ const MC = (() => {
   function renderText(t){
     return esc(t).replace(/\{\{(.+?)\}\}/g, (_, m) => m === "lim" ? `<span class="mf">lim</span>` : `<span class="mi">${render(m.replace(/&lt;/g,"<").replace(/&amp;/g,"&"))}</span>`)
       .replace(/\[\[(.+?)\]\]/g, (_, m) => `<span class="chem">${formulaHTML(m)}</span>`)    // [[Al2O3]] → Al₂O₃
-      .replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");                                            // **term** → bold
+      .replace(/\*\*(.+?)\*\*/g, "<b>$1</b>")                                             // **term** → bold
+      .replace(/__([^_\s](?:[^_]*?[^_\s])?)__/g, "<u class=\"tgt\">$1</u>");                                  // __phrase__ → underlined (grammar)
   }
 
   /* ---- answers ---- */

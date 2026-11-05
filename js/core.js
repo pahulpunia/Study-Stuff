@@ -169,6 +169,7 @@ function renderSubjBar(){
   bar.querySelectorAll("button").forEach(b => { const on = b.dataset.id === ST.subject; b.classList.toggle("on", on); b.setAttribute("aria-selected", on); });
   bar.classList.toggle("many", list.length > 2);
   bar.classList.toggle("lots", list.length > 3);
+  bar.classList.toggle("five", list.length > 4);
   movePill();
 }
 // the highlight slides to the chosen subject
@@ -203,6 +204,7 @@ function renderHome(){
   setLabel($("toStudy"), isTerms ? "book" : "notes", isTerms ? "Study list" : "Notes");
   const blurb = $("homeBlurb" + (isTerms ? "T" : "P")); blurb.textContent = subj.blurb || ""; blurb.classList.toggle("hidden", !subj.blurb);
   show("home");
+  if (typeof paintJoin === "function") paintJoin();
   renderSubjBar();
   $("pageHead").innerHTML = `<span class="phico">${ic(subj.icon)}</span><span>${escHTML(subj.name)}</span>`;
   const box = isTerms ? $("modes") : $("mmodes");
@@ -221,6 +223,7 @@ $("secondChance").onchange = e => { ST.settings.second = e.target.checked; save(
 $("toStudy").onclick = () => Study.engines[Study.subject().type].study(Study.subject());
 $("toStats").onclick = () => Study.engines[Study.subject().type].stats(Study.subject());
 $("toSettings").onclick = () => renderSettings();
+$("toJoin").onclick = () => openJoin();
 document.querySelectorAll("[data-home]").forEach(b => b.onclick = renderHome);
 $("resetStats").onclick = e => {
   const b = e.currentTarget, subj = Study.subject();

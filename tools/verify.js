@@ -154,7 +154,7 @@ for (const s of subjects){
 }
 /* ===== formatting lint: catch odd-looking problems before they ship ===== */
 let warnN = 0; const warn = (q, m) => { warnN++; console.log('⚠', q.src || '', '→', m); };
-const RENDER_BAD = /NaN|undefined|\[object|Infinity|\{\{|\}\}|\*\*/;
+const RENDER_BAD = /NaN|undefined|\[object|Infinity|\{\{|\}\}|\*\*|(^|[^_])__[^_]/;
 function polyDegree(n, v = 'x'){             // degree of a monomial term in v, or null if not a simple monomial
   if (n.k === 'neg' || n.k === 'par') return polyDegree(n.a, v);
   if (n.k === 'num') return 0;
@@ -191,10 +191,10 @@ function lintExpr(q, src, label, subj){
 const TEXT_ODD = [[/ {2,}/, 'double space'], [/ [,.;:?!](?!\d)/, 'space before punctuation'], [/\b(\w+) \1\b/i, 'repeated word'], [/\[\[(?![^\]]*\]\])|\{\{(?![^}]*\}\})/, 'unclosed [[ or {{']];
 function lintText(q, t, label){
   if (t == null) return; t = String(t);
-  TEXT_ODD.forEach(([re, m]) => { const hit = t.replace(/\{\{.*?\}\}/g, 'X').replace(/\[\[.*?\]\]/g, 'X').match(re); if (hit && !/^(ha ha|that that)$/i.test(hit[0])) warn(q, `${label}: ${m} in "${t.slice(0, 60)}"`); });
+  TEXT_ODD.forEach(([re, m]) => { const hit = t.replace(/\.( \.)+/g, '…').replace(/\{\{.*?\}\}/g, 'X').replace(/\[\[.*?\]\]/g, 'X').match(re); if (hit && !/^(ha ha|that that)$/i.test(hit[0])) warn(q, `${label}: ${m} in "${t.slice(0, 60)}"`); });
   const bal = (o, c) => (t.split(o).length - 1) === (t.split(c).length - 1);
   if (!bal('(', ')')) warn(q, `${label}: unbalanced parentheses in "${t.slice(0, 60)}"`);
-  if (/NaN|\[object|\{\{|\}\}|\*\*|\[\[|\]\]/.test(MC.renderText(t).replace(/<[^>]+>/g, ''))) warn(q, `${label}: renders badly: "${t.slice(0, 60)}"`);
+  if (/NaN|\[object|\{\{|\}\}|\*\*|(^|[^_])__[^_]|\[\[|\]\]/.test(MC.renderText(t).replace(/<[^>]+>/g, ''))) warn(q, `${label}: renders badly: "${t.slice(0, 60)}"`);
 }
 function lintItem(q, subj){
   lintExpr(q, q.math, 'prompt', subj); lintExpr(q, q.target, 'target', subj);

@@ -271,7 +271,7 @@ function qLabel(q){
   const u = PB().units.find(x => x.id === q.unit);
   if (u && !u._srcN){ u._srcN = {}; u.items.forEach(i => u._srcN[i.src] = (u._srcN[i.src] || 0) + 1); }
   if (!q.gen && u && u._srcN[q.src] === 1) return q.src;
-  const t = String(q.text || "").replace(/\[\[(.+?)\]\]/g, (_, f) => f.replace(/\^/g, "")).replace(/\{\{(.+?)\}\}/g, "$1").replace(/\s+/g, " ").trim();
+  const t = String(q.text || "").replace(/\[\[(.+?)\]\]/g, (_, f) => f.replace(/\^/g, "")).replace(/\{\{(.+?)\}\}/g, "$1").replace(/__(?=[^_\s])|(?<=[^_\s])__|\*\*/g, "").replace(/\s+/g, " ").trim();
   return t.length > 48 ? t.slice(0, 46).trim() + "…" : t;
 }
 
