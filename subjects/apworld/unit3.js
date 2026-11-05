@@ -371,7 +371,7 @@ Study.addUnit("apwh", {
       BG, [
       ["The Sufi approach described is an example of", ["syncretism, blending Islam with local traditions", "Islam spreading mainly through military conquest and force", "Muslim scholars rejecting the Quran in favor of poetry", "a political movement to bring back the Umayyad caliphs"],
         "Letting converts keep familiar practices made Islam feel approachable rather than foreign."],
-      ["Sufis were often more successful than legal scholars at winning converts because they", ["emphasized personal devotion over strict legal scholarship", "were backed by the caliph's armies wherever they preached", "required every convert to learn Arabic before joining", "refused to trade with or live among non-Muslims"],
+      ["Sufis were often more successful than legal scholars at winning converts because they", ["emphasized personal devotion over strict legal scholarship", "were backed by the caliph's armies wherever they went to preach", "required every convert to learn Arabic before joining", "refused to trade with or live among non-Muslims"],
         "Emotional, personal faith appealed to people who had no training in Islamic law."],
       ["A historian would most likely use this passage as evidence that", ["Islam often spread by adapting to local cultures, not only by conquest", "Sufis worked against the official spread of Islam in these regions", "Islam spread mostly among Arabs and rarely reached other peoples", "converts were required to give up all of their local customs and festivals at once"],
         "Adaptation (syncretism) explains much of Islam's growth beyond the lands Arab armies conquered."]
@@ -391,7 +391,7 @@ Study.addUnit("apwh", {
     ]);
     set("14", "By 1127 Song China's population had passed 100 million. Fast-ripening Champa rice allowed two harvests a year in the south, and canals and coastal shipping moved food to growing cities. Merchants used paper money and credit, and workshops mass-produced porcelain and iron.",
       BG, [
-      ["Which factor most directly made this population growth possible?", ["Larger food supplies from new rice strains and better farming", "Expansion of the equal-field system under the Song emperors", "Mongol protection of trade routes across central Asia", "Conquest of new farmland in Korea and northern Vietnam"],
+      ["Which factor most directly made this population growth possible?", ["Larger food supplies from new rice strains and better farming", "Expansion of the equal-field land system under the Song emperors", "Mongol protection of trade routes across central Asia", "Conquest of new farmland in Korea and northern Vietnam"],
         "More food supported more people. The equal-field system had already broken down, and Mongol rule came later."],
       ["The economic changes described most likely led to", ["more commercialization and urban growth across east Asia", "a decline in Chinese manufacturing as farming took over", "China cutting off trade with Korea, Japan, and southeast Asia", "a return to barter as merchants stopped trusting coins"],
         "Song prosperity drove trade with southeast Asia, Korea, Japan, and beyond."],
@@ -424,7 +424,7 @@ Study.addUnit("apwh", {
       "Adapted from al-Biruni, a Muslim scholar who traveled with Mahmud of Ghazni, c. 1030", [
       ["Al-Biruni's account suggests that Mahmud of Ghazni's raids", ["deepened hostility between Hindus and Muslims in northern India", "spread Islam peacefully through the teaching of Sufi missionaries", "united northern and southern India into a single lasting empire", "led many Hindu scholars to move to Baghdad and Cairo for safety"],
         "Plundering temples created lasting resentment, as this Muslim observer admits."],
-      ["Which is the best evidence that Islam also spread in India without conquest?", ["Muslim merchant communities settled in Indian Ocean port cities", "Mahmud of Ghazni carrying away treasure from Hindu temples", "The Delhi sultans collecting special taxes from Hindu subjects", "Arab armies conquering Sind and making it an Umayyad province"],
+      ["Which is the best evidence that Islam also spread in India without conquest?", ["Muslim merchant communities settled in Indian Ocean port cities", "Mahmud of Ghazni carrying away treasure from Hindu temples", "The Delhi sultans collecting special taxes from their Hindu subjects", "Arab armies conquering Sind and making it an Umayyad province"],
         "The other three are all political or military. Merchants built mosques and communities through trade."],
       ["Al-Biruni was a Muslim scholar criticizing a Muslim ruler. This most likely makes his account", ["more believable about the damage the raids caused", "less reliable, because a Muslim scholar would always hate Islam", "irrelevant to Indian history, since he was not an Indian writer", "official propaganda written to celebrate Mahmud's victories"],
         "Sourcing: when a writer admits harm done by his own side, it is less likely to be propaganda."]
@@ -449,7 +449,7 @@ Study.addUnit("apwh", {
     ]);
     set("15", "Kings in Funan and at Angkor brought in brahmin advisors from India, built Hindu and Buddhist temples, and took Sanskrit titles, while keeping many local customs and beliefs.",
       BG, [
-      ["Southeast Asian rulers adopted these Indian traditions mainly because", ["Hindu and Buddhist ideas supported the authority of kings", "Indian empires had conquered the region and imposed them", "they were required to join the overland Silk Roads", "Islam had already been banned by the local rulers"],
+      ["Southeast Asian rulers adopted these Indian traditions mainly because", ["Hindu and Buddhist ideas supported the authority of kings", "Indian empires had conquered the whole region and imposed them", "they were required to join the overland Silk Roads", "Islam had already been banned by the local rulers"],
         "Divine kingship and sacred order made rulers look powerful and legitimate."],
       ["This process is best described as", ["cultural diffusion through trade", "forced conversion by foreign armies", "European colonization of the coast", "migration of nomads from central Asia"],
         "Indian merchants and priests brought these ideas; no Indian empire ruled southeast Asia."],
@@ -484,7 +484,7 @@ Study.addUnit("apwh", {
       BG, [
       ["This difference helps explain", ["the growing split that led to the schism of 1054", "the rise of the Hanseatic League in northern Europe", "the success of the Byzantine theme system against invaders", "the Viking raids on western European monasteries"],
         "Different ideas about church authority, plus language and ritual, drove the churches apart."],
-      ["Compared to western Europe after 500, Byzantium", ["kept a centralized imperial government and strong economy", "was more politically divided among local lords and kings", "lost all of its territory to the Franks and the Lombards", "had no organized church or clergy of its own"],
+      ["Compared to western Europe after 500, Byzantium", ["kept a centralized imperial government and strong economy", "was more politically divided among many local lords and kings", "lost all of its territory to the Franks and the Lombards", "had no organized church or clergy of its own"],
         "The west broke into local lordships; Byzantium kept Roman institutions."],
       ["The arrangement described suggests that in Byzantium", ["religious and political authority were joined under the emperor", "the church was completely independent of the emperor's power", "Islam had become the official religion of the empire", "the pope in Rome chose and crowned each new emperor"],
         "The emperor led both state and church, unlike the west."]
@@ -519,7 +519,7 @@ Study.addUnit("apwh", {
         "Unified Mongol rule (the Pax Mongolica) protected merchants across the steppe."],
       ["Which unintended result came from the conditions described?", ["The rapid spread of plague along trade routes", "The collapse of trade across the Indian Ocean", "The conversion of most of Europe to Islam", "The immediate fall of the Byzantine empire"],
         "The same routes that carried merchants carried the Black Death in the 1340s."],
-      ["Pegolotti's handbook was most likely written for", ["Italian merchants planning trade journeys to Asia", "Mongol tax collectors traveling to Italian ports", "Chinese officials planning trips to Europe", "crusading knights marching to the Holy Land"],
+      ["Pegolotti's handbook was most likely written for", ["Italian merchants planning trade journeys to Asia", "Mongol tax collectors traveling to the Italian ports", "Chinese officials planning trips to Europe", "crusading knights marching to the Holy Land"],
         "Sourcing: a merchant's handbook gives practical advice to other merchants."]
     ]);
     set("17", "In Karakorum there are mosques, a Christian church, and Buddhist temples. The khan held a debate among Christians, Muslims, and Buddhists, and told me that just as God gave the hand several fingers, he has given people several ways.",
@@ -533,7 +533,7 @@ Study.addUnit("apwh", {
     ]);
     set("17", "For several years I avoided mentioning this event because of its horror. It is a disaster the like of which the world has never seen. They spared no one, killing women, men, and children.",
       "Adapted from Ibn al-Athir, an Arab historian, writing about the Mongol invasions, c. 1220s", [
-      ["Ibn al-Athir's perspective was most likely shaped by", ["his life in a Muslim society attacked by the Mongols", "his years of service as an official for the Mongols", "his travels through western Europe and Byzantium", "his admiration for Chinggis Khan's military genius"],
+      ["Ibn al-Athir's perspective was most likely shaped by", ["his life in a Muslim society attacked by the Mongols", "his many years of service as an official for the Mongols", "his travels through western Europe and Byzantium", "his admiration for Chinggis Khan's military genius"],
         "Sourcing: he wrote as a member of the communities being destroyed."],
       ["The Ilkhanate's later conversion to Islam best illustrates", ["conquerors adopting the culture of the people they ruled", "Islam spreading east from Persia into Mongol China", "Mongols forcing Persians to give up farming for herding", "the complete disappearance of Persian language and culture"],
         "Within two generations, Mongol rulers in Persia became Muslim and governed through Persian traditions."],
@@ -546,7 +546,7 @@ Study.addUnit("apwh", {
         "Compare Japan, where shoguns ruled while emperors remained symbols."],
       ["Turkish settlement of Anatolia after 1071 most directly set the stage for", ["the rise of the Ottoman empire", "the Mongol conquest of Song China", "the founding of the Mughal empire in India", "the Christian reconquest of Spain"],
         "Osman's state began in Anatolia around 1300."],
-      ["Converting to Islam before taking power most likely helped the Saljuqs", ["gain acceptance as rulers in the Abbasid realm", "defeat the Mongol armies that invaded Persia", "win support from the Byzantine emperor", "spread Buddhism among the peoples of Anatolia"],
+      ["Converting to Islam before taking power most likely helped the Saljuqs", ["gain acceptance as rulers in the Abbasid realm", "defeat the Mongol armies that invaded Persia", "win support from the Byzantine emperor", "spread Buddhism among the Turkish peoples of Anatolia"],
         "Sharing the faith of their subjects made Turkish rule acceptable."]
     ]);
     Q("17", "By letting Russian princes rule as long as they collected tribute, the Golden Horde most directly", ["helped Moscow grow into a powerful center", "turned Russia into a homeland for Mongol herders", "converted the Russian people to Buddhism", "ended trade between Russia and western Europe"],
@@ -559,7 +559,7 @@ Study.addUnit("apwh", {
       "Adapted from al-Bakri, a Muslim geographer in Spain, 1068", [
       ["Ghana's king most likely employed Muslim officials because", ["literate Muslims helped manage trade with north African merchants", "he had already converted all of his subjects and nobles to Islam", "Islamic law required non-Muslim kings to hire Muslims", "Portuguese traders insisted on dealing with Muslims"],
         "The king kept his own religion but used Muslims' literacy and trade connections."],
-      ["The king's control of gold nuggets most directly helped him", ["keep gold scarce and valuable while funding his power", "spread Christianity among the miners of the south", "end the trans-Saharan trade so outsiders stayed away", "pay tribute to the Abbasid caliphs in Baghdad"],
+      ["The king's control of gold nuggets most directly helped him", ["keep gold scarce and valuable while funding his power", "spread Christianity among the miners of the south", "end the trans-Saharan trade so that outsiders stayed away", "pay tribute to the Abbasid caliphs in Baghdad"],
         "Controlling supply kept prices high and filled the royal treasury."],
       ["Separate Muslim and royal towns in Ghana suggest that", ["the king let Muslim merchants worship while keeping his own faith", "Ghana was governed directly by the caliphs in faraway Baghdad", "Muslims had been banned from living anywhere near the king", "the king had become a Christian and rejected Islam"],
         "Trade brought Muslims in, but the king kept his own religion."]
@@ -575,7 +575,7 @@ Study.addUnit("apwh", {
     ]);
     set("18", "When Mansa Musa passed through Cairo on pilgrimage, he gave away so much gold that its value fell in Egypt, and it had not recovered twelve years later.",
       "Adapted from al-Umari, an Egyptian official, c. 1340", [
-      ["Mansa Musa's pilgrimage most directly demonstrated", ["the wealth west Africa gained from trans-Saharan trade", "Mali's dependence on Egyptian armies to protect it", "the spread of Christianity among west African rulers", "a decline in the gold trade across the Sahara"],
+      ["Mansa Musa's pilgrimage most directly demonstrated", ["the wealth west Africa gained from trans-Saharan trade", "Mali's dependence on Egyptian armies to protect it", "the spread of Christianity among the rulers of west Africa", "a decline in the gold trade across the Sahara"],
         "Mali's gold made it famous across the Muslim world and even in Europe."],
       ["A long-term result of pilgrimages and trade like Mansa Musa's was that", ["Timbuktu became a major center of Islamic learning", "Mali conquered Egypt and took over the Red Sea trade", "Europeans began colonizing west Africa in the 1300s", "trade across the Sahara came to a sudden end"],
         "Musa brought back scholars and architects, and Timbuktu's mosques and schools flourished."],
@@ -616,11 +616,11 @@ Study.addUnit("apwh", {
     ]);
     set("20", "Mexica rulers left conquered peoples' local leaders in place but demanded heavy tribute: food, cloth, feathers, gold, and captives for sacrifice. Many subject peoples deeply resented these demands.",
       BG, [
-      ["This method of rule most directly contributed to", ["Aztec weakness once the Spanish found native allies", "a peaceful union between the Aztecs and the Inca", "the end of human sacrifice well before 1519", "a centralized bureaucracy like that of Ming China"],
+      ["This method of rule most directly contributed to", ["Aztec weakness once the Spanish found native allies", "a peaceful union between the Aztecs and the Inca", "the end of human sacrifice well before 1519", "a centralized bureaucracy much like that of Ming China"],
         "Tens of thousands of resentful subjects later fought alongside Cortés."],
       ["Compared to the Aztecs, the Inca governed more directly by", ["using roads, resettlement, and labor service to unite the empire", "letting conquered peoples govern themselves with no outside officials", "relying on detailed written law codes posted in every town", "using horses and iron weapons to patrol their mountain roads"],
         "The Inca integrated their realm; the Aztecs mostly collected tribute."],
-      ["Which evidence would best support the passage?", ["Tribute lists of goods sent by conquered towns", "Inca quipu records kept by officials in Cuzco", "Spanish encomienda grants issued after 1521", "Maori oral traditions recorded in New Zealand"],
+      ["Which evidence would best support the passage?", ["Tribute lists of goods sent by conquered towns", "Inca quipu records kept by royal officials in Cuzco", "Spanish encomienda grants issued after 1521", "Maori oral traditions recorded in New Zealand"],
         "Records of tribute payments directly show the system described."]
     ]);
     Q("20", "Without a writing system, Inca officials kept census and tribute records on quipu (knotted cords). This shows that the Inca", ["developed effective record-keeping to run a large state", "borrowed a writing system from European traders", "had little need for organized administration", "traded regularly with Ming China across the Pacific"],
@@ -658,7 +658,7 @@ Study.addUnit("apwh", {
       ["Pico's view most directly contrasts with the medieval idea that", ["people's places in life were fixed by birth", "trade was important to the growth of medieval cities", "Aristotle's logic was a useful tool for theology", "towns should grow and attract new merchants"],
         "Humanists stressed individual potential; medieval thinkers stressed fixed social order."]
     ]);
-    Q("21", "Compared to Zheng He's voyages, Portuguese voyages in the 1400s were driven more by", ["the search for trade profits and new routes to Asia", "the desire to collect tribute from foreign rulers", "larger and more powerful fleets than China's", "Confucian ideals of order and harmony abroad"],
+    Q("21", "Compared to Zheng He's voyages, Portuguese voyages in the 1400s were driven more by", ["the search for trade profits and new routes to Asia", "the desire to collect tribute and gifts from foreign rulers", "larger and more powerful fleets than China's", "Confucian ideals of order and harmony abroad"],
       "Portugal wanted gold and spices without Muslim and Venetian middlemen.");
     Q("21", "Which factor best explains why European states kept exploring after the Ming stopped?", ["Competition among many rival European states", "Europe had a much larger population than Ming China", "European ships were larger than Zheng He's treasure ships", "The pope required every Christian king to explore"],
       "If one kingdom stopped, a rival might profit. China, as one large empire, had no such pressure.");
@@ -666,6 +666,260 @@ Study.addUnit("apwh", {
       "Cooler weather and famine left populations weak just before the plague struck.");
     Q("21", "The journeys of Marco Polo and Ibn Battuta were made easier by", ["large networks that connected distant regions, like the Mongol empire", "European colonial empires that linked Africa, Asia, and the Americas", "steamships and railroads that made long journeys faster and safer", "the Columbian Exchange, which tied the eastern and western hemispheres"],
       "Shared rule (Mongols) or shared faith and law (Islam) let travelers move and find work far from home.");
+
+    /* ================= Skill builders: sourcing, causation, comparison, context, evidence ================= */
+    /* ===== Ch 13 ===== */
+    set("13", "The sultan of Delhi made me a judge (qadi) because I knew Islamic law, and paid me well. Years later, in the Maldive Islands, the ruler also made me qadi, even though I was a stranger there and did not speak the local language.",
+      "Adapted from Ibn Battuta, a Moroccan scholar, describing his travels, c. 1355", [
+      ["Ibn Battuta's experience best illustrates that in the 1300s", ["a shared legal tradition let educated Muslims find work across the dar al-Islam", "the Abbasid caliph still appointed every judge from Delhi to the Maldives", "Muslim rulers preferred foreign judges because locals could not read Arabic", "Islamic law had replaced local customs completely in every Muslim land"],
+        "Sharia scholarship was portable: a trained qadi was valued from India to the Maldives. (The Abbasid caliphate had fallen in 1258, so the second choice is wrong.)"],
+      ["Which development most directly made a career like Ibn Battuta's possible?", ["The spread of Islam along trade routes from Africa to Southeast Asia", "The Abbasid conquest of India and East Africa during the 700s", "European navies keeping Indian Ocean shipping lanes safe for pilgrims", "The Mongol conversion to Islam, which united all Muslim lands"],
+        "Islam spread mostly through merchants and missionaries, creating Muslim communities that needed judges and scholars."],
+      ["A historian would most likely question how typical Ibn Battuta's experience was because", ["as a learned scholar he received honors ordinary travelers did not", "he wrote centuries after the events, using only other people's stories", "his account was written down by Portuguese officials in Lisbon", "he traveled only within North Africa and copied other travelers"],
+        "Sourcing: his elite status shaped his experience. Most merchants or pilgrims were not offered judgeships."]
+    ]);
+    set("13", "The caliph al-Ma'mun wrote to the Byzantine emperor asking for permission to send scholars to collect old Greek books on philosophy, medicine, and mathematics. When they were brought to Baghdad, he paid translators to put them into Arabic.",
+      "Adapted from Ibn al-Nadim, The Fihrist, a Baghdad book catalog, 987", [
+      ["The caliph's actions best illustrate", ["Abbasid patronage that preserved and built on Greek learning", "a Byzantine attempt to convert the Abbasid caliphs to Christianity", "Muslim rejection of knowledge from outside Arabia", "the Umayyad policy of separating Arabs from converts"],
+        "The House of Wisdom translated Greek, Persian, and Indian works, and Muslim scholars then added their own advances."],
+      ["Over the following centuries, works translated in Baghdad most directly", ["reached western Europe through Muslim Spain and helped revive learning", "led Abbasid rulers to replace Islamic law with Greek law", "caused the Byzantines to adopt Arabic as their official language", "ended the use of Persian at the Abbasid court"],
+        "Translations from Arabic into Latin in places like Toledo fed European scholasticism and, later, the Renaissance."],
+      ["Which condition most helped Baghdad become a center of learning?", ["Its wealth and location on trade routes linking many cultures", "Its isolation, which protected scholars from outside ideas", "Its role as a former capital of the Byzantine Empire", "A ban on paper that made scholars memorize every text"],
+        "Trade brought wealth, scholars, and even papermaking (learned from Chinese prisoners after 751), which made books cheaper."]
+    ]);
+    set("13", "Dynasties have natural life spans, like people. The first generation keeps the toughness and group loyalty of desert life. By the third or fourth generation, rulers have forgotten that toughness; luxury weakens them, and a tougher group replaces them.",
+      "Adapted from Ibn Khaldun, the Muqaddimah, 1377", [
+      ["Ibn Khaldun's argument is best described as", ["a cyclical theory of how dynasties rise and fall", "a religious prophecy about the coming end of the world", "a defense of permanent rule by one family", "an argument that trade is the main cause of war"],
+        "He saw history in cycles driven by group solidarity (asabiyya) and its loss."],
+      ["Which example would best support Ibn Khaldun's argument?", ["Abbasid caliphs losing real power to Turkish soldiers within two centuries", "Islam spreading into Southeast Asia through merchants and Sufi teachers", "The Byzantine Empire surviving for about a thousand years after Rome", "Mecca growing as a trading city on caravan routes before Islam began"],
+        "Supports the cycle: a once-strong dynasty weakened and tougher outsiders (Turks, later Seljuks) took control. The Byzantine example would challenge it."],
+      ["Ibn Khaldun's theory is most similar to which idea from another region?", ["The Chinese dynastic cycle and the Mandate of Heaven", "The Confucian focus on filial piety", "The Christian belief in salvation through faith", "The Hindu idea of dharma tied to caste"],
+        "Both explain why dynasties grow corrupt and are replaced."]
+    ]);
+    Q("13", "Which comparison between the spread of Islam and the spread of Buddhism is most accurate?", ["Both spread largely along trade routes through merchants and missionaries", "Both spread mainly by forcing conquered peoples to convert to the faith", "Both began in the Arabian Peninsula and moved east along the Silk Roads", "Both rejected written scriptures and relied only on teachers' memories"],
+      "Silk Roads and sea lanes carried both faiths. Conquest played a role for Islam early on, but most conversion was gradual.");
+    Q("13", "Which piece of evidence would most weaken the claim that Islam spread mainly by the sword?", ["Large Muslim populations grew in Indonesia, where no Muslim army conquered", "Arab armies quickly defeated the Sasanian Persian Empire in the 600s", "The Umayyads ruled their empire from Damascus with mostly Arab officials", "The Abbasids defeated a Tang army at the Talas River in Central Asia"],
+      "Indonesia became mostly Muslim through trade and Sufi teaching, not conquest. The other choices are about military events.");
+
+    /* ===== Ch 14 ===== */
+    set("14", "Harmony is to be valued. When you receive the emperor's commands, obey them carefully. Sincerely revere the three treasures: the Buddha, the law, and the monks. Officials should treat good manners as the basis of government.",
+      "Adapted from Prince Shotoku's Seventeen Article Constitution, Japan, 604", [
+      ["The document best shows Japan", ["borrowing Confucian and Buddhist ideas from China to build a stronger state", "rejecting Chinese influence and building government around Shinto alone", "copying the Mongol system of rule after the invasions of the 1200s", "following a samurai warrior code written for the Kamakura shogunate"],
+        "Harmony, obedience to the ruler, and proper conduct are Confucian; the three treasures are Buddhist. Both came from China."],
+      ["Japan's later history differed from China's in that", ["real power passed to military shoguns while emperors became figureheads", "Japan adopted China's civil service exams more fully than China itself", "Japan was conquered by the Tang and ruled as a province for centuries", "Japanese emperors ruled directly, without powerful noble families"],
+        "Japan never fully adopted the exams; power went to aristocrats like the Fujiwara and then to shoguns from 1185."],
+      ["A similar pattern of selective borrowing from China appeared in", ["Korea and Vietnam, which adopted Confucian ideas but kept their independence", "the Abbasid caliphate, which adopted Confucian ideas for its government", "Mali, which used Chinese characters to keep records of its gold trade", "the Byzantine Empire, which copied Tang law codes for its own courts"],
+        "Korea and Vietnam both adopted Chinese writing, Confucian exams, and Buddhism while resisting Chinese rule."]
+    ]);
+    set("14", "Envoys from Silla, Japan, and other neighbors came to the Tang capital, presented gifts, and performed the kowtow before the emperor. In return the emperor gave them gifts that were often worth more than what they brought, along with permission to trade.",
+      BG, [
+      ["The tributary system is best described as", ["a way for China to show its status while allowing trade and diplomacy", "a heavy tax that drained neighboring states' wealth into China", "a military alliance of East Asian states against the Abbasids", "a form of direct Chinese rule over the governments of Korea and Japan"],
+        "It was mostly symbolic: neighbors accepted China's superiority, and in return got trade and gifts."],
+      ["Neighboring states most likely took part mainly because", ["it gave them access to Chinese goods, trade, and prestige", "Tang armies occupied their capitals and forced them to come", "they had adopted Confucianism as their official religion", "Chinese law required every Asian ruler to visit the capital"],
+        "The return gifts and trading rights made it worth the bow."],
+      ["Which later event is the clearest continuation of this system?", ["Zheng He's voyages collecting tribute for the early Ming", "Japan's Closed Country Edict limiting foreign contact", "The Mongol fleets sent to invade Japan in 1274 and again in 1281", "Britain's demand for open ports during the Opium War"],
+        "Zheng He's fleets brought back envoys and tribute to show Ming prestige, the same logic as the Tang system."]
+    ]);
+    set("14", "Song China produced gunpowder weapons, the magnetic compass for sailing, movable type printing, and paper money. Over the next few centuries, versions of these appeared in Southwest Asia and Europe.",
+      BG, [
+      ["These technologies most likely reached Europe through", ["trade and warfare along routes linked by the Mongols and Indian Ocean ports", "Portuguese ships that sailed directly to Song China during the 1100s", "Chinese armies that conquered eastern Europe and settled along the Danube", "Byzantine missionaries who lived in Song cities and sent letters home"],
+        "The Mongol era and Muslim merchants carried Chinese technology west. Europeans didn't sail to China until the 1500s."],
+      ["In Europe, the magnetic compass most directly contributed to", ["longer ocean voyages in the 1400s", "the Crusades of the 1000s", "the end of the manorial system", "the invention of paper"],
+        "Along with the astrolabe and better ships, the compass made Atlantic exploration possible."],
+      ["The spread of gunpowder weapons later helped the rise of", ["the Ottoman, Safavid, and Mughal empires", "the Swahili city-states of East Africa", "the Maya city-states of southern Mexico and Central America", "the Viking kingdoms of Scandinavia"],
+        "These land empires used cannons and muskets to conquer and hold territory after 1450."]
+    ]);
+    Q("14", "Foot binding among Song elites and the seclusion of elite women in Abbasid cities were similar in that both", ["marked high status while limiting women's public lives", "were required by law for women of every social class", "began as Buddhist practices and spread along with the monks", "were introduced to both regions by Mongol rulers"],
+      "Both were mostly elite practices that showed a family could afford for women not to work outside the home.");
+    Q("14", "The Grand Canal, completed under the Sui, most directly", ["linked the rice-growing south to the political north", "connected China to the Indian Ocean by an overland route", "kept nomadic armies from crossing into northern China", "carried silk west to the markets of the Abbasid caliphate"],
+      "It moved grain and goods north, tying China's economy together under later dynasties too.");
+
+    /* ===== Ch 15 ===== */
+    set("15", "In the port of Calicut there were thirteen large Chinese ships in harbor when we arrived. Merchants come here from China, Java, Ceylon, the Maldives, Yemen, and Persia. The ruler is a Hindu, but Muslim merchants live here in great numbers and have their own judge.",
+      "Adapted from Ibn Battuta, describing Calicut in southern India, c. 1342", [
+      ["The passage best illustrates", ["the Indian Ocean as a network linking many regions through monsoon trade", "Chinese conquest and direct rule over the Malabar coast of southern India", "a single empire's monopoly on trade across the whole Indian Ocean", "a sharp decline in Indian trade caused by the spread of the Black Death"],
+        "Merchants of many faiths and regions met in Calicut. Nobody controlled the whole ocean."],
+      ["The detail about the Hindu ruler and the Muslim judge suggests that", ["port rulers allowed foreign merchant communities to govern their own affairs", "the Delhi Sultanate had recently conquered Calicut and installed judges", "Hindus and Muslims in Calicut were usually at war over control of the port", "the ruler had made Islamic law the law for every person living in Calicut"],
+        "Rulers welcomed merchants because trade made them rich, so they let communities keep their own laws."],
+      ["Compared to the Silk Roads, Indian Ocean trade in this era carried", ["larger amounts of bulk goods like grain, timber, and cotton", "only luxury goods because ships were too small", "fewer goods because the monsoons made sailing unpredictable", "mainly enslaved people rather than goods"],
+        "Ships could carry far more than camels, so everyday goods moved by sea."]
+    ]);
+    set("15", "The city is so built that the pupil of the eye has never seen a place like it. It has seven walls, one inside another. The bazaars are wide and full of jewels, and the king's treasury holds pits filled with gold.",
+      "Adapted from Abdur Razzaq, an envoy from the Timurid ruler of Persia, describing Vijayanagar in southern India, 1443", [
+      ["The wealth described most likely came from", ["farming, temple economies, and trade through south Indian ports", "silver mines in the Americas, shipped across the Pacific to India", "tribute paid to Vijayanagar by the defeated Mughal emperors", "the Portuguese spice trade, which the city's kings controlled"],
+        "This is 1443, before the Mughals (1526) and before the Portuguese arrived (1498)."],
+      ["Vijayanagar's rise is best understood in the context of", ["Hindu kingdoms in the south resisting the Delhi Sultanate's expansion", "the Mongol conquest of southern India and the fall of its old kingdoms", "the collapse of the Gupta dynasty and the end of Buddhist rule in India", "British colonial rule pushing Hindu rulers into the far south"],
+        "Vijayanagar was founded in 1336 as the Delhi Sultanate pushed south."],
+      ["Because Abdur Razzaq was an envoy reporting to his ruler, his description was most likely meant to", ["show how powerful and rich this possible partner or rival was", "convince Persian readers to convert to the Hindu religion", "attract European merchants to trade directly with the city", "warn the people of India that a Mongol army was coming"],
+        "Point of view and purpose: a diplomat sizes up a foreign court for his own king."]
+    ]);
+    set("15", "Hindus say Ram is the beloved, Muslims say Rahim. They fight and kill each other, but no one knows the truth. The same God lives in every heart; seek him there, not in temple or mosque.",
+      "Adapted from the poems of Kabir, a north Indian poet, 1400s", [
+      ["Kabir's message best reflects", ["devotional movements stressing a personal bond with God over ritual", "the official religion that the Delhi Sultanate required of its subjects", "the Buddhist teaching that there is no creator God in the universe", "brahmin insistence that people keep strict caste and temple rituals"],
+        "Like bhakti and Sufism, Kabir valued inner devotion more than temples, mosques, or caste."],
+      ["Ideas like Kabir's spread in north India mainly because", ["Hindus and Muslims lived side by side under the Delhi Sultanate", "the Mughals had banned Hinduism", "Christian missionaries carried them from village to village", "the caste system had already disappeared"],
+        "Centuries of shared life produced blending, not just conflict."],
+      ["Which later development is most closely connected to ideas like Kabir's?", ["The founding of Sikhism by Guru Nanak around 1500", "The Portuguese conquest of the port of Goa in 1510", "Aurangzeb's decision to bring back the jizya in 1679", "The spread of Buddhism to Tibet from northern India"],
+        "Sikhism drew on both bhakti and Sufi ideas and rejected caste. Aurangzeb's policy was the opposite of this spirit."]
+    ]);
+    Q("15", "Islam spread into South Asia mainly through", ["Turkish conquests, coastal merchants, and Sufi teachers", "Arab armies that conquered all of India by 750", "Portuguese traders converting coastal rulers", "Mongol rulers who made Islam India's only religion"],
+      "Merchants reached the coasts early, Turkish rulers set up the Delhi Sultanate (1206), and Sufis won converts.");
+    Q("15", "Which claim about the Delhi Sultanate is best supported by the evidence?", ["Its Muslim rulers governed a mostly Hindu population", "It converted most of India's population to Islam", "It ruled all of southern India by 1300", "It was founded by Mughal emperors from Persia"],
+      "Most Indians remained Hindu. The south stayed largely independent, and the Mughals came later (1526).");
+
+    /* ===== Ch 16 & 19 ===== */
+    set("16", "No free man shall be seized, imprisoned, or stripped of his rights or possessions except by the lawful judgment of his equals or by the law of the land. No special tax shall be imposed except by the common counsel of our kingdom.",
+      "Adapted from the Magna Carta, England, 1215", [
+      ["The document most directly limited", ["the power of the English king over his nobles", "the power of the pope over English bishops", "the rights of serfs to own land", "the ability of merchants to form guilds"],
+        "Nobles forced King John to accept that he was bound by law and needed their consent for taxes."],
+      ["The Magna Carta was produced in the context of", ["conflict between a king and powerful nobles in a feudal system", "a peasant revolt in England that followed the Black Death", "the Viking invasions and conquest of Anglo-Saxon England", "England's break with the Catholic Church under Henry VIII"],
+        "Feudal nobles had their own armies and pushed back against royal taxes and abuses."],
+      ["Historians see long-term significance in the document mainly because it", ["set a precedent that rulers are bound by law", "created a democracy where all men could vote", "ended feudalism in England immediately", "made England a Catholic theocracy"],
+        "At first it protected nobles, but later generations used it to argue for limits on all rulers."]
+    ]);
+    set("16", "The Franks, a countless host, came toward Constantinople. The simpler among them truly wished to worship at the tomb of the Lord, but the more cunning ones, like Bohemond, secretly hoped to seize the capital itself.",
+      "Adapted from Anna Komnene, a Byzantine princess, writing about the First Crusade, c. 1148", [
+      ["Anna's account shows that Byzantines viewed the Crusaders with", ["suspicion that some wanted land and power more than Jerusalem", "complete trust, since they were fellow Christians coming to help", "fear that the western knights had secretly converted to Islam", "gratitude for saving Constantinople from the Mongol invasions"],
+        "Her father Alexios had asked for help, but she worried the western knights had their own goals."],
+      ["Anna's point of view was most shaped by", ["her position as daughter of the emperor who dealt with the Crusaders", "the years she spent living in France as the wife of a Crusader", "her own role as a commander leading Byzantine troops to Jerusalem", "her decision to convert from Orthodox to Latin Christianity"],
+        "She wrote to defend her father's policies and Byzantine interests."],
+      ["Her suspicion was later supported when", ["Crusaders sacked Constantinople in 1204", "the Ottomans took Constantinople in 1453", "the pope and patriarch split in 1054", "Saladin retook Jerusalem in 1187"],
+        "The Fourth Crusade attacked the Byzantine capital itself, a blow it never fully recovered from."]
+    ]);
+    set("16", "Faith and reason cannot contradict each other, since both come from God. Using the methods of the Philosopher [Aristotle], we can show by reason that a first mover must exist, and this all people call God.",
+      "Adapted from Thomas Aquinas, Summa Theologica, 1270s", [
+      ["Aquinas's work is best described as", ["scholasticism, using Aristotle's logic to explain Christian faith", "a humanist work rejecting religion in favor of praising human achievement", "a call for a new crusade to take Jerusalem back from the Muslims", "a defense of the pope's power to choose and remove kings"],
+        "Scholastics tried to fit Greek philosophy and Christian theology together."],
+      ["Aquinas could draw on Aristotle largely because", ["Muslim scholars had preserved Greek works, later translated into Latin", "Byzantine emperors had sent all their Greek books to the pope in Rome", "Aristotle's works had been taught in every European school since Rome", "Mongol traders had carried Greek manuscripts to Europe from China"],
+        "Many of Aristotle's works reached western Europe through Arabic translations in Spain."],
+      ["Aquinas's goal was most similar to the work of", ["Ibn Rushd, who argued philosophy and Islamic law agree", "Martin Luther, who attacked the church's authority", "Ibn Battuta, who traveled across the Muslim world", "Zheng He, who sailed to East Africa"],
+        "Both thinkers used reason (and Aristotle) to support their faith."]
+    ]);
+    Q("16", "Which development most weakened feudalism and serfdom in western Europe by the 1400s?", ["Labor shortages after the Black Death and the growth of towns and money", "The flood of American silver into Europe after the conquest of Mexico", "The Byzantine conquest of Italy and its free cities in the 1300s", "Mongol armies that conquered western Europe and freed the serfs"],
+      "Fewer workers meant peasants could demand wages or leave. Towns offered other ways to make a living.");
+    Q("16", "How did the role of the church differ between Byzantium and western Europe?", ["Byzantine emperors controlled the church; western popes often challenged kings", "Byzantium had no church leaders at all; the west had a pope and many bishops", "Western kings chose the pope, while Byzantine patriarchs chose the emperors", "Both regions had churches that were completely independent from their rulers"],
+      "This is caesaropapism vs. the papacy's claims, as in the investiture controversy.");
+
+    /* ===== Ch 17 ===== */
+    set("17", "All his subjects accept the Great Khan's paper money without hesitation, because wherever they go they can use it to buy anything. Anyone who refuses it is put to death. In this way the Khan has more treasure than any lord in the world.",
+      "Adapted from Marco Polo, The Travels, dictated c. 1298", [
+      ["Polo's description shows that Yuan rulers", ["kept and expanded Chinese practices like paper money", "replaced Chinese paper money with Mongol silver coins", "banned trade with foreign merchants across their lands", "forced Chinese farmers to give up farming for herding"],
+        "Paper money began under the Song. The Mongols kept useful Chinese systems."],
+      ["Historians use Polo's account carefully mainly because", ["he dictated it years later in prison to a writer of romances", "he never traveled farther east than the borders of Persia", "it was written by Chinese officials who disliked Europeans", "it was banned in Europe, so only a few lines survive today"],
+        "Sourcing: memory, a co-author who liked drama, and later copyists all affect accuracy."],
+      ["Kublai Khan's use of foreigners like Polo as officials most directly reflects", ["Mongol distrust of Chinese scholar-officials", "a Confucian belief in hiring by merit through exams", "Christian influence at the Yuan court", "an alliance between the Yuan and Venice"],
+        "The Yuan suspended the civil service exams for decades and favored Mongols, Central Asians, and other outsiders."]
+    ]);
+    set("17", "Mongol rule linked China, Central Asia, Persia, and Russia. Merchants, envoys, and armies moved along the Silk Roads faster than before. In the 1340s plague spread from Central Asia to the Black Sea ports, and from there by ship to Europe and North Africa.",
+      BG, [
+      ["The passage suggests the Black Death spread so quickly mainly because", ["Mongol-era trade and travel tightly connected distant regions", "Europeans brought the disease back from the Americas", "Mongols deliberately carried it to every city they ruled", "ships from West Africa brought it to China"],
+        "The same roads that carried silk carried rats, fleas, and infected people."],
+      ["In western Europe, one effect of the plague was", ["labor shortages that gave surviving peasants more bargaining power", "rapid population growth as families had more children after 1350", "a stronger manor system that tied even more peasants to the land", "the immediate collapse of the Catholic Church across all of Europe"],
+        "With a third or more of people dead, workers could demand higher wages."],
+      ["The same connections that spread plague also helped spread", ["technologies like gunpowder and the compass westward", "Christianity, which became China's main religion", "maize and potatoes from the Americas into Eurasia", "the European printing press eastward into Song China"],
+        "Maize and potatoes came after 1492, and Europe's press came after China's printing, not before."]
+    ]);
+    set("17", "Ghazan, the Mongol ruler of Persia, converted to Islam in 1295. He lowered taxes on peasants, rebuilt irrigation, and employed Persian officials such as the scholar Rashid al-Din to run his government.",
+      BG, [
+      ["Ghazan's policies best illustrate", ["Mongol rulers adapting to the cultures of the lands they ruled", "Mongol rulers rejecting all local religions and customs", "the Persian conquest of the Mongol homeland in Central Asia", "the Mongol restoration of the Abbasid caliphate in Baghdad"],
+        "Ruling settled people well meant using their religion, officials, and methods."],
+      ["Which is most similar to Ghazan's approach?", ["Kublai Khan taking a Chinese dynasty name and capital", "Chinggis Khan refusing to rule settled peoples", "Timur destroying Delhi in 1398", "The Golden Horde forcing Russians to become nomads"],
+        "Kublai founded the Yuan dynasty and ruled from Beijing, using Chinese ceremonies and many Chinese institutions."],
+      ["Lowering taxes and rebuilding irrigation most likely aimed to", ["restore farming and tax revenue damaged by conquest", "punish Persian landowners for rebelling", "turn Persia's farmland into pasture for herds", "pay for an invasion of Europe"],
+        "Early Mongol conquests wrecked irrigation; Ghazan tried to rebuild the economy that paid for his state."]
+    ]);
+    Q("17", "The Mongols' ability to conquer settled empires is best explained by", ["skilled cavalry, discipline, and siege methods learned from conquered peoples", "gunpowder weapons they invented themselves and kept secret from enemies", "a large navy that controlled the Indian Ocean and its port cities", "an alliance with the Abbasid caliph, who sent troops to help them"],
+      "They borrowed Chinese and Persian engineers to take walled cities.");
+    Q("17", "Which is the best evidence that Mongol rule was not only destructive?", ["Trade and travel across Eurasia grew safer and more frequent", "Baghdad was sacked and its libraries destroyed in 1258", "Large parts of Persia's irrigation systems were ruined", "Many cities that resisted were completely destroyed"],
+      "The other choices show destruction. The Pax Mongolica shows a benefit.");
+
+    /* ===== Ch 18 ===== */
+    set("18", "In Timbuktu there are many judges, scholars, and priests, all well paid by the king. Many handwritten books are brought here from North Africa and sold for more money than any other merchandise.",
+      "Adapted from Leo Africanus, a North African traveler, writing for European readers, 1526", [
+      ["High prices for books best show", ["Timbuktu's role as a center of Islamic learning", "a shortage of paper in Europe", "that Timbuktu was ruled by Portugal", "that West Africans had no writing system of their own"],
+        "Scholars and mosques made Timbuktu famous; books were prized."],
+      ["Timbuktu's wealth came mostly from", ["trans-Saharan trade in gold, salt, and other goods", "Atlantic trade with Brazil and the Caribbean", "silver mines along the banks of the Niger River", "Indian Ocean trade through the port of Kilwa"],
+        "Camel caravans linked West Africa to North Africa and the Mediterranean."],
+      ["Because Leo Africanus wrote for European readers, his account most likely", ["introduced a rich African region that Europeans knew little about", "aimed to recruit European soldiers to fight in Songhai's army", "was meant to convert Timbuktu's scholars to Christianity", "was written to help Portuguese traders find captives to buy"],
+        "Audience matters: he described Africa for Italian and European readers."]
+    ]);
+    set("18", "At Great Zimbabwe, builders fit huge stone walls together without mortar. Archaeologists found Chinese porcelain, Persian pottery, and glass beads there. The city's rulers controlled gold that was sent to Swahili ports on the coast.",
+      BG, [
+      ["The objects found at Great Zimbabwe best support the claim that", ["the city was tied to Indian Ocean trade through the coast", "Chinese merchants founded the city and ruled it for centuries", "the city traded mainly with western Europe by way of Portugal", "its people had no contact with anyone outside their region"],
+        "Goods from China and Persia arrived through Swahili ports in exchange for gold."],
+      ["Which evidence would best answer European colonial claims that outsiders built the city?", ["Archaeology linking the site to the ancestors of the local Shona people", "The Chinese porcelain found inside the walls of the Great Enclosure", "Swahili records listing the gold sent from the interior to the coast", "Portuguese maps of the East African coast drawn in the 1500s"],
+        "Using evidence: excavations show local Africans built it. Foreign goods show trade, not foreign builders."],
+      ["Great Zimbabwe's role in trade was most similar to that of", ["Ghana and Mali, which grew rich supplying gold to long-distance trade", "the Inca, who used mit'a labor to build roads across the Andes", "Venice, which built a navy to control trade in the Mediterranean", "the Mongols, who grew rich by taxing caravans on the Silk Roads"],
+        "All three controlled gold sources and traded them to distant buyers."]
+    ]);
+    set("18", "King Lalibela had churches carved downward into solid rock, around 1200. They were meant to be a 'new Jerusalem' for Ethiopian Christians, whose kingdom had been Christian since the 300s.",
+      BG, [
+      ["The churches best show", ["a long-standing Christian kingdom in East Africa", "Portuguese missionaries building churches in Africa", "the spread of Islam into the Ethiopian highlands", "Byzantine rule over Ethiopia"],
+        "Ethiopian Christianity went back to the kingdom of Axum and developed its own traditions."],
+      ["Calling the churches a 'new Jerusalem' most likely reflects that", ["pilgrimage to Jerusalem had become hard after Muslim conquests", "Ethiopians believed the real Jerusalem had been destroyed", "the pope had ordered Ethiopian Christians to stay at home", "Ethiopia had recently conquered Jerusalem and its churches"],
+        "Muslim states lay between Ethiopia and Jerusalem, so a holy site at home made sense."],
+      ["Ethiopia's Christianity is most similar to Byzantine Christianity in that both", ["developed separately from the Roman Catholic Church", "accepted the pope in Rome as their highest leader", "began only after the Crusades had reached Jerusalem", "spread mainly through conquest by Mongol armies"],
+        "Both were eastern churches outside the pope's authority."]
+    ]);
+    Q("18", "Which statement best compares Islam in Mali with Islam in the Swahili cities?", ["In both, rulers and merchants adopted Islam while many rural people kept older beliefs", "In both, Islam arrived with Arab armies that conquered the whole region by force", "Mali's rulers rejected Islam entirely, while the Swahili cities embraced it fully", "In both, Islam replaced all the local languages with Arabic within a century"],
+      "Islam was strongest among elites and traders. Swahili stayed a Bantu language with Arabic words.");
+    Q("18", "Bantu migrations most directly explain", ["why related languages and iron-working spread across central and southern Africa", "why Islam spread across West Africa with merchants crossing the Sahara desert", "why the kingdom of Axum in the Ethiopian highlands became Christian in the 300s", "why camels became the main way to carry gold and salt across the Sahara"],
+      "Over centuries, Bantu speakers spread farming, iron tools, and their languages.");
+
+    /* ===== Ch 20 ===== */
+    set("20", "I believe that since the history of man there has been no account of such grandeur as this road. Every so many leagues there were storehouses with food, clothing, and weapons, so that armies passing through lacked nothing.",
+      "Adapted from Pedro de Cieza de León, a Spanish soldier, Chronicle of Peru, 1553", [
+      ["The roads and storehouses most directly helped the Inca", ["move armies and govern a long, mountainous empire", "carry trade goods north to the Aztec markets", "spread the worship of the sun to Spanish settlers", "store gold to pay the Spanish who invaded them"],
+        "Runners, armies, and officials used the road network to hold the empire together."],
+      ["The Inca built projects like these mainly with", ["mit'a labor that communities owed the state", "enslaved Africans brought from the coast", "paid workers using silver coins", "prisoners captured from the Aztecs"],
+        "Each community sent workers for a set time. The Spanish later turned the mit'a into the mining mita."],
+      ["Cieza de León's praise is especially useful to historians because", ["he was part of the conquest, so he had no reason to flatter the Inca", "he was an Inca noble writing proudly about his own people's empire", "he wrote before the Spanish ever arrived in the Andes of Peru", "he was a Chinese visitor comparing the Inca roads to China's"],
+        "Sourcing: praise from an enemy carries extra weight."]
+    ]);
+    set("20", "The captive warriors were led up the temple steps and their hearts were offered to the sun, so that it would keep moving across the sky. The warrior who had taken the captive was honored and given fine cloaks.",
+      "Adapted from the Florentine Codex, compiled by Spanish friar Bernardino de Sahagún from Nahua accounts, 1500s", [
+      ["This passage helps explain why Mexica warfare aimed to", ["take captives rather than simply kill enemies", "conquer land for farming only", "spread Christianity to neighboring peoples", "capture silver mines"],
+        "Captives were needed for sacrifice, and taking them brought warriors status."],
+      ["Historians use this source carefully because", ["a Spanish friar compiled it from Nahua accounts after the conquest", "it was written by Cortés himself to justify his own actions", "the Nahua kept no records, so the friar invented most of it", "it actually describes the Inca of Peru rather than the Mexica"],
+        "It preserves Nahua voices but was shaped by Spanish goals and post-conquest memory."],
+      ["Mexica sacrifice and tribute demands most directly", ["led many subject peoples to ally with the Spanish", "made the Mexica the most popular rulers in Mesoamerica", "ended warfare in central Mexico", "caused the Inca to invade Mexico"],
+        "Groups like the Tlaxcalans joined Cortés against their Mexica enemies."]
+    ]);
+    set("20", "Polynesian navigators sailed double-hulled canoes across thousands of miles of open ocean, reading the stars, ocean swells, and the flight of birds. By about 1200 they had settled Hawai'i and New Zealand, bringing taro, sweet potatoes, pigs, and chickens.",
+      BG, [
+      ["Polynesian expansion depended most on", ["skilled navigation without compasses or written charts", "routes and sailing methods learned from Arab traders", "large ships borrowed from Chinese treasure fleets", "maps of the Pacific made by European explorers"],
+        "Knowledge passed down orally let them find tiny islands in a huge ocean."],
+      ["Carrying crops and animals to new islands is most similar to", ["the Columbian Exchange, though on a smaller scale", "the Mongols taxing caravans on the Silk Roads", "the spread of the bubonic plague along trade routes", "the camel caravans carrying salt across the Sahara"],
+        "Settlers moved plants and animals to transform new lands."],
+      ["Sweet potatoes in Polynesia (a plant from South America) suggest that", ["Polynesians likely made contact with South America before Europeans", "Spanish sailors brought them to Hawai'i around the year 1200", "sweet potatoes first grew in Asia and spread east across the sea", "Polynesia was first settled by sailors coming from East Africa"],
+        "Many scholars see this as evidence of Polynesian voyages reaching the Americas."]
+    ]);
+    set("20", "Cahokia, near present-day St. Louis, may have held 10,000 to 20,000 people around 1100. Its people built huge earthen mounds, farmed maize, and traded for copper from the Great Lakes and shells from the Gulf of Mexico. By 1350 the city had been abandoned.",
+      BG, [
+      ["Cahokia's large population was made possible mainly by", ["maize farming that produced a surplus", "silver mining for trade with Europe", "herding horses and cattle", "fishing in the Pacific"],
+        "Surplus food supports cities, priests, and builders."],
+      ["Copper and shells found at Cahokia best show", ["trade networks reaching across much of North America", "regular contact with Spanish traders in Florida", "that Cahokia had a navy on the Mississippi River", "that its people were nomads who moved every season"],
+        "Goods came from hundreds of miles away."],
+      ["Cahokia differs from Tenochtitlan in that Cahokia", ["was abandoned well before Europeans arrived", "was built on a lake", "collected tribute from a large empire", "was conquered by the Spanish"],
+        "Tenochtitlan was thriving in 1519; Cahokia had declined by about 1350."]
+    ]);
+    Q("20", "The Aztec and Inca empires differed most in how they ruled conquered peoples: the Inca", ["governed directly through officials and roads; the Aztec let local rulers collect tribute", "let local rulers stay in charge; the Aztec sent their own officials to run every town", "used alphabetic writing and coins; the Aztec used neither writing nor any money", "ruled mainly by sea with a navy; the Aztec ruled their empire mainly over land"],
+      "Inca rule was more centralized. Aztec rule was loose, which left many resentful subjects.");
+
+    /* ===== Ch 21 ===== */
+    set("21", "The prince's first reason was to know the land beyond the Canary Islands. The second was that if Christian people lived there, trade might be opened with them. The third was to learn the strength of the Moors. The fifth was his great desire to spread the faith of Christ.",
+      "Adapted from Gomes Eanes de Zurara, Chronicle of the Discovery of Guinea, 1453", [
+      ["The passage shows that Portuguese exploration was driven by", ["a mix of curiosity, trade, rivalry with Muslims, and religion", "the need to escape religious persecution back in Portugal", "orders from the Mongol khans to find a route to Europe", "a plan to settle Portuguese farmers on empty land in Asia"],
+        "Gold, God, and glory: several motives worked together."],
+      ["Zurara's chronicle was written for Prince Henry's family, so it most likely", ["presented Henry's motives in the most honorable light", "criticized Henry for wasting the kingdom's money", "was secretly written to be read by Muslim rulers", "focused mostly on the hardships of ordinary sailors"],
+        "Sourcing: an official chronicle praises its patron and puts faith up front."],
+      ["Learning 'the strength of the Moors' reflects which earlier development?", ["Centuries of Christian-Muslim conflict, including the Reconquista", "The Mongol conquest of Portugal and Spain during the 1200s", "Portugal's long alliance with the Ottoman Empire against Spain", "The Ming ban on sea voyages after Zheng He's last voyage"],
+        "Iberian kingdoms had fought Muslim states for centuries and wanted allies behind them."]
+    ]);
+    Q("21", "Which is the best evidence that the Ming decision to stop Zheng He's voyages did not cut China off from world trade?", ["Chinese merchants kept trading in Southeast Asia, and silver later poured into China", "The Ming burned their ships and banned every kind of foreign contact forever", "Portugal seized control of all of China's major ports in the 1430s and 1440s", "China stopped making silk and porcelain because no one would buy them"],
+      "Official voyages ended, but private and later global trade continued.");
+    Q("21", "Which best explains why the Renaissance began in northern Italy rather than elsewhere?", ["Rich trading cities, Roman ruins nearby, and contact with Byzantine and Muslim scholars", "Italy was the only part of Europe with a working printing press by the year 1350", "Italy had escaped the Black Death entirely, so its cities stayed large and rich", "Italian kings ruled most of Europe and paid artists using the taxes they collected"],
+      "Money from trade, classical remains, and scholars fleeing Byzantium all came together there.");
   },
 });
 })();

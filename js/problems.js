@@ -539,7 +539,12 @@ function mNext(){
   if (M.idx >= M.queue.length) return mFinish();
   mShow();
 }
-$("mQuit").onclick = () => { if (M && M.results.length && M.mode === "drill") return mFinish(); document.activeElement && document.activeElement.blur(); renderHome(); };
+$("mQuit").onclick = () => {
+  if (M && M.results.length && M.mode === "drill") return mFinish();
+  // quitting partway: the points you earned still count
+  if (M && M.results.length && !M.sent){ M.sent = true; LB.submit(PSUBJ.id, M.score); LB.record(PSUBJ.id, M.results); }
+  document.activeElement && document.activeElement.blur(); renderHome();
+};
 
 function mFinish(){
   document.activeElement && document.activeElement.blur();
@@ -547,8 +552,7 @@ function mFinish(){
   let newBest = false;
   if (!M.override && M.score > (ST.mbest[mBestKey(M.mode)] || 0)){ ST.mbest[mBestKey(M.mode)] = M.score; newBest = true; }
   save();
-  LB.submit(PSUBJ.id, M.score);
-  LB.record(PSUBJ.id, M.results);
+  if (!M.sent){ M.sent = true; LB.submit(PSUBJ.id, M.score); LB.record(PSUBJ.id, M.results); }
   const secName = mSecInfo().name;
   $("meMode").textContent = `${secName} · ${MMODES[M.mode].name}` + (M.override ? " · retry" : "");
   countUp($("meScore"), M.score);

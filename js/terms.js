@@ -201,7 +201,11 @@ $("form").addEventListener("submit", e => {
 $("skip").onclick = () => { if (!S.answered) reveal(false, ""); };
 $("sayBtn").onclick = () => say(S.queue[S.idx].w.w);
 ["hintBtn","skip","check","sayBtn"].forEach(id => $(id).addEventListener("mousedown", e => e.preventDefault()));
-$("quit").onclick = () => { clearTimers(); $("answer").blur(); renderHome(); };
+$("quit").onclick = () => {
+  clearTimers(); $("answer").blur();
+  if (S && S.results && S.results.length && !S.sent){ S.sent = true; LB.submit(TSUBJ.id, S.score); }   // partway points still count
+  renderHome();
+};
 
 function reveal(ok, typed){
   const q = S.queue[S.idx], w = q.w.w;
@@ -268,7 +272,7 @@ function finish(){
   if (!S.override && S.score > (ST.best[bestKey(S.mode)] || 0)){ ST.best[bestKey(S.mode)] = S.score; newBest = true; }
   ST.bestStreak = Math.max(ST.bestStreak || 0, S.bestStreak);
   save();
-  LB.submit(TSUBJ.id, S.score);
+  if (!S.sent){ S.sent = true; LB.submit(TSUBJ.id, S.score); }
 
   const mname = fill(MODES[S.mode].name);
   $("endMode").textContent = `${TSUBJ.name} · ${L().setLabel} ${CH.n} · ${mname}` + (S.override ? " · retry" : "");

@@ -267,7 +267,7 @@ Study.addUnit("apwh", {
       "Adapted from an account of Vasco da Gama's voyage to India, 1498", [
       ["The reply best reflects which motives for European exploration?", ["Both religious and economic goals", "Mainly scientific curiosity", "Escaping persecution at home", "Finding new farmland to settle"],
         "Spreading Christianity and profiting from the spice trade went hand in hand."],
-      ["Portuguese power in the Indian Ocean after 1500 depended most on", ["armed ships and fortified ports used to control trade", "producing more goods than Asian societies could make", "a lasting alliance with the Ming navy against rivals", "conquering the interior of India with large armies"],
+      ["Portuguese power in the Indian Ocean after 1500 depended most on", ["armed ships and fortified ports used to control trade", "producing more goods than Asian societies could make themselves", "a lasting alliance with the Ming navy against rivals", "conquering the interior of India with large armies"],
         "A trading-post empire: Albuquerque seized ports like Goa and Melaka and taxed shipping."],
       ["The reply suggests the Portuguese expected to find in India", ["Christian allies and access to the spice trade", "empty land where Portuguese farmers could settle", "silver mines to pay for Portugal's wars", "a land route that led on to China"],
         "Europeans hoped to find Christian allies against Muslim powers as well as spices."]
@@ -276,7 +276,7 @@ Study.addUnit("apwh", {
       "Estimates given in Bentley, Traditions & Encounters", [
       ["Which best explains the change shown in the chart?", ["Epidemic diseases such as smallpox", "Famine after a series of failed potato harvests", "Large numbers of natives emigrating to Spain", "Wars between the Aztec and Inca empires"],
         "Disease killed far more people than warfare did. Native Americans had never been exposed to Afro-Eurasian diseases."],
-      ["A historian could best use this chart as evidence of", ["the demographic impact of the Columbian Exchange", "the encomienda system protecting native peoples", "rapid population growth in Mexico after 1519", "the effects of the Little Ice Age in Europe"],
+      ["A historian could best use this chart as evidence of", ["the demographic impact of the Columbian Exchange", "the encomienda system successfully protecting native peoples", "rapid population growth in Mexico after 1519", "the effects of the Little Ice Age in Europe"],
         "A loss of as much as 90 percent in a century is the clearest effect of the exchange of diseases."],
       ["The change shown most directly encouraged Europeans to", ["import enslaved Africans to replace native workers", "abandon their American colonies and return home", "shut down the silver mines of Mexico and Peru", "stop trading with China and India altogether"],
         "With native workers dying, colonists turned to the Atlantic slave trade."]
@@ -301,7 +301,7 @@ Study.addUnit("apwh", {
     ]);
     Q("22", "The Seven Years' War (1756–1763) showed that by the 1750s", ["European rivalries were being fought around the world", "European states had agreed to stop competing for colonies", "Spain had taken control of most of the Indian subcontinent", "Asian empires had come to dominate European politics and trade"],
       "Britain and France fought in Europe, North America, and India at the same time.");
-    Q("22", "Russian expansion across Siberia was similar to European maritime expansion in that both", ["sought valuable goods and conquered indigenous peoples", "depended mainly on long sea voyages across the oceans", "began only after the year 1900 with railroads", "were organized and funded by Chinese merchants"],
+    Q("22", "Russian expansion across Siberia was similar to European maritime expansion in that both", ["sought valuable goods and conquered indigenous peoples", "depended mainly on long sea voyages across the open oceans", "began only after the year 1900 with railroads", "were organized and funded by Chinese merchants"],
       "Russia wanted furs; maritime empires wanted spices and silver. Both conquered local peoples.");
 
     /* ===== Ch 23 ===== */
@@ -338,10 +338,10 @@ Study.addUnit("apwh", {
         "Divine right said kings answered only to God."],
       ["Compared to Louis XIV, Peter the Great used absolute power especially to", ["modernize Russia by adopting western European ways", "restore Catholicism as the religion of the Russian state", "break Russia into smaller states ruled by nobles", "cut Russia off from contact with western Europe"],
         "He built a navy, a new capital, and forced western dress and education on nobles."],
-      ["Bossuet, a bishop writing for the king, most likely wrote this to", ["strengthen Louis XIV's authority with religious backing", "limit the king's power by placing him under church law", "support the Protestants in their conflict with Rome", "promote Enlightenment ideas about natural rights"],
+      ["Bossuet, a bishop writing for the king, most likely wrote this to", ["strengthen Louis XIV's authority with religious backing", "limit the king's power by placing him firmly under church law", "support the Protestants in their conflict with Rome", "promote Enlightenment ideas about natural rights"],
         "Sourcing: a royal advisor defending royal power."]
     ]);
-    Q("23", "The Peace of Westphalia (1648) marked a shift in Europe from", ["religion as the main cause of war toward rivalry among sovereign states", "monarchy toward democracy and elected parliaments across Europe", "trade toward farming as the main source of national wealth", "science toward religion as the main basis of knowledge"],
+    Q("23", "The Peace of Westphalia (1648) marked a shift in Europe from", ["religion as the main cause of war toward rivalry among sovereign states", "monarchy toward democracy and elected parliaments in most of Europe's states", "trade toward farming as the main source of each kingdom's national wealth", "science toward religion as the main basis of knowledge in the universities"],
       "States recognized each other's sovereignty and began balancing power, regardless of religion.");
     Q("23", "Adam Smith's argument for free markets was mainly a criticism of", ["mercantilist policies that tightly regulated trade", "the Protestant work ethic that encouraged hard work and saving", "the encomienda system used in Spanish America", "Locke's argument that people have natural rights"],
       "Mercantilism tried to hoard gold and control trade; Smith argued open markets created more wealth.");
@@ -351,9 +351,9 @@ Study.addUnit("apwh", {
       "Adapted from Bartolomé de las Casas, A Short Account of the Destruction of the Indies, 1542", [
       ["Las Casas, a Spanish priest, most likely wrote this account to", ["persuade Spanish authorities to reform the treatment of natives", "recruit more conquistadores for the conquest of Peru", "celebrate the encomienda system and its results", "describe Aztec religion and temples for readers in Spain"],
         "He lobbied the king, and his writing helped produce the New Laws of 1542."],
-      ["Las Casas's account is limited as evidence for the overall population collapse because", ["it focuses on cruelty, while disease caused most deaths", "he never visited the Americas and relied on rumors", "it was written centuries after the events it describes", "he supported the conquistadores and hid their crimes"],
+      ["Las Casas's account is limited as evidence for the overall population collapse because", ["it focuses on cruelty, while disease caused most deaths", "he never visited the Americas and relied on rumors", "it was written several centuries after the events it describes", "he supported the conquistadores and hid their crimes"],
         "Brutality was real, but smallpox and other diseases killed far more people."],
-      ["Which group would most likely disagree with Las Casas?", ["Spanish settlers who profited from native labor", "Dominican friars who supported reform", "Indigenous leaders in the Caribbean", "royal officials who wrote the New Laws"],
+      ["Which group would most likely disagree with Las Casas?", ["Spanish settlers who profited from native labor", "Dominican friars in the Americas who supported reform", "Indigenous leaders of the Caribbean islands and Mexico", "royal officials who wrote and enforced the New Laws"],
         "Settlers depended on native labor and resisted reform."]
     ]);
     set("24", "At Potosí, Spanish officials used the mita to require indigenous villages to send workers in rotation to the silver mines, where many died from accidents and mercury poisoning.",
@@ -466,7 +466,7 @@ Study.addUnit("apwh", {
     ]);
     Q("25", "Songhay's defeat in 1591 by a Moroccan army armed with guns best shows", ["the growing military importance of gunpowder", "the spread of Christianity in west Africa", "the decline of trans-Saharan trade before 1500", "the strength of the Portuguese navy in Africa"],
       "Firearms gave a much smaller army the advantage, as in the gunpowder empires.");
-    Q("25", "Maroon communities are best described as", ["resistance in which escaped slaves built their own societies", "plantations owned and run by free Africans in the Caribbean", "European trading forts built along the west African coast", "African states that captured and sold people to Europeans"],
+    Q("25", "Maroon communities are best described as", ["resistance in which escaped slaves built their own societies", "large plantations owned and run by free Africans in the Caribbean", "European trading forts built along the west African coast", "African states that captured and sold people to Europeans"],
       "Escaping was one of the most serious forms of resistance, and some maroon communities lasted for generations.");
 
     /* ===== Ch 26 ===== */
@@ -481,11 +481,11 @@ Study.addUnit("apwh", {
     ]);
     set("26", "Japanese ships are strictly forbidden to leave for foreign countries. Any Japanese who returns from living overseas must be put to death. Wherever the teachings of the padres are practiced, investigate thoroughly.",
       "Adapted from the Tokugawa shogunate's Closed Country Edict, 1635", [
-      ["The edict was mainly intended to", ["protect Tokugawa stability by limiting foreign influence", "expand Japanese trade throughout southeast Asia", "welcome European missionaries to Japanese cities", "prepare an invasion of Ming China and Korea"],
+      ["The edict was mainly intended to", ["protect Tokugawa stability by limiting foreign influence", "expand Japanese trade and shipping throughout Southeast Asia", "welcome European missionaries to Japan's largest port cities", "prepare a Japanese invasion of Ming China by way of Korea"],
         "The shogunate saw Christianity and foreign ties as threats to its control."],
       ["Compared to Tokugawa Japan, Ming and Qing China", ["also limited foreign trade and missionaries, though less strictly", "allowed unlimited trade with any European merchants who arrived", "banned every form of contact with foreign countries", "converted to Christianity under Jesuit influence"],
         "Both kept Europeans at arm's length; China confined trade to certain ports."],
-      ["The edict's focus on Christianity most likely came from", ["fear that converts would be loyal to foreigners, not the shogun", "a desire to increase trade with Spain and Portugal", "Buddhist monks taking control of the government", "pressure from the Chinese emperor to ban it"],
+      ["The edict's focus on Christianity most likely came from", ["fear that converts would be loyal to foreigners, not the shogun", "a desire to increase Japan's trade with Spain and Portugal", "Buddhist monks taking control of the shogun's government", "pressure from the Ming emperor, who had banned it in China"],
         "The shogunate saw divided loyalty as a threat to order."]
     ]);
     set("26", "The entire kingdom is administered by the order of the learned, commonly known as the philosophers. Responsibility for the orderly management of the whole realm is entrusted entirely to them.",
@@ -501,7 +501,7 @@ Study.addUnit("apwh", {
       BG, [
       ["This passage best illustrates", ["growing merchant influence despite their low official status", "the decline of Japanese cities under Tokugawa rule", "samurai being required by law to become merchants", "European artists shaping Japanese painting and theater"],
         "Wealth gave merchants cultural power the official hierarchy didn't recognize."],
-      ["A similar development in Ming and Qing China was", ["merchants gaining wealth and status as the economy grew", "merchants becoming the top social class by law", "the government ending the civil service exams", "a long decline in China's population and cities"],
+      ["A similar development in Ming and Qing China was", ["merchants gaining wealth and status as the economy grew", "merchants becoming the top social class under the law", "the government ending the civil service exams for good", "a long decline in China's population and its big cities"],
         "In both societies, economic change outpaced the Confucian ranking of classes."],
       ["Which development in Europe is most similar to the one described?", ["Merchant wealth paying for art in Renaissance cities", "The Thirty Years' War between Catholic and Protestant states", "The Spanish Inquisition's campaign against heresy", "Absolutism and court culture under Louis XIV"],
         "In both, merchant wealth paid for new urban culture."]
@@ -553,7 +553,7 @@ Study.addUnit("apwh", {
       BG, [
       ["Mehmed's actions best show Ottoman rulers", ["combining Islamic rule with tolerance of diverse subjects", "forcing all Christian subjects to convert to Islam", "abandoning the city for a new capital in Anatolia", "keeping the Byzantine government in place"],
         "The mosque announced Islamic rule; resettlement rebuilt a thriving, diverse capital."],
-      ["The Ottoman, Safavid, and Mughal empires were similar in that all three", ["used gunpowder and ruled religiously diverse peoples", "were all Shia Muslim states ruled by shahs", "were founded directly by Mongol khans", "avoided building large monuments or mosques"],
+      ["The Ottoman, Safavid, and Mughal empires were similar in that all three", ["used gunpowder and ruled religiously diverse peoples", "were all Shia Muslim states ruled by shahs from Persia", "were founded directly by the sons of Mongol khans", "avoided building large monuments, palaces, or mosques"],
         "Only the Safavids were Shia; all three used gunpowder and governed diverse peoples."],
       ["Inviting diverse peoples to resettle Istanbul most likely helped Mehmed", ["revive the city's economy and trade", "convert all Greek residents to Islam", "prepare to abandon the city", "weaken his own power over the city"],
         "Merchants and craftsmen of many faiths made Istanbul thrive again."]
@@ -563,7 +563,7 @@ Study.addUnit("apwh", {
       "Akbar holds a religious assembly in the Ibadat Khana (House of Worship); the two men in black are Jesuit missionaries. Painting by Nar Singh for the Akbarnama, Akbar's official history, c. 1605", [
       ["The painting best illustrates Akbar's", ["interest in debate among many religions", "persecution of Hindus and other non-Muslims", "conversion to Christianity late in life", "military campaigns in southern India"],
         "He invited Muslim, Hindu, Christian, and other scholars to discuss their faiths."],
-      ["Akbar's religious policies were most likely intended to", ["build loyalty among a diverse population", "make Christianity the official religion", "win the favor of the Safavid shah", "end trade with European merchants"],
+      ["Akbar's religious policies were most likely intended to", ["build loyalty among a diverse population", "make Christianity the empire's official religion", "win the favor of the Safavid shah", "end trade with European merchants"],
         "A Muslim ruler of a mostly Hindu land needed broad support."],
       ["Because the painting was made for Akbar's official history, it most likely", ["presents the emperor in a favorable light", "shows the scene with no point of view", "was meant to criticize Akbar's policies", "was made by the Jesuits to mock him"],
         "Sourcing: court art was made to glorify the ruler."]
@@ -572,6 +572,208 @@ Study.addUnit("apwh", {
       "Shah Jahan's tomb for his wife mixes Persian design with Indian craftsmanship.");
     Q("27", "Suleyman's reign is often seen as the Ottoman peak because the empire", ["reached its greatest power and issued major law codes", "first captured Constantinople and made it the capital", "converted from Sunni to Shia Islam under his rule", "began to lose territory to Russia and Austria"],
       "He besieged Vienna in 1529, and Ottomans remember him as \"the Lawgiver.\"");
+
+    /* ================= Skill builders: sourcing, causation, comparison, context, evidence ================= */
+    /* ===== Ch 22 ===== */
+    set("22", "They have no iron or steel or weapons, and they are so timid and so generous with all they have that no one would believe it without seeing it. I gave them many pleasing things so that they would become Christians and be inclined to serve Your Highnesses.",
+      "Adapted from Christopher Columbus, letter describing his first voyage, 1493", [
+      ["Columbus's description was most likely meant to", ["convince his royal sponsors that the lands could be easily controlled and converted", "warn Spain that the islands were too dangerous and poor to be worth settling", "praise the Taíno as equals of Spanish nobles who deserved their own kingdom", "persuade the king of Portugal to join Spain in a new alliance against Muslims"],
+        "Purpose: he needed continued funding, so he stressed easy conversion and service to the crown."],
+      ["Which development most directly followed from the attitudes in the letter?", ["Spanish colonists forcing Taíno people to work under the encomienda", "Spain signing equal trade treaties with the Taíno chiefs of Hispaniola", "Taíno armies driving the Spanish out of the Caribbean for a century", "Spain abandoning its Caribbean colonies by 1510 to focus on Africa"],
+        "Seeing the Taíno as people who would 'serve' led to forced labor; disease and abuse devastated them."],
+      ["Columbus's voyage is best understood in the context of", ["Iberian competition to reach Asian trade by sea", "the Mongol Empire's control of the Atlantic", "the Reformation's split of the Catholic Church in Europe", "the Ottoman alliance with Spain"],
+        "Portugal had just rounded Africa (1488). Spain bet on going west."]
+    ]);
+    set("22", "After 1550, maize, sweet potatoes, and peanuts from the Americas spread across China, Europe, and West Africa. They grew on hillsides and poor soils where rice and wheat could not, and they gave many calories per acre.",
+      BG, [
+      ["These crops most directly contributed to", ["population growth in parts of Afro-Eurasia", "the decline of the Atlantic slave trade", "the end of rice farming in China", "famines in West Africa"],
+        "More food from more land supported larger populations."],
+      ["Which is the best evidence of the crops' impact in China?", ["Farmers planted maize and sweet potatoes on hills never farmed before", "The Ming government built a larger fleet to replace Zheng He's ships", "Chinese silk exports to Europe fell sharply after American crops arrived", "The civil service exams added questions about growing American crops"],
+        "Using evidence: new farmland is the direct link between the crops and more food."],
+      ["Unlike these crops, the diseases of the Columbian Exchange", ["moved mostly from Afro-Eurasia to the Americas", "moved mostly from the Americas to Europe", "affected only European colonists", "spread only after 1800"],
+        "Smallpox, measles, and influenza devastated Native Americans, who had no prior exposure."]
+    ]);
+    set("22", "As Russians pushed across Siberia in the 1600s, they built forts along major rivers and demanded yasak, a tribute paid in furs, from Siberian peoples. Furs were sold in Europe, the Ottoman Empire, and China.",
+      BG, [
+      ["Yasak is most similar to", ["Spanish demands for tribute and labor from Native peoples", "the Mughal emperor Akbar's decision to end the jizya", "Japan's edict closing the country to most foreigners", "Portuguese forts that controlled ports in the Indian Ocean"],
+        "Both forced conquered peoples to hand over wealth to a colonial state."],
+      ["Russian expansion into Siberia was driven mainly by", ["demand for furs in global markets", "a search for a sea route to India", "religious persecution in Moscow", "the need for land to grow sugar"],
+        "Furs were Russia's 'soft gold.'"],
+      ["Building forts along rivers suggests that early Russian control", ["focused on key routes rather than the whole territory", "already reached every village and camp in Siberia", "depended on a strong navy sailing the Arctic Ocean", "relied on Chinese help to defeat Siberian peoples"],
+        "Rivers were highways; controlling them meant controlling the fur trade."]
+    ]);
+    Q("22", "The main global result of the Seven Years' War (1756–1763) was that", ["Britain became the leading colonial and naval power", "France gained control of most of North America", "Spain lost all of its colonies in South America", "Russia took control of India from the Mughals"],
+      "Britain won Canada and dominance in India, setting up the 1800s.");
+    Q("22", "How did the Portuguese empire in the Indian Ocean differ from Spain's empire in the Americas?", ["Portugal mostly controlled ports and sea lanes, not large inland territories", "Portugal conquered the Mughal Empire, while Spain only traded in the Americas", "Portugal relied on joint-stock companies, while Spain's crown ran everything", "Portugal ruled far more people in Asia than Spain ruled in all of the Americas"],
+      "Portugal had a trading-post empire. Spain conquered and settled huge areas.");
+
+    /* ===== Ch 23 ===== */
+    set("23", "If anyone says that the sinner is justified by faith alone, meaning that nothing else is required, let him be cut off from the Church. If anyone says the sacraments are not necessary for salvation, let him be cut off.",
+      "Adapted from the decrees of the Council of Trent, Catholic Church, 1547", [
+      ["The council's statement was a direct response to", ["Protestant teaching that salvation comes through faith alone", "Galileo's claim, backed by his telescope, that the earth moves", "the Ottoman siege of Vienna and its threat to Christendom", "Enlightenment demands that kings share power with the people"],
+        "Luther and other Protestants taught salvation by faith alone; Trent rejected that."],
+      ["The Council of Trent is best seen as part of", ["the Catholic Reformation, which fixed abuses but kept Catholic teaching", "the Protestant Reformation led by John Calvin in the city of Geneva", "the Scientific Revolution, which tested church teachings by experiment", "the Peace of Westphalia, which ended Europe's wars of religion in 1648"],
+        "Trent cracked down on abuses like selling offices but reaffirmed doctrine."],
+      ["Which was another part of the same Catholic effort?", ["Jesuit schools and missions in Europe, Asia, and the Americas", "Henry VIII creating the Church of England with himself at its head", "the founding of the Royal Society in London to promote science", "Peter the Great's reforms to make Russia more like the West"],
+        "The Jesuits spread and defended Catholicism worldwide."]
+    ]);
+    set("23", "The Peace of Westphalia in 1648 ended the Thirty Years' War. It confirmed that each ruler could decide whether his lands were Catholic, Lutheran, or Calvinist, and it recognized the independence of states like the Dutch Republic and the Swiss Confederation.",
+      BG, [
+      ["The Peace of Westphalia most directly", ["strengthened independent sovereign states in Europe", "united Europe under the rule of the Holy Roman Emperor", "made Catholicism the only legal religion in Germany", "ended European competition for colonies overseas"],
+        "It's often seen as the start of the modern system of sovereign states."],
+      ["Which fact best shows that the Thirty Years' War became about power more than religion?", ["Catholic France fought on the Protestant side against the Catholic Habsburgs", "The war started with a Protestant revolt against a Catholic king in Bohemia", "Armies destroyed many German towns, and some regions lost half their people", "The war dragged on for thirty years before the sides agreed to peace"],
+        "France joined to weaken its Habsburg rivals, not to defend Protestantism."],
+      ["One long-term effect of these religious wars was that", ["many rulers and thinkers came to value religious toleration and strong states", "the pope gained the power to choose and remove most kings across Europe", "Protestantism disappeared from the German states within a single generation", "European kingdoms stopped building large armies and turned to trade alone"],
+        "Exhaustion from war helped push both absolutism and Enlightenment ideas of toleration."]
+    ]);
+    set("23", "It is not from the kindness of the butcher, the brewer, or the baker that we expect our dinner, but from their concern for their own interest. Each person, pursuing his own gain, is led as if by an invisible hand to promote the good of society.",
+      "Adapted from Adam Smith, The Wealth of Nations, 1776", [
+      ["Smith's argument most directly challenged", ["mercantilism, where governments controlled trade to pile up gold", "the Protestant belief that salvation comes by faith alone", "the divine right of kings to rule without answering to anyone", "the heliocentric model of the universe proposed by Copernicus"],
+        "Smith argued that free markets, not state control, create wealth."],
+      ["Smith's work is best seen as part of", ["the Enlightenment's use of reason to study society", "the Catholic Reformation's defense of tradition", "the Renaissance revival of Greek and Roman art", "the Columbian Exchange of crops, animals, and people"],
+        "Enlightenment thinkers applied scientific reasoning to economics and politics."],
+      ["Which group would most likely support Smith's argument?", ["Merchants who wanted to trade without state monopolies", "Officials running royal monopoly trading companies", "Kings raising tariffs to protect their gold reserves", "Nobles who lived comfortably off the labor of serfs"],
+        "Free trade threatened monopolies and helped independent merchants."]
+    ]);
+    Q("23", "The Scientific Revolution challenged traditional authority mainly because it", ["relied on observation, experiment, and math instead of accepted texts", "rejected Christianity completely and called for atheist governments", "was led by Catholic popes who wanted to update church teaching", "began in Ming China and reached Europe through Jesuit missionaries"],
+      "Truth could be tested, not just inherited from Aristotle or the church.");
+    Q("23", "Which best explains the rise of absolutist monarchs like Louis XIV in the 1600s?", ["After religious wars, many elites wanted order and a strong central ruler", "The Peace of Westphalia gave Europe's kings control over the papacy", "Enlightenment thinkers like John Locke argued that kings need total power", "Merchants refused to pay taxes unless kings ruled with total power"],
+      "Chaos made strong kings attractive. Louis XIV also controlled nobles at Versailles.");
+
+    /* ===== Ch 24 ===== */
+    set("24", "Foolish men who accuse women without reason, not seeing that you are the cause of the very thing you blame: if you court them so eagerly, why do you want them to behave well while you tempt them to do wrong?",
+      "Adapted from a poem by Sor Juana Inés de la Cruz, a nun and writer in Mexico City, 1689", [
+      ["The poem criticizes", ["the double standard men applied to women", "the Spanish crown's taxes on Mexico", "the mita labor system", "Protestant attacks on the church"],
+        "She points out that men blame women for things men cause."],
+      ["Sor Juana's career is notable mainly because", ["a creole woman became a famous scholar through the convent", "she led an armed revolt against Spanish rule in Mexico", "she was the first woman to govern New Spain as viceroy", "she wrote only in Nahuatl to preserve Aztec culture"],
+        "The convent was one of the few places a woman could study and write."],
+      ["Late in life, Sor Juana was pressured by church officials to stop writing. This best shows", ["the limits placed on educated women in colonial society", "the church's strong support for women's education", "that the Inquisition had been abolished in Mexico", "that creoles held the highest offices in New Spain"],
+        "Even a celebrated woman faced strict limits."]
+    ]);
+    set("24", "The priests, the corregidores, and the encomenderos take from the Indians their property, their labor, and even their wives and daughters. Because of this the Indians are dying out, and the kingdom will be left empty.",
+      "Adapted from Felipe Guaman Poma de Ayala, an Andean noble, in a long letter to King Philip III of Spain, 1615", [
+      ["Guaman Poma most likely wanted the king to", ["reform colonial abuses against Andean people", "end Christianity in Peru", "give all of Peru to the Inca nobility", "send more soldiers to fight the Inca"],
+        "He wrote as a loyal Christian subject asking the king to fix abuses by local officials."],
+      ["His point of view was most shaped by", ["being an Andean noble who knew both Inca and Spanish worlds", "being a Spanish priest who had never left his home in Spain", "working for years as a slave trader on the coast of Brazil", "serving as the viceroy who governed Peru for the king"],
+        "He wrote with insider knowledge of Andean society and the colonial system."],
+      ["The population loss he describes is best explained by", ["disease, forced labor, and broken communities", "a famine caused by the Little Ice Age alone", "wars between rival Inca and Aztec armies", "Native Americans leaving for Europe"],
+        "Epidemics were the biggest killer, worsened by the mita and other abuses."]
+    ]);
+    set("24", "In northeastern Brazil, sugar mills needed many workers all year. Portuguese planters first enslaved Native Brazilians, but epidemics and escape reduced their numbers. Planters then bought enslaved Africans, and by the early 1600s Africans made up most of the workforce.",
+      BG, [
+      ["Planters turned to enslaved Africans mainly because", ["Native workers died from disease or escaped", "Africans asked to work on Brazilian farms", "Portugal had banned all trade with Africa", "Native Brazilians were all Christian and couldn't be enslaved"],
+        "Disease and escape shrank the Native labor supply, and Portugal already traded on the African coast."],
+      ["Sugar in Brazil is best described as", ["a cash crop grown for export to Europe", "a food crop grown mainly for local families", "a crop introduced by the Aztecs", "a crop grown only by small farmers"],
+        "Plantations produced sugar for European markets."],
+      ["Brazil's sugar economy was most similar to", ["Caribbean plantations run by the British and French", "Russian fur trading among the peoples of Siberia", "rice farming by village peasants in Tokugawa-era Japan", "cotton weaving in the Mughal workshops of Bengal"],
+        "Both used enslaved Africans to grow sugar for export."]
+    ]);
+    set("24", "English colonists in Virginia grew tobacco for export, while New England colonists farmed small plots and fished. In Canada, French traders exchanged guns, metal tools, and cloth for beaver furs supplied by Native peoples.",
+      BG, [
+      ["French colonization in Canada differed from English colonization mainly in that the French", ["depended more on trade alliances with Native peoples than on large settlements", "brought many more settlers to North America than the English colonies did", "built their colony around sugar plantations worked by enslaved Africans", "showed little interest in furs and focused on growing tobacco instead"],
+        "New France stayed small, and its economy depended on Native trading partners."],
+      ["Tobacco farming in Virginia most directly led planters to", ["rely on indentured servants and then enslaved Africans", "trade beaver furs with the French traders in Canada", "build silver mines in the hills of western Virginia", "stop exporting crops to England and sell them only locally"],
+        "Labor-hungry cash crops pushed Virginia toward slavery by the late 1600s."],
+      ["The French fur trade is most similar to", ["the Russian fur trade in Siberia", "the Spanish mita in Potosí", "the Manila galleon trade", "the Ottoman devshirme"],
+        "Both brought furs from Indigenous peoples to world markets."]
+    ]);
+    Q("24", "The Virgin of Guadalupe, shown with dark skin and linked to a site sacred before the Spanish arrived, best illustrates", ["blending of Indigenous and Catholic traditions in New Spain", "the complete disappearance of Native religion in Mexico", "the influence of Dutch Protestant missionaries in Mexico", "the Aztec rejection of Christianity after the conquest"],
+      "Syncretism helped Christianity take root among Native Mexicans.");
+
+    /* ===== Ch 25 ===== */
+    set("25", "Queen Nzinga of Ndongo and Matamba negotiated with the Portuguese and was baptized as a Christian, but later fought them for decades. At times she allied with the Dutch, and she took part in the slave trade to strengthen her own state.",
+      BG, [
+      ["Nzinga's actions best show", ["African rulers using diplomacy, religion, and war to protect their power", "African states being unable to resist European armies in any real way", "Portugal conquering and ruling all of central Africa by the year 1600", "Christian missionaries quietly taking control of African governments"],
+        "She switched tactics as needed to keep her kingdom independent."],
+      ["Her alliance with the Dutch best reflects", ["European rivalries that African rulers could take advantage of", "Dutch control over the Ottoman Empire's Mediterranean trade", "the end of the slave trade across central Africa by 1650", "a Dutch plan to settle Angola with farmers from Holland"],
+        "The Dutch and Portuguese were enemies; she played them against each other."],
+      ["Her role in the slave trade shows that", ["many African rulers controlled the supply of captives sold to Europeans", "Europeans captured most enslaved people themselves deep in the interior", "the slave trade had little effect on African kingdoms or their politics", "only Muslim states in North Africa took any part in selling captives"],
+        "Europeans mostly bought captives on the coast from African sellers."]
+    ]);
+    set("25", "In the 1700s the kingdom of Dahomey grew powerful by selling war captives to European traders in exchange for guns and other goods. The guns helped Dahomey's armies capture more people.",
+      BG, [
+      ["This pattern best illustrates", ["a cycle where the slave trade strengthened some states and destabilized others", "Europeans conquering the West African interior with their guns and cannons", "the end of warfare in West Africa as its kingdoms grew richer from trade", "Dahomey refusing to trade with Europeans in order to protect its own people"],
+        "Guns-for-captives fed more raids and warfare."],
+      ["One long-term effect of the slave trade on West African societies was", ["population loss and more women than men in some regions", "rapid growth in factories producing guns for export", "the spread of Christianity to every West African kingdom", "a large surplus of young men available to work farms"],
+        "Most captives sold across the Atlantic were young men."],
+      ["Europeans mostly stayed on the West African coast in this period because", ["African states controlled the interior and diseases like malaria were deadly", "the African interior had no goods or resources that Europeans wanted to buy", "the Ottoman sultans had banned all Europeans from traveling inland in Africa", "their ships were too small to sail up any of the large African rivers"],
+        "Coastal forts depended on African partners."]
+    ]);
+    set("25", "In the interior of northeastern Brazil, people who escaped slavery built Palmares, a community of thousands. Its leaders drew on African political traditions, and it fought off Portuguese and Dutch attacks for most of the 1600s.",
+      BG, [
+      ["Palmares best illustrates", ["resistance by enslaved people through escape and maroon communities", "a Portuguese plan to free enslaved people and settle them inland", "a Native American empire that ruled the interior of northern Brazil", "a Dutch trading post set up to buy sugar from local planters"],
+        "Maroon communities existed across the Americas, from Jamaica to Suriname."],
+      ["Palmares lasted so long most likely because", ["its rough, remote location made it hard for colonial armies to reach", "Portugal paid its leaders to defend Brazil against the Dutch", "it was protected by Spanish warships along the Brazilian coast", "it had more guns than all the plantations of Brazil put together"],
+        "Distance and terrain helped maroons hold out."],
+      ["Another form of resistance by enslaved people was", ["keeping African religious and cultural practices alive", "joining the Portuguese army as high-ranking officers", "buying the plantations from their owners with saved wages", "voting against slavery in the colonial assemblies"],
+        "Everyday resistance included culture, slowdowns, and sabotage, not just revolts."]
+    ]);
+    Q("25", "Religions like Vodou in Haiti and Candomblé in Brazil best illustrate", ["blending of African religions with Catholic practices in the Americas", "the complete loss of African culture among enslaved people in the Americas", "the conversion of most enslaved people to Islam during the Middle Passage", "the success of Protestant missions among the kingdoms of West Africa"],
+      "Syncretism: African spirits were linked with Catholic saints.");
+    Q("25", "Which statement about the Atlantic slave trade is best supported by the evidence?", ["Most enslaved Africans went to Brazil and the Caribbean, not North America", "Most enslaved Africans were taken to the English colonies in North America", "The Atlantic slave trade had mostly ended before the start of the 1700s", "More Europeans than Africans crossed the Atlantic to the Americas before 1800"],
+      "About 90 percent went to Brazil, the Caribbean, and Spanish America, mostly for sugar.");
+
+    /* ===== Ch 26 ===== */
+    set("26", "In 1645 the Qing ordered all Chinese men to shave the front of their heads and wear a long braid, the queue, in the Manchu style, on pain of death. Yet the Qing kept the civil service exams and ruled through Confucian scholar-officials.",
+      BG, [
+      ["The queue order was mainly meant to", ["make Chinese men show loyalty to the new Manchu rulers", "improve health and cleanliness in Chinese cities", "bring back a hairstyle worn by the Ming emperors", "please the Jesuit missionaries at the Qing court"],
+        "Wearing the queue was a visible sign of submission."],
+      ["Keeping the exams and Confucian officials suggests the Qing", ["needed Chinese elites' support to govern a huge population", "wanted to replace Chinese culture with Manchu culture completely", "planned to return power to the Ming", "were following orders from the Mongols"],
+        "A small Manchu minority ruled through Chinese institutions."],
+      ["The Qing approach is most similar to that of", ["the Mughals, Muslim rulers who used Hindu officials and allies", "the Spanish in Mexico, who destroyed the Aztec government", "the Tokugawa, who banned Christianity", "the Dutch, who ruled through a trading company"],
+        "Both were outsiders ruling large, different populations by working with local elites."]
+    ]);
+    set("26", "The farmers of all provinces are strictly forbidden to have swords, bows, spears, firearms, or other weapons. The weapons collected will be melted down and used as nails and bolts in building the Great Buddha.",
+      "Adapted from Toyotomi Hideyoshi's Sword Collection Edict, Japan, 1588", [
+      ["The edict's main purpose was to", ["prevent peasant uprisings and keep classes separate", "arm peasants so they could fight in the war in Korea", "spread Buddhism to provinces that still followed Shinto", "help farmers make money by selling weapons abroad"],
+        "Disarming peasants separated farmers from samurai and reduced rebellion."],
+      ["The religious reason given in the edict most likely", ["made the order easier for people to accept", "was the real reason weapons were collected", "came from Jesuit missionaries", "was meant to anger Buddhist monks"],
+        "Sourcing: a stated reason isn't always the main one."],
+      ["This policy helped lead to", ["the long peace and rigid class order of the Tokugawa era", "a peasant takeover of the shogunate in the early 1600s", "the first arrival of Portuguese guns in Japan in 1543", "Japan's conquest of Ming China and its tribute states"],
+        "Tokugawa Japan kept these class lines and avoided major wars for over 200 years."]
+    ]);
+    set("26", "By 1600 there were about 300,000 Japanese Christians. In 1614 the shogunate banned Christianity and expelled the missionaries. Thousands of believers were later executed, but Dutch traders were allowed to stay on a small island at Nagasaki.",
+      BG, [
+      ["The shogunate's main worry about Christianity was", ["that converts might be loyal to foreign powers instead of the shogun", "that Christian farmers would refuse to grow rice for the samurai", "that Christianity would replace the Confucian civil service exams", "that the Dutch were spreading Catholicism in the port cities"],
+        "Leaders feared European influence and divided loyalty."],
+      ["The Dutch were allowed to stay mainly because they", ["focused on trade and did not try to spread Christianity", "were Catholic, like the Portuguese who came before them", "promised to give up all trade in return for a safe harbor", "had defeated the Japanese navy in a battle off Nagasaki"],
+        "Protestant Dutch traders cared about profit, not missions."],
+      ["Contact through the Dutch at Nagasaki most directly allowed", ["some Japanese scholars to study European science (Dutch learning)", "large numbers of Japanese families to move to Europe and back", "Christian missionaries to return and preach freely again", "Japan to take part in the Atlantic trade in enslaved people"],
+        "Rangaku kept a small window open to European ideas."]
+    ]);
+    Q("26", "The Ming 'single whip' reform, which required taxes to be paid in silver, most directly", ["increased China's demand for silver from the Americas and Japan", "ended China's trade with European merchants at the port of Canton", "started the Columbian Exchange of crops between the hemispheres", "led Tokugawa Japan to close its ports to European traders"],
+      "Silver flowed into China because the tax system ran on it.");
+
+    /* ===== Ch 27 ===== */
+    set("27", "Hindustan is a country of few charms. The people are not good-looking, there are no good horses, no grapes or melons, no good bread. Its one pleasant aspect is that it is a large country with a great deal of gold and silver.",
+      "Adapted from Babur, founder of the Mughal Empire, in his memoirs, c. 1530", [
+      ["Babur's attitude suggests his main motive for conquering India was", ["wealth and power rather than love of the land", "spreading Shia Islam to India", "escaping the Portuguese", "protecting Hindus from the Delhi Sultanate"],
+        "He clearly preferred Central Asia but valued India's riches."],
+      ["Babur defeated the Delhi Sultan at Panipat in 1526 mainly with", ["field cannons and muskets", "war elephants borrowed from Persia", "a fleet that sailed up the Ganges", "Portuguese soldiers"],
+        "Gunpowder weapons gave the Mughals the edge, like the Ottomans and Safavids."],
+      ["Later Mughal rulers like Akbar differed from Babur in that they", ["worked to win over Hindu elites through marriage, office, and tolerance", "left most of India to return to the family's homeland in Central Asia", "banned the building of new Hindu temples throughout the whole empire", "refused to use cannons or muskets because they saw them as dishonorable"],
+        "Akbar married Rajput princesses, ended the jizya, and gave Hindus high posts."]
+    ]);
+    set("27", "Aurangzeb brought back the jizya on non-Muslims in 1679, banned the building of new Hindu temples in many places, and spent decades fighting to conquer the Deccan in southern India.",
+      BG, [
+      ["Compared with Akbar, Aurangzeb", ["favored strict Sunni rule over religious tolerance", "was even more tolerant of Hindus than Akbar was", "ended Mughal expansion and made peace in the Deccan", "made Hinduism the official religion of the empire"],
+        "Akbar abolished the jizya; Aurangzeb restored it."],
+      ["One result of Aurangzeb's policies was", ["revolts by Marathas, Sikhs, and Rajputs", "a large wave of conversions to Christianity", "the Portuguese conquest of Delhi", "the end of the Safavid Empire"],
+        "Groups who felt pushed out rose against the Mughals."],
+      ["The long Deccan wars most directly", ["drained the treasury and weakened the empire after his death", "doubled the empire's tax income and paid for new palaces", "united all of India peacefully under a single Mughal law", "ended Mughal trade with the English and Dutch companies"],
+        "Endless war was costly, and the empire broke apart in the 1700s."]
+    ]);
+    set("27", "Shah Abbas I built a new capital at Isfahan, invited Armenian merchants to run Persia's silk trade, and formed an army of Georgian and Armenian converts trained to use guns and loyal only to him.",
+      BG, [
+      ["Shah Abbas's new army is most similar to", ["the Ottoman Janissaries", "the Mongol cavalry", "the Spanish conquistadors", "the samurai of Tokugawa Japan"],
+        "Both were slave-soldier armies of converts loyal to the ruler, not to nobles."],
+      ["Inviting Armenian merchants best shows Shah Abbas", ["using a minority's trade networks to raise revenue", "trying to convert Armenians to Shia Islam by force", "banning Persian trade with all European merchants", "copying the tax policies of the Mughal emperors"],
+        "Armenians had trading links from Europe to India."],
+      ["Safavid wars with the Ottomans were made fiercer by", ["the Sunni–Shia religious divide", "competition over American silver mines", "the Portuguese takeover of Istanbul", "Mongol invasions of Persia"],
+        "The Safavids were Shia, the Ottomans Sunni; each saw the other as a religious rival."]
+    ]);
+    Q("27", "Which feature did the Ottoman, Safavid, and Mughal empires share?", ["Turkic origins, gunpowder armies, and Muslim rulers over diverse peoples", "Shia Islam as the official religion and Persian as the only language", "Large overseas colonies in the Americas defended by strong navies", "Rule by elected assemblies that limited the power of the sultan"],
+      "All three were gunpowder empires founded by Turkic Muslim dynasties ruling varied populations.");
   }
 });
 })();

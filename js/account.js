@@ -48,9 +48,12 @@ const LB = (() => {
       A = a; F = f;
       const inst = app.initializeApp(cfg());
       auth = a.getAuth(inst); db = f.getFirestore(inst);
-      await new Promise(res => { const off = a.onAuthStateChanged(auth, u => { off(); res(u); }); });
+      const first = await new Promise(res => { const off = a.onAuthStateChanged(auth, u => { off(); res(u); }); });
+      // know who's signed in before anything else runs (otherwise queued points wait for the next round)
+      user = first; if (first) await loadMember();
       a.onAuthStateChanged(auth, async u => {
         if (creating) return;            // sign-up in progress handles itself
+        if (u && user && u.uid === user.uid && checked) return;   // same account, already loaded
         const was = !!(user && memberName);
         user = u;
         if (u){ await loadMember(); } else { memberName = null; checked = false; }
@@ -107,38 +110,55 @@ const LB = (() => {
     const cred = await A.signInWithEmailAndPassword(auth, emailOf(name), pass);
     user = cred.user; await loadMember();
   }
-  async function signOut(){ await init(); await A.signOut(auth); user = null; memberName = null; checked = false; ST.lbUser = null; save(); }
+  async function signOut(){ await init(); await A.signOut(auth); user = null; memberName = null; checked = false; ST.lbUser = null; ST.lbRow = null; save(); }
 
   // round finished: queue the points, send when possible
+  // round finished (or quit partway): queue the points, send when possible.
+  // Points earned before making an account are kept too, and count once you sign up.
   function submit(subject, pts){
     pts = Math.max(0, Math.round(pts || 0));
     if (ST.lbUser) init().then(() => sync()).catch(() => {});
-    if (!pts || !ST.lbUser) return;
+    if (!pts || !cfg()) return;
     ST.lbPending = (ST.lbPending || []).concat([{s: subject, p: pts}]).slice(-50);
     save();
-    init().then(flush).catch(() => {});
+    if (ST.lbUser) init().then(flush).catch(() => {});
+  }
+  // the server accepts at most 50 rounds and 50,000 points per write, so send in batches (a giant round is split)
+  const CAP = 50000;
+  function batchOf(list){
+    const out = []; let sum = 0;
+    for (const x of list){ if (out.length >= 50 || sum + x.p > CAP) break; out.push(x); sum += x.p; }
+    return out;
   }
   async function flush(){
     if (busy || !user || !memberName) return;
-    const pend = (ST.lbPending || []).slice(0, 50);
-    if (!pend.length) return;
     busy = true;
     try {
+      // split any round over the cap into pieces (best keeps the full round's score)
+      ST.lbPending = (ST.lbPending || []).flatMap(x => { const out = []; let left = x.p; while (left > CAP){ out.push({s: x.s, p: CAP, b: x.b || x.p}); left -= CAP; } out.push(Object.assign({}, x, {p: left})); return out; });
       const ref = F.doc(db, "scores", user.uid);
-      await F.runTransaction(db, async tx => {
-        const snap = await tx.get(ref);
-        const o = snap.exists() ? snap.data() : {total:0, vocab:0, math:0, rounds:0, best:0};
-        const subjOf = x => x.s === "math" ? "math3" : x.s;           // older app versions sent "math"
-        const by = Object.assign({}, o.by || {});
-        pend.forEach(x => { const s = subjOf(x); by[s] = (by[s] || 0) + x.p; });
-        const sumWhere = f => pend.filter(x => f(subjOf(x))).reduce((a, x) => a + x.p, 0);
-        const sum = pend.reduce((a, x) => a + x.p, 0);
-        tx.set(ref, {name: memberName, total: (o.total || 0) + sum,
-                     vocab: (o.vocab || 0) + sumWhere(s => s === "vocab"),
-                     math: (o.math || 0) + sumWhere(s => s.startsWith("math")),
-                     by, rounds: (o.rounds || 0) + pend.length, best: Math.max(o.best || 0, ...pend.map(x => x.p)), updated: F.serverTimestamp()});
-      });
-      ST.lbPending = (ST.lbPending || []).slice(pend.length); save();
+      for (let guard = 0; guard < 25; guard++){
+        const pend = batchOf(ST.lbPending);
+        // nothing to send: still make sure this member has a row, so new accounts show up right away
+        if (!pend.length && ST.lbRow === user.uid) break;
+        await F.runTransaction(db, async tx => {
+          const snap = await tx.get(ref);
+          if (!pend.length && snap.exists()) return;
+          const o = snap.exists() ? snap.data() : {total:0, vocab:0, math:0, rounds:0, best:0};
+          const subjOf = x => x.s === "math" ? "math3" : x.s;           // older app versions sent "math"
+          const by = Object.assign({}, o.by || {});
+          pend.forEach(x => { const s = subjOf(x); by[s] = (by[s] || 0) + x.p; });
+          const sumWhere = f => pend.filter(x => f(subjOf(x))).reduce((a, x) => a + x.p, 0);
+          const sum = pend.reduce((a, x) => a + x.p, 0);
+          tx.set(ref, {name: memberName, total: (o.total || 0) + sum,
+                       vocab: (o.vocab || 0) + sumWhere(s => s === "vocab"),
+                       math: (o.math || 0) + sumWhere(s => s.startsWith("math")),
+                       by, rounds: (o.rounds || 0) + Math.max(1, pend.length), best: Math.max(o.best || 0, 0, ...pend.map(x => x.b || x.p)), updated: F.serverTimestamp()});
+        });
+        ST.lbRow = user.uid;
+        ST.lbPending = (ST.lbPending || []).slice(pend.length); save();
+        if (!pend.length) break;
+      }
     } catch(e){ /* stays queued; retried next time */ }
     busy = false;
   }
