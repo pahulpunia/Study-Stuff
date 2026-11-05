@@ -120,4 +120,11 @@ const Shell = (() => {
 
 /* every screen change refreshes the sidebar + panel */
 const _show = show;
-show = function(id){ _show(id); Shell.update(id); };
+const SCREEN_NAMES = {home:"Home", quiz:"Vocab round", end:"Vocab results", study:"Study list", stats:"Stats", mquiz:"Round", mend:"Results", mnotes:"Notes", settings:"Settings", write:"Writing", board:"Leaderboard"};
+let lastScreen = "";
+show = function(id){ _show(id); Shell.update(id);
+  /* the site is one page, so report screen changes as page views */
+  if (window.gtag && id !== lastScreen && lastScreen){
+    try { gtag("event", "page_view", {page_title: SCREEN_NAMES[id] || id, page_location: location.origin + location.pathname + "#" + id, subject: (typeof ST !== "undefined" && ST.subject) || ""}); } catch(e){}
+  }
+  lastScreen = id; };

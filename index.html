@@ -8,6 +8,11 @@
 <script>/* theme before first paint: dark unless the user picked light */
 (function(){ var t = "dark"; try { t = (JSON.parse(localStorage.getItem("genVocabQuiz.v2") || "{}").settings || {}).theme || "dark"; } catch(e){}
   document.documentElement.dataset.theme = t; document.getElementById("themeColor").content = t === "light" ? "#F6F8FB" : "#10151E"; })();</script>
+<script>/* Google Analytics (live site only) */
+(function(){ if (!/\.github\.io$/.test(location.hostname)) return;
+  var s = document.createElement("script"); s.async = true; s.src = "https://www.googletagmanager.com/gtag/js?id=G-8SXRDR5GD8"; document.head.appendChild(s);
+  window.dataLayer = window.dataLayer || []; window.gtag = function(){ dataLayer.push(arguments); };
+  gtag("js", new Date()); gtag("config", "G-8SXRDR5GD8"); })();</script>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Study Quiz">
