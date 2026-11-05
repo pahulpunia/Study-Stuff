@@ -1,5 +1,5 @@
 /* =====================================================================
-   Study Quiz — core: storage, helpers, subject registry + loader, home
+   Study Stuff — core: storage, helpers, subject registry + loader, home
    ===================================================================== */
 
 /* ---------- storage ---------- */
@@ -113,6 +113,14 @@ const Study = {
 
   subjects(){ return window.SUBJECTS || []; },
   subject(id){ return this.subjects().find(s => s.id === (id || ST.subject)) || this.subjects()[0]; },
+  /* class groups (Honors English 10, Math…) with their subjects; subjects without a group go under "Other" */
+  groups(){
+    const subs = this.subjects(), gs = (window.GROUPS || []).map(g => Object.assign({}, g, {subjects: subs.filter(s => s.group === g.id)}));
+    const loose = subs.filter(s => !gs.some(g => g.id === s.group));
+    if (loose.length) gs.push({id: "other", name: "Other", icon: "book", subjects: loose});
+    return gs.filter(g => g.subjects.length);
+  },
+  groupOf(id){ return this.groups().find(g => g.subjects.some(s => s.id === (id || ST.subject))); },
 
   load(subj){
     if (this.loaded[subj.id]) return this.loaded[subj.id];
@@ -154,22 +162,29 @@ function loadScript(src){
 
 /* ---------- home ---------- */
 function renderSubjBar(){
-  const bar = $("subjBar"), list = Study.subjects();
-  if (bar.dataset.n !== String(list.length)){
+  const bar = $("subjBar"), groups = Study.groups(), cur = Study.groupOf();
+  const sig = groups.map(g => g.id).join();
+  if (bar.dataset.sig !== sig){
     bar.innerHTML = '<span class="pill" aria-hidden="true"></span>';
-    list.forEach(s => {
-      const b = el("button"); b.dataset.id = s.id; b.setAttribute("role", "tab");
-      b.innerHTML = ic(s.icon) + `<span class="sl">${escHTML(s.name)}</span><span class="ss">${escHTML(s.short || s.name)}</span>`;
-      b.title = s.name;
-      b.onclick = () => { ST.subject = s.id; save(); renderHome(); };
+    groups.forEach(g => {
+      const b = el("button"); b.dataset.g = g.id; b.setAttribute("role", "tab");
+      b.innerHTML = ic(g.icon) + `<span class="sl">${escHTML(g.name)}</span><span class="ss">${escHTML(g.short || g.name)}</span>`;
+      b.title = g.name;
+      // a class group opens the subject you last used in it
+      b.onclick = () => { const last = (ST.lastInGroup || {})[g.id]; ST.subject = g.subjects.some(s => s.id === last) ? last : g.subjects[0].id; save(); renderHome(); };
       bar.appendChild(b);
     });
-    bar.dataset.n = list.length;
+    bar.dataset.sig = sig;
   }
-  bar.querySelectorAll("button").forEach(b => { const on = b.dataset.id === ST.subject; b.classList.toggle("on", on); b.setAttribute("aria-selected", on); });
-  bar.classList.toggle("many", list.length > 2);
-  bar.classList.toggle("lots", list.length > 3);
-  bar.classList.toggle("five", list.length > 4);
+  bar.querySelectorAll("button").forEach(b => { const on = cur && b.dataset.g === cur.id; b.classList.toggle("on", on); b.setAttribute("aria-selected", on); });
+  bar.classList.toggle("many", groups.length > 2);
+  bar.classList.toggle("lots", groups.length > 3);
+  bar.classList.toggle("five", groups.length > 4);
+  // second row: the subjects inside this group (only when there's a choice)
+  const sub = $("subSubj"), list = cur ? cur.subjects : [];
+  sub.classList.toggle("hidden", list.length < 2);
+  sub.innerHTML = list.length < 2 ? "" : list.map(s => `<button data-s="${s.id}" class="${s.id === ST.subject ? "on" : ""}" role="tab" aria-selected="${s.id === ST.subject}">${escHTML(s.inGroup || s.short || s.name)}</button>`).join("");
+  sub.querySelectorAll("button").forEach(b => b.onclick = () => { ST.subject = b.dataset.s; save(); renderHome(); });
   movePill();
 }
 // the highlight slides to the chosen subject
@@ -203,6 +218,7 @@ function renderHome(){
   $("probHome").classList.toggle("hidden", isTerms);
   setLabel($("toStudy"), isTerms ? "book" : "notes", isTerms ? "Study list" : "Notes");
   const blurb = $("homeBlurb" + (isTerms ? "T" : "P")); blurb.textContent = subj.blurb || ""; blurb.classList.toggle("hidden", !subj.blurb);
+  const grp = Study.groupOf(); if (grp){ ST.lastInGroup = ST.lastInGroup || {}; ST.lastInGroup[grp.id] = subj.id; save(); }
   show("home");
   if (typeof paintJoin === "function") paintJoin();
   renderSubjBar();
@@ -228,6 +244,8 @@ document.querySelectorAll("[data-home]").forEach(b => b.onclick = renderHome);
 $("resetStats").onclick = e => {
   const b = e.currentTarget, subj = Study.subject();
   if (!b.dataset.armed){ b.dataset.armed = "1"; b.textContent = "Tap again to confirm reset"; return; }
-  Study.engines[subj.type].reset(subj); save();
+  Study.engines[subj.type].reset(subj);
+  ST.resets = ST.resets || {}; ST.resets[subj.id] = Date.now(); save();   // so synced devices clear it too
+  if (ST.lbUser) LB.sync();
   Study.engines[subj.type].stats(subj);
 };

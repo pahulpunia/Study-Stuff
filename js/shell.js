@@ -14,10 +14,13 @@ const Shell = (() => {
     const subj = Study.subject(), isTerms = subj && subj.type === "terms";
     const r = $("rail");
     r.innerHTML = `
-      <div class="brand"><span class="logo" aria-hidden="true"><svg viewBox="0 0 32 32"><rect width="32" height="32" rx="8"/><path d="M5 19l3.2-1.5 3.8 8 4.5-18.5H27"/></svg></span><span>Study Quiz</span></div>
+      <div class="brand"><span class="logo" aria-hidden="true"><svg viewBox="0 0 32 32"><rect width="32" height="32" rx="8"/><path d="M5 19l3.2-1.5 3.8 8 4.5-18.5H27"/></svg></span><span>Study Stuff</span></div>
       <div class="rlabel">Subjects</div>
-      <nav class="rnav" id="railSubj">${Study.subjects().map(s =>
-        `<button data-s="${s.id}" class="${s.id === ST.subject ? "on" : ""}">${ic(s.icon)}<span>${escHTML(s.name)}</span></button>`).join("")}</nav>
+      <nav class="rnav" id="railSubj">${Study.groups().map(g => {
+        const open = (ST.railOpen || {})[g.id] !== false, here = g.subjects.some(s => s.id === ST.subject);
+        return `<button class="rgrp${here && !open ? " on" : ""}" data-g="${g.id}" aria-expanded="${open}">${ic(g.icon)}<span>${escHTML(g.name)}</span><svg class="caret" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10l5 5 5-5"/></svg></button>
+          <div class="rsub${open ? "" : " hidden"}">${g.subjects.map(s =>
+          `<button data-s="${s.id}" class="${s.id === ST.subject ? "on" : ""}"><span>${escHTML(g.subjects.length > 1 || g.id === "english" ? (s.inGroup || s.name) : s.name)}</span></button>`).join("")}</div>`; }).join("")}</nav>
       <div class="rlabel">This subject</div>
       <nav class="rnav" id="railUtil">
         <button data-p="home" class="${screen === "home" ? "on" : ""}">${ic("home")}<span>Modes</span></button>
@@ -29,6 +32,7 @@ const Shell = (() => {
         ${LB.cfg() ? `<button data-p="board" class="${screen === "board" ? "on" : ""}">${ic("trophy")}<span>Leaderboard</span></button>` : ""}
         <button data-p="settings" class="${screen === "settings" ? "on" : ""}">${ic("gear")}<span>Settings</span></button>
       </nav>`;
+    r.querySelectorAll("[data-g]").forEach(b => b.onclick = () => { ST.railOpen = ST.railOpen || {}; ST.railOpen[b.dataset.g] = b.getAttribute("aria-expanded") !== "true"; save(); rail(); });
     r.querySelectorAll("[data-s]").forEach(b => b.onclick = () => { if (inRound() && !confirmLeave()) return; ST.subject = b.dataset.s; save(); renderHome(); });
     r.querySelectorAll("[data-p]").forEach(b => b.onclick = () => {
       if (inRound() && !confirmLeave()) return;

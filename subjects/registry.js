@@ -7,36 +7,44 @@
    icon     an icon name from js/icons.js: book, graph, globe, flask, atom, quill (or an emoji)
    type     "terms"    → type the word from its definition/sentence/audio (vocab, AP World terms…)
             "problems" → typed-answer problems with hints + solutions (math, chem calculations…)
+   group    which class group it sits under (see GROUPS below): english, math, science, history
+   inGroup  optional shorter name shown inside its group ("Vocab" under Honors English 10)
    files    content files, loaded the first time the subject is opened (in this order)
    blurb    optional short tip under the section picker (leave it out if it isn't needed)
 
    terms-only:     setLabel ("Chapter"), groupLabel/groupsLabel ("Root"/"Roots"), itemLabel ("word"), defaultSet
    problems-only:  defaultSection (e.g. "u4:4.3")
    ===================================================================== */
+window.GROUPS = [
+  {id: "english", name: "Honors English 10", short: "English", icon: "book"},
+  {id: "math", name: "Math", icon: "graph"},
+  {id: "science", name: "Science", icon: "flask"},
+  {id: "history", name: "History", icon: "globe"}
+];
 window.SUBJECTS = [
   {
-    id: "vocab", name: "English Vocab", short: "Vocab", icon: "book", type: "terms",
+    id: "vocab", name: "English Vocab", short: "Vocab", inGroup: "Vocab", group: "english", icon: "book", type: "terms",
     files: ["subjects/english/vocab.js"],
     setLabel: "Chapter", groupLabel: "Root", groupsLabel: "Roots", itemLabel: "word", defaultSet: 2
   },
   {
-    id: "grammar", name: "English Grammar", short: "Grammar", icon: "quill", type: "problems",
-    files: ["subjects/grammar/basics.js", "subjects/grammar/phrases.js", "subjects/grammar/clauses.js", "subjects/grammar/sentences.js", "subjects/grammar/mechanics.js"],
+    id: "grammar", name: "English Grammar", short: "Grammar", inGroup: "Grammar", group: "english", icon: "quill", type: "problems",
+    files: ["subjects/grammar/sentences.js", "subjects/grammar/basics.js", "subjects/grammar/mechanics.js", "subjects/grammar/phrases.js", "subjects/grammar/clauses.js"],
     defaultSection: "ph:ger"
   },
   {
-    id: "math3", name: "Honors Math 3", short: "Math 3", icon: "graph", type: "problems",
+    id: "math3", name: "Honors Math 3", short: "Math 3", group: "math", icon: "graph", type: "problems",
     files: ["subjects/math3/unit4.js"],          // add "subjects/math3/unit5.js" etc. here
     blurb: "Any equivalent form works, like (2x+1)/(x-2) or DNE",
     defaultSection: "u4:4.3"
   },
   {
-    id: "hchem", name: "Honors Chemistry", short: "Chem", icon: "flask", type: "problems",
+    id: "hchem", name: "Honors Chemistry", short: "Chem", group: "science", icon: "flask", type: "problems",
     files: ["subjects/chem/unit4.js"],
     defaultSection: "u4:4.1"
   },
   {
-    id: "apwh", name: "AP World History", short: "AP World", icon: "globe", type: "problems",
+    id: "apwh", name: "AP World History", short: "AP World", group: "history", icon: "globe", type: "problems",
     files: ["subjects/apworld/unit3.js", "subjects/apworld/unit4.js"],
     defaultSection: "u3:13"
   }

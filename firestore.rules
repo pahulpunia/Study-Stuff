@@ -33,6 +33,18 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
+    // progress sync: each member's own stats, so they match on every device
+    match /progress/{uid} {
+      allow read, write: if isMember() && request.auth.uid == uid;
+    }
+
+    // club stats: how often each question is missed (powers "Tough Ones")
+    match /qstats/{subject} {
+      allow read: if isMember();
+      allow create, update: if isMember() && request.resource.data.keys().hasOnly(['q']);
+      allow delete: if false;
+    }
+
     // leaderboard: members can see everyone, but only write their own row
     match /scores/{uid} {
       allow read: if isMember();

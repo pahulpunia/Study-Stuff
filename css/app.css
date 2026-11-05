@@ -1,4 +1,4 @@
-/* Study Quiz styles. Theme colors are the --variables near the bottom (graph-paper notebook theme). */
+/* Study Stuff styles. Theme colors are the --variables near the bottom (graph-paper notebook theme). */
 
 :root{
   --bg:#f6f4ef; --card:#ffffff; --ink:#1f2328; --muted:#6b6f76;
@@ -305,7 +305,7 @@ input[type=text], input[type=password]{border-width:1.5px;border-radius:10px;bac
 /* ===== desktop shell: sidebar | content | progress panel ===== */
 @media (min-width: 960px){
   body{padding:0}
-  .shell{display:grid;grid-template-columns:232px minmax(0, 1fr);min-height:100vh;min-height:100dvh}
+  .shell{display:grid;grid-template-columns:244px minmax(0, 1fr);min-height:100vh;min-height:100dvh}
   .wrap{max-width:none;width:100%;margin:0;padding:28px clamp(24px, 4vw, 56px) 48px;box-sizing:border-box;container-type:inline-size}
   .wrap > section{max-width:860px;margin-left:auto;margin-right:auto}
   .qhead{margin-left:calc(-1 * clamp(24px, 4vw, 56px));margin-right:calc(-1 * clamp(24px, 4vw, 56px));padding-left:clamp(24px, 4vw, 56px);padding-right:clamp(24px, 4vw, 56px);margin-top:-28px;padding-top:14px}
@@ -317,7 +317,7 @@ input[type=text], input[type=password]{border-width:1.5px;border-radius:10px;bac
   #mquiz{max-width:1040px !important}
 }
 @media (min-width: 1280px){
-  .shell{grid-template-columns:232px minmax(0, 1fr) 300px}
+  .shell{grid-template-columns:244px minmax(0, 1fr) 300px}
 }
 /* math quiz: question left, answers right, once the content area is wide enough */
 @container (min-width: 860px){
@@ -608,3 +608,30 @@ ol.saq{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap
 @media (min-width: 960px){ #home > .joinbtn{display:none} }
 .rnav button.rjoin{color:var(--accent);border:1px dashed var(--accent);margin-bottom:4px}
 .rnav button.rjoin .ic{color:var(--accent)}
+
+/* Check waits until every box is answered */
+#mCheck.dim{opacity:.5}
+/* desktop rounds: a little breathing room under the header */
+@media (min-width: 960px){
+  #mquiz > .qhead, #quiz > .qhead{margin-bottom:56px}
+}
+@media (min-width: 1280px){
+  .shell:has(#mquiz:not(.hidden)) .ctx, .shell:has(#quiz:not(.hidden)) .ctx{padding-top:124px}
+}
+
+/* class groups: phone second row + sidebar dropdowns */
+.subsubj{display:flex;gap:6px;margin:-6px 0 14px;padding:0 2px}
+.subsubj button{flex:1;border:1px solid var(--line);background:none;border-radius:9px;padding:7px 8px;font-weight:600;font-size:.88rem;color:var(--muted)}
+.subsubj button.on{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+@media (min-width: 960px){
+  #home > .subsubj{display:none}
+  .rnav .rgrp .caret{width:16px;height:16px;margin-left:auto;fill:none;stroke:var(--muted);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:transform .15s}
+  .rnav .rgrp[aria-expanded="false"] .caret{transform:rotate(-90deg)}
+  .rsub{display:flex;flex-direction:column;gap:2px;margin:0 0 4px 21px;padding-left:10px;border-left:1px solid var(--line)}
+  .rsub.hidden{display:none}
+  .rsub button{padding:7px 10px;font-weight:500}
+  .rsub button.on::before{left:-25px}
+}
+@media (min-width: 960px){ .rnav .rgrp > span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis} .rnav .rgrp{gap:9px} }
+.acsync{display:flex;align-items:center;gap:8px;margin:10px 0 2px;font-size:.92rem;color:var(--muted)}
+.acsync input{accent-color:var(--accent);width:16px;height:16px}

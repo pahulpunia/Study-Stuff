@@ -1,7 +1,7 @@
 {
-  "name": "Study Quiz",
-  "short_name": "Study Quiz",
-  "description": "Practice quizzes for vocab, math and chemistry",
+  "name": "Study Stuff",
+  "short_name": "Study Stuff",
+  "description": "Practice for English, math, chemistry and AP World History",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

@@ -67,7 +67,7 @@ const LB = (() => {
     try { const m = await F.getDoc(F.doc(db, "members", user.uid)); memberName = m.exists() ? m.data().name : null; checked = true; }
     catch(e){ checked = false; }
     ST.lbUser = memberName || null; save();
-    if (memberName) flush();
+    if (memberName){ flush(); sync(); }
   }
 
   function niceError(e){
@@ -100,7 +100,7 @@ const LB = (() => {
       }
       user = cred.user; memberName = name; checked = true; ST.lbUser = name; save();
     } finally { creating = false; }
-    await flush();
+    await flush(); sync();
   }
   async function signIn(name, pass){
     await init();
@@ -112,6 +112,7 @@ const LB = (() => {
   // round finished: queue the points, send when possible
   function submit(subject, pts){
     pts = Math.max(0, Math.round(pts || 0));
+    if (ST.lbUser) init().then(() => sync()).catch(() => {});
     if (!pts || !ST.lbUser) return;
     ST.lbPending = (ST.lbPending || []).concat([{s: subject, p: pts}]).slice(-50);
     save();
@@ -141,6 +142,82 @@ const LB = (() => {
     } catch(e){ /* stays queued; retried next time */ }
     busy = false;
   }
+  /* ---- progress sync: signed-in members see the same stats on every device ----
+     Per question/word, the record with more attempts wins; best scores take the max.
+     A reset on one device clears that subject everywhere (ST.resets). */
+  const SYNC_KEYS = ["words", "mq", "best", "mbest", "wbest"];
+  const subjOfKey = k => k.includes("|") ? k.split("|")[0] : "vocab";
+  function mergeProgress(a, b){
+    const resets = Object.assign({}, b.resets || {});
+    Object.entries(a.resets || {}).forEach(([s, t]) => resets[s] = Math.max(resets[s] || 0, t));
+    // drop a side's records for a subject if that side hasn't seen the latest reset
+    const live = (side, f, k) => f === "wbest" || ((side.resets || {})[subjOfKey(k)] || 0) >= (resets[subjOfKey(k)] || 0);
+    const out = {resets, bestStreak: Math.max(a.bestStreak || 0, b.bestStreak || 0)};
+    SYNC_KEYS.forEach(f => {
+      const A = a[f] || {}, B = b[f] || {}, o = {};
+      new Set([...Object.keys(A), ...Object.keys(B)]).forEach(k => {
+        const x = k in A && live(a, f, k) ? A[k] : undefined, y = k in B && live(b, f, k) ? B[k] : undefined;
+        if (x === undefined && y === undefined) return;
+        if (x === undefined) o[k] = y; else if (y === undefined) o[k] = x;
+        else if (typeof x === "number") o[k] = Math.max(x, y);
+        else o[k] = (y.t || 0) > (x.t || 0) ? y : x;
+      });
+      out[f] = o;
+    });
+    return out;
+  }
+  let syncing = null, syncAgain = false;
+  async function sync(){
+    if (!user || !memberName || ST.settings.sync === false) return;
+    if (syncing){ syncAgain = true; return syncing; }
+    syncing = (async () => {
+      try {
+        const ref = F.doc(db, "progress", user.uid);
+        const snap = await F.getDoc(ref);
+        const m = mergeProgress(ST, snap.exists() ? snap.data() : {});
+        const changed = JSON.stringify(SYNC_KEYS.map(f => ST[f] || {}).concat(ST.bestStreak || 0)) !== JSON.stringify(SYNC_KEYS.map(f => m[f]).concat(m.bestStreak));
+        Object.assign(ST, m); ST.syncedAt = Date.now(); save();
+        await F.setDoc(ref, Object.assign({}, m, {updated: F.serverTimestamp()}));
+        if (changed) document.dispatchEvent(new Event("progress-synced"));
+      } catch(e){ /* offline or not allowed: try again next time */ }
+    })();
+    await syncing; syncing = null;
+    if (syncAgain){ syncAgain = false; return sync(); }
+  }
+  // also sync when the app goes to the background (at most once a minute)
+  let lastHide = 0;
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState !== "hidden" || !user || !memberName || Date.now() - lastHide < 60e3) return;
+    lastHide = Date.now(); sync();
+  });
+
+  /* ---- club stats: which questions members miss most (one write per round, one read per visit) ---- */
+  function qkey(q){
+    const str = q.unit + "|" + q.text + "|" + q.fields.map(f => f.a).join("|");
+    let h = 5381; for (let i = 0; i < str.length; i++) h = ((h << 5) + h + str.charCodeAt(i)) | 0;
+    return q.unit + "-" + (h >>> 0).toString(36);
+  }
+  function record(subject, results){
+    if (!ST.lbUser || !cfg()) return;
+    init().then(() => {
+      if (!user || !memberName) return;
+      const q = {}, seen = new Set();
+      results.forEach(r => { if (!r.q || r.q.gen) return; const k = qkey(r.q); if (seen.has(k)) return; seen.add(k);
+        q[k] = {n: F.increment(1), w: F.increment(r.ok ? 0 : 1)}; });
+      if (seen.size) return F.setDoc(F.doc(db, "qstats", subject), {q}, {merge: true});
+    }).catch(() => {});
+  }
+  const club = {};
+  async function clubStats(subject){
+    const c = club[subject]; if (c && Date.now() - c.at < 5 * 60e3) return c.data;
+    await init(); if (!user || !memberName) return null;
+    const snap = await F.getDoc(F.doc(db, "qstats", subject));
+    const data = snap.exists() ? (snap.data().q || {}) : {};
+    club[subject] = {at: Date.now(), data};
+    return data;
+  }
+  const clubCached = subject => club[subject] ? club[subject].data : null;
+
   async function top(){
     await init();
     const q = F.query(F.collection(db, "scores"), F.orderBy("total", "desc"), F.limit(25));
@@ -150,7 +227,7 @@ const LB = (() => {
   // start in the background if this phone was signed in before (sends queued points)
   if (cfg() && ST.lbUser) window.addEventListener("load", () => setTimeout(() => init().catch(() => {}), 1500));
 
-  return {cfg, init, signUp, signIn, signOut, submit, top, niceError, get user(){ return user; }, get name(){ return memberName; }, get checked(){ return checked; }};
+  return {cfg, init, signUp, signIn, signOut, submit, top, niceError, sync, mergeProgress, qkey, record, clubStats, clubCached, get user(){ return user; }, get name(){ return memberName; }, get checked(){ return checked; }};
 })();
 
 /* ---- settings screen ---- */
@@ -202,9 +279,11 @@ function renderAccount(){
     const pend = (ST.lbPending || []).reduce((a, x) => a + x.p, 0);
     box.innerHTML = `<div class="acrow"><span>Signed in as <b>${LB.name}</b></span><button class="link" id="acOut">Sign out</button></div>
       ${pend ? `<div class="small">${pend} pts to send</div>` : ""}
+      <label class="toggle acsync"><input type="checkbox" id="acSync" ${ST.settings.sync === false ? "" : "checked"}><span>Sync progress across your devices</span></label>
       <div id="lbList"></div><button class="grow lbtoggle" id="lbShow">${ic("refresh")}<span>Refresh</span></button>`;
     $("acOut").onclick = async () => { await LB.signOut(); acctTab = "in"; renderAccount(); paintJoin(); Shell.update(); };
     $("lbShow").onclick = showBoard;
+    $("acSync").onchange = e => { ST.settings.sync = e.target.checked; save(); if (e.target.checked) LB.sync(); };
     showBoard();
     return;
   }
@@ -253,3 +332,9 @@ async function showBoard(){
       <span class="lbr">${i + 1}</span><span class="lbn">${escHTML(r.name)}<span class="small">${lbSplit(r)}best ${r.best || 0}</span></span><b>${r.total || 0}</b></li>`).join("")}</ol>`;
   } catch(e){ box.innerHTML = `<div class="small">${LB.niceError(e)}</div>`; }
 }
+
+/* when another device's progress arrives, refresh what's on screen */
+document.addEventListener("progress-synced", () => {
+  if (!$("home").classList.contains("hidden")) renderHome();
+  else if (!$("stats").classList.contains("hidden")) Study.engines[Study.subject().type].stats(Study.subject());
+});

@@ -27,6 +27,7 @@ const MMODES = {
   mastery: {name:"Mastery", desc:"Misses come back until they stick", icon:"loop"},
   drill:   {name:"Endless Drill", desc:"New random problems, forever", icon:"infinity", gen:true},
   weak:    {name:"Weak Spots", desc:"Your 8 most-missed", icon:"target"},
+  tough:   {name:"Tough Ones", desc:"What the club misses most", icon:"bolt", club:true},
   saq:     {name:"Short Answer", desc:"Write it, then compare to a model answer", icon:"quill", write:"saq"},
   leq:     {name:"Essay Thesis", desc:"Build an LEQ thesis step by step", icon:"pencil", write:"leq"}
 };
@@ -167,11 +168,23 @@ function renderMathHome(subj){
   Object.entries(MMODES).forEach(([k, m]) => {
     if (m.gen && !drillHas(mSec())) return;
     if (m.write && !Write.has(m.write, mSec())) return;
+    if (m.club && toughList(mSec()).length < 4) return;
     const b = el("button", "mode");
     modeTile(b, m.icon, m.name, m.desc, m.write ? null : ST.mbest[mBestKey(k)]);
     b.onclick = () => m.write ? Write.start(m.write) : mStart(k);
     box.appendChild(b);
   });
+  // members: fetch what the club misses (cached), then show Tough Ones if there's enough
+  if (ST.lbUser && LB.cfg()){
+    const id = PSUBJ.id, before = LB.clubCached(id);
+    LB.clubStats(id).then(d => { if (d && d !== before && PSUBJ.id === id && !$("home").classList.contains("hidden")) renderMathHome(PSUBJ); }).catch(() => {});
+  }
+}
+/* the questions club members miss most in this section (needs a few tries from the club first) */
+function toughList(sec){
+  const d = LB.clubCached(PSUBJ.id); if (!d) return [];
+  return mItems(sec).map(q => [q, d[LB.qkey(q)]]).filter(([, r]) => r && r.n >= 3 && r.w / r.n >= 0.25)
+    .sort((a, b) => (b[1].w / b[1].n - a[1].w / a[1].n) || b[1].n - a[1].n).slice(0, 10).map(x => x[0]);
 }
 $("msecSel").onchange = e => { ST.sel[PSUBJ.id] = e.target.value; ST.lastSec = ST.lastSec || {}; ST.lastSec[PSUBJ.id + "|" + e.target.value.split(":")[0]] = e.target.value; save(); renderMathHome(PSUBJ); Shell.update(); };
 $("munitSel").onchange = e => {
@@ -251,6 +264,7 @@ function renderMNotes(subj){
 let M = null;
 function mStart(mode, override){
   let list = override || mItems(mSec());
+  if (mode === "tough") list = toughList(mSec());
   if (mode === "weak") list = list.slice().sort((a, b) => ((mAcc(a.id) ?? 0.5) - (mAcc(b.id) ?? 0.5)) || Math.random() - 0.5).slice(0, 8);
   let queue = mode === "drill" ? [drillMake(mSec())] : shuffle(list);
   if (mode === "practice" && !override && ST.settings.count) queue = queue.slice(0, ST.settings.count);
@@ -329,6 +343,7 @@ function mShow(){
       if (f.t === "formula") pv.innerHTML = /\d/.test(inp.value) ? MC.preview(f, inp.value) : "";
       else if (f.t !== "text") pv.innerHTML = /[\/^]|sqrt|cbrt|pi|\*/i.test(inp.value) ? MC.preview(f, inp.value) : "";
     });
+    inp.addEventListener("input", mReady);
     inp.addEventListener("focus", () => { M.lastFocus = i; setTimeout(() => keepVisible(inp), 350); });
     inp.addEventListener("keydown", e => {
       if (e.key !== "Enter") return; e.preventDefault();
@@ -349,7 +364,7 @@ function mShow(){
         b.onclick = () => {
           if (M.answered || inp.dataset.ok === "1" || b.disabled) return;
           ch.querySelectorAll(".chip").forEach(c => { c.classList.toggle("sel", c === b); c.setAttribute("aria-checked", c === b); });
-          inp.value = o; M.lastFocus = i;
+          inp.value = o; M.lastFocus = i; mReady();
           if (q.fields.length === 1) mCheck();
         };
         ch.appendChild(b);
@@ -366,8 +381,15 @@ function mShow(){
   window.scrollTo(0, 0);
   $("mCheck").textContent = "Check";
   $("mSkip").disabled = false;
-  mHintBtn(); mHud();
+  mHintBtn(); mHud(); mReady();
   $("mf0").focus();
+}
+/* Check looks inactive until every box has an answer */
+function mReady(){
+  if (!M) return;
+  const q = M.queue[M.idx], wait = !M.answered && q.fields.some((_, i) => { const f = $("mf" + i); return f && !f.readOnly && !f.value.trim(); });
+  $("mCheck").classList.toggle("dim", wait);
+  if (!wait && $("mFb").textContent === "Answer every part first."){ $("mFb").textContent = ""; $("mFb").className = "fb"; }
 }
 
 function mHints(q){
@@ -423,7 +445,15 @@ function mCheck(){
   if (M.answered){ mNext(); return; }
   const q = M.queue[M.idx];
   const vals = q.fields.map((_, i) => $("mf" + i).value);
-  if (vals.every(v => !v.trim())){ $("mf0").focus(); return; }
+  // every box needs an answer before checking
+  const empty = q.fields.findIndex((_, i) => !$("mf" + i).readOnly && !vals[i].trim());
+  if (empty >= 0){
+    const inp = $("mf" + empty), tgt = q.fields[empty].t === "choice" ? inp.parentNode.querySelector(".chips") : inp;
+    tgt.classList.remove("shake"); void tgt.offsetWidth; tgt.classList.add("shake"); setTimeout(() => tgt.classList.remove("shake"), 520);
+    if (q.fields[empty].t !== "choice") inp.focus();
+    if (q.fields.length > 1){ $("mFb").className = "fb warn"; $("mFb").textContent = "Answer every part first."; }
+    return;
+  }
   const res = q.fields.map((f, i) => $("mf" + i).dataset.ok === "1" ? {ok:true} : MC.check(f, vals[i]));
   const nOk = res.filter(r => r.ok).length;
   if (nOk === q.fields.length) return mReveal(res, vals);
@@ -449,6 +479,7 @@ function mCheck(){
     $("mFb").className = "fb warn";
     $("mFb").textContent = (q.fields.length > 1 ? `${nOk} of ${q.fields.length} right. Fix the orange ones` : "Not it. One more try") + " (half points).";
     const firstBad = res.findIndex(r => !r.ok); $("mf" + firstBad).focus(); $("mf" + firstBad).select();
+    mReady();
     return;
   }
   mReveal(res, vals);
@@ -458,6 +489,7 @@ $("mSkip").onclick = () => { if (!M.answered) mReveal(M.queue[M.idx].fields.map(
 ["mCheck","mHintBtn","mSkip"].forEach(id => $(id).addEventListener("mousedown", e => e.preventDefault()));
 
 function mReveal(res, vals, skipped){
+  $("mCheck").classList.remove("dim");
   const q = M.queue[M.idx]; M.answered = true;
   const nOk = res.filter(r => r.ok).length, all = nOk === q.fields.length;
   q.fields.forEach((f, i) => {
@@ -516,6 +548,7 @@ function mFinish(){
   if (!M.override && M.score > (ST.mbest[mBestKey(M.mode)] || 0)){ ST.mbest[mBestKey(M.mode)] = M.score; newBest = true; }
   save();
   LB.submit(PSUBJ.id, M.score);
+  LB.record(PSUBJ.id, M.results);
   const secName = mSecInfo().name;
   $("meMode").textContent = `${secName} · ${MMODES[M.mode].name}` + (M.override ? " · retry" : "");
   countUp($("meScore"), M.score);
@@ -550,7 +583,7 @@ function renderMStats(subj){
   $("resetStats").dataset.armed = ""; $("resetStats").textContent = `Reset ${subj.name} stats`;
   const bl = $("bestList"); bl.innerHTML = "";
   $("statsTitle").textContent = mSecInfo().name + ": best scores";
-  Object.entries(MMODES).filter(([, m]) => !m.write && !(m.gen && !drillHas(mSec()))).forEach(([k, m]) => {
+  Object.entries(MMODES).filter(([, m]) => !m.write && !(m.gen && !drillHas(mSec())) && !(m.club && toughList(mSec()).length < 4)).forEach(([k, m]) => {
     const row = el("div"); row.style.cssText = "display:flex;justify-content:space-between;padding:4px 0";
     const nm = el("span", "srow"); nm.innerHTML = ic(m.icon, "ic-s") + escHTML(m.name); row.appendChild(nm); row.appendChild(el("b", null, ST.mbest[mBestKey(k)] ? ST.mbest[mBestKey(k)] + " pts" : "–"));
     bl.appendChild(row);

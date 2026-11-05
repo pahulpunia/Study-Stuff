@@ -1,4 +1,4 @@
-/* Study Quiz service worker.
+/* Study Stuff service worker.
    Network-first: when you're online you always get the newest version from GitHub Pages,
    and every successful load is saved so the app still opens offline. No version bumps needed. */
 const CACHE = "study-quiz";

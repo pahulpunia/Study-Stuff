@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Practice quizzes for vocab, math and chemistry">
+<meta name="description" content="Practice for English, math, chemistry and AP World History">
 <meta name="theme-color" content="#10151E" id="themeColor">
 <script>/* theme before first paint: dark unless the user picked light */
 (function(){ var t = "dark"; try { t = (JSON.parse(localStorage.getItem("genVocabQuiz.v2") || "{}").settings || {}).theme || "dark"; } catch(e){}
@@ -15,7 +15,7 @@
   gtag("js", new Date()); gtag("config", "G-8SXRDR5GD8"); })();</script>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Study Quiz">
+<meta name="apple-mobile-web-app-title" content="Study Stuff">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,7 +23,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<title>Study Quiz</title>
+<title>Study Stuff</title>
 <link rel="stylesheet" href="css/app.css">
 </head>
 <body>
@@ -34,9 +34,10 @@
 
   <!-- HOME -->
   <section id="home">
-    <h1 class="brandh"><span class="logo" aria-hidden="true"><svg viewBox="0 0 32 32"><rect width="32" height="32" rx="8"/><path d="M5 19l3.2-1.5 3.8 8 4.5-18.5H27"/></svg></span>Study Quiz</h1>
+    <h1 class="brandh"><span class="logo" aria-hidden="true"><svg viewBox="0 0 32 32"><rect width="32" height="32" rx="8"/><path d="M5 19l3.2-1.5 3.8 8 4.5-18.5H27"/></svg></span>Study Stuff</h1>
     <div class="pagehead" id="pageHead"></div>
-    <div class="subj" id="subjBar" role="tablist" aria-label="Subject"></div>
+    <div class="subj" id="subjBar" role="tablist" aria-label="Class"></div>
+    <div class="subsubj hidden" id="subSubj" role="tablist" aria-label="Subject"></div>
     <div id="termsHome">
       <div class="card chapcard">
         <label class="chaplabel" for="chapSel" id="chapLabel">Chapter</label>
