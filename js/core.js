@@ -37,7 +37,7 @@ function fmtTime(ms){ const s = Math.max(0, Math.round(ms / 1000)); return Math.
 const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
 const escHTML = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;");
 
-const SCREENS = ["home","quiz","end","study","stats","mquiz","mend","mnotes","settings", "write", "board", "admin"];
+const SCREENS = ["home","quiz","end","study","stats","mquiz","mend","mnotes","settings", "write", "board", "admin", "party"];
 function show(id){
   if (id !== "mquiz" && typeof Tools !== "undefined") Tools.close();
   SCREENS.forEach(s => $(s).classList.toggle("hidden", s !== id));

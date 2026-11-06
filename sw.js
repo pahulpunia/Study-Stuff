@@ -4,7 +4,7 @@
 const CACHE = "study-quiz";
 // app files saved for offline use (subject files get saved automatically the first time they load)
 const FILES = ["./", "index.html", "css/app.css",
-  "js/core.js", "js/icons.js", "js/mathcore.js", "js/terms.js", "js/kit.js", "js/problems.js", "js/writing.js", "js/tools.js", "js/admin.js", "js/account.js", "js/shell.js", "js/boot.js",
+  "js/core.js", "js/icons.js", "js/mathcore.js", "js/terms.js", "js/kit.js", "js/problems.js", "js/writing.js", "js/tools.js", "js/admin.js", "js/party.js", "js/account.js", "js/shell.js", "js/boot.js",
   "subjects/registry.js", "firebase-config.js", "manifest.webmanifest",
   "icon-192.png", "icon-512.png", "icon-maskable-512.png", "apple-touch-icon.png"];
 

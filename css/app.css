@@ -744,3 +744,50 @@ html.bigtext .mtext, html.bigtext .chip, html.bigtext .notes{font-size:1.08em}
 .admiss .mq i{display:block;font-style:normal;color:var(--muted);font-size:.8rem;margin-top:2px}
 .adlinks{display:flex;flex-direction:column;gap:8px}
 .adlinks a{color:var(--accent);font-weight:600}
+
+/* ---------- parties ---------- */
+.pdot{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--c);flex:none}
+.pmembers{list-style:none;padding:0;margin:10px 0;display:flex;flex-direction:column;gap:8px}
+.pmembers li{display:flex;align-items:center;gap:10px;font-weight:600}
+.pmembers em,.pstand em{font-style:normal;font-size:.75rem;font-weight:600;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:1px 6px}
+.pstand{list-style:none;padding:0;margin:8px 0 0;display:flex;flex-direction:column;gap:8px}
+.pstand li{display:flex;align-items:center;gap:10px}
+.pstand .prank{width:20px;text-align:center;color:var(--muted);font-weight:700;display:inline-flex;justify-content:center}
+.pstand li:first-child .prank{color:var(--warn)}
+.pstand .pname{font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pstand b{min-width:70px;text-align:right}
+.pset{display:flex;flex-direction:column;gap:12px;margin:10px 0 14px}
+.pset label{display:flex;flex-direction:column;gap:6px;font-size:.88rem;color:var(--muted);font-weight:600}
+.pset select{width:100%}
+.pset .slide{grid-template-columns:1fr}
+.pset .slide label{flex-direction:row}
+.pgo{width:100%;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px}
+.pleave{display:flex;align-items:center;gap:8px;margin:4px auto 20px;color:var(--muted)}
+.plist{list-style:none;padding:0;margin:4px 0 14px;display:flex;flex-direction:column}
+.plist li{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.plist li > div{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.plist li b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.plist button{flex:none;min-width:76px}
+#partyBox .row{margin-top:2px}
+#partyBox p{margin:0 0 10px}
+
+/* who's done, under the top bar during a party round */
+.pstrip{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:8px 0 2px;font-size:.8rem}
+.pm{display:inline-flex;align-items:center;gap:5px;padding:3px 8px 3px 6px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--muted);font-weight:600;max-width:150px}
+.pm .pmn{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pm .ic-s{width:14px;height:14px}
+.pm.done,.pm.ok{color:var(--ink)}
+.pm.ok .ic-s{color:var(--good)}
+.pm.no .ic-s{color:var(--bad)}
+.pm .pwait{width:10px;height:2px;border-radius:2px;background:var(--muted);opacity:.6}
+.pcount{margin-left:auto;color:var(--muted);font-weight:700}
+@media (max-width:480px){ .pm .pmn{max-width:64px} }
+
+/* everyone else's pointer */
+.curlayer{position:fixed;inset:0;overflow:hidden;z-index:60;pointer-events:none}
+.pcur{position:absolute;left:0;top:0;pointer-events:none;transition:transform .09s linear, opacity .4s;will-change:transform}
+.pcur svg{display:block;fill:var(--c);stroke:var(--bg);stroke-width:1.4;stroke-linejoin:round;filter:drop-shadow(0 1px 2px rgba(0,0,0,.35))}
+.pcur span{position:absolute;left:13px;top:15px;background:var(--c);color:#10151E;font-size:.72rem;font-weight:700;padding:1px 6px;border-radius:6px;white-space:nowrap;max-width:120px;overflow:hidden;text-overflow:ellipsis}
+.pcur.gone{opacity:0}
+.pcur.hidden{display:none}
+@media (prefers-reduced-motion:reduce){ .pcur{transition:none} }

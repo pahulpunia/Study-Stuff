@@ -153,6 +153,7 @@
       <div class="themerow"><span>Theme</span><div class="seg" id="themeSeg" role="radiogroup" aria-label="Theme"><button data-t="dark" role="radio">Dark</button><button data-t="light" role="radio">Light</button></div></div>
     </div>
     <button class="card rowbtn" id="toBoard" data-ic="trophy">Account &amp; leaderboard</button>
+    <div class="card hidden" id="partyCard"><h2>Party</h2><div id="partyBox"></div></div>
     <div class="card">
       <h2>Backup</h2>
       <div class="row"><button class="grow" id="bkCopy"></button><button class="grow" id="bkRestore"></button></div>
@@ -177,6 +178,12 @@
     <div class="card" id="acctCard"><h2>Leaderboard</h2><div id="acct"></div></div>
   </section>
 
+  <!-- PARTY (find a party / the lobby) -->
+  <section id="party" class="hidden">
+    <div class="topbar"><button class="link" id="pyBack" data-ic="back">Settings</button><span class="chip" id="pyCount"></span></div>
+    <div id="pyBody"></div>
+  </section>
+
   <!-- MATH QUIZ -->
   <section id="mquiz" class="hidden">
     <div class="qhead">
@@ -186,6 +193,7 @@
         <div class="hud"><span id="mStreak" class="streak"></span><span id="mScore"></span></div>
       </div>
       <div class="bar"><div id="mProg"></div></div>
+      <div class="pstrip hidden" id="mParty" aria-label="Party"></div>
     </div>
     <div class="card qcard mcard mreview hidden" id="mReview" aria-live="polite"></div>
     <div class="card qcard mcard" id="mCard">
@@ -251,6 +259,8 @@
 <aside class="ctx" id="ctx" aria-label="Progress"></aside>
 </div><!-- /shell -->
 
+<div class="curlayer" id="curLayer" aria-hidden="true"></div>
+
 <!-- LEARN SHEET (notes for the current problem) -->
 <div class="sheet hidden" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
   <div class="sheetbox">
@@ -271,6 +281,7 @@
 <script src="js/tools.js"></script>
 <script src="js/admin.js"></script>
 <script src="js/account.js"></script>
+<script src="js/party.js"></script>
 <script src="js/shell.js"></script>
 <script src="js/boot.js"></script>
 </body>

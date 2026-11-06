@@ -88,7 +88,9 @@ const Admin = (() => {
       <div class="card"><div class="adhead"><h2>Most-missed questions</h2><select id="adSubj" aria-label="Subject">${subs.map(s => `<option value="${s.id}">${esc(s.name)}</option>`).join("")}</select></div><div id="adMissed" class="small">Loading…</div></div>
       ${d.isAdmin ? "" : `<div class="card"><h2>Full access</h2><p class="small">To see join dates and each person's accuracy, make this account an admin: in the Firebase console, open Firestore and create a collection named <b>admins</b> with a document whose ID is your user ID below (no fields needed). Then publish the updated <b>firestore.rules</b> from the repo.</p>
         <div class="row"><input id="adUid" readonly value="${esc(d.uid)}" aria-label="Your user ID"><button id="adCopy">Copy</button></div></div>`}
+      <div class="card"><h2>Parties</h2><div id="adParties" class="small">Loading…</div></div>
       <div class="card"><h2>More</h2>${links()}</div>`;
+    loadParties();
     $("adLock").onclick = () => { try { sessionStorage.removeItem(UNLOCK); } catch(e){} lock(); };
     if ($("adCopy")) $("adCopy").onclick = () => { $("adUid").select(); try { navigator.clipboard.writeText(d.uid); $("adCopy").textContent = "Copied"; } catch(e){} };
     const pickSubj = async () => {
@@ -105,10 +107,26 @@ const Admin = (() => {
     $("adSubj").onchange = pickSubj; pickSubj();
   }
 
+  // live parties (Realtime Database): who's in them and how far along they are
+  async function loadParties(){
+    const box = $("adParties"); if (!box) return;
+    let ps;
+    try { ps = await Party.all(); } catch(e){ box.textContent = "Couldn't load parties. Is the Realtime Database set up?"; return; }
+    if (!$("adParties")) return;
+    if (!ps.length){ box.textContent = "No parties right now."; return; }
+    ps.sort((a, b) => (b.created || 0) - (a.created || 0));
+    box.className = "";
+    box.innerHTML = `<div class="adscroll"><table class="adtable"><thead><tr><th>Party</th><th>Host</th><th>People</th><th>Subject</th><th>Status</th><th>Started</th></tr></thead><tbody>${ps.map(p => {
+      const r = p.round, subj = Study.subject((r || p.set || {}).subj) || {}, names = Object.values(p.members || {}).map(m => m.name);
+      const st = p.status === "playing" && r ? `question ${r.idx + 1} of ${String(r.keys || "").split(",").length}` : "in the lobby";
+      return `<tr><td>${esc(p.name)}</td><td>${esc(p.hostName)}</td><td>${esc(names.join(", "))}</td><td>${esc(subj.short || subj.name || "—")}</td><td>${st}</td><td>${ago(p.created)}</td></tr>`;
+    }).join("")}</tbody></table></div><div class="small">${ps.length} active · ${ps.reduce((a, p) => a + Object.keys(p.members || {}).length, 0)} people · ${ps.reduce((a, p) => a + (p.rounds || 0), 0)} rounds played</div>`;
+  }
+
   function links(){
     const pid = (window.FIREBASE_CONFIG || {}).projectId;
     return `<div class="adlinks"><a href="https://analytics.google.com/" target="_blank" rel="noopener">Google Analytics (visits, pages, devices)</a>` +
-      (pid ? `<a href="https://console.firebase.google.com/project/${encodeURIComponent(pid)}/firestore" target="_blank" rel="noopener">Firestore data</a><a href="https://console.firebase.google.com/project/${encodeURIComponent(pid)}/authentication/users" target="_blank" rel="noopener">Accounts (reset or delete)</a>` : "") + `</div>`;
+      (pid ? `<a href="https://console.firebase.google.com/project/${encodeURIComponent(pid)}/firestore" target="_blank" rel="noopener">Firestore data</a><a href="https://console.firebase.google.com/project/${encodeURIComponent(pid)}/authentication/users" target="_blank" rel="noopener">Accounts (reset or delete)</a><a href="https://console.firebase.google.com/project/${encodeURIComponent(pid)}/database" target="_blank" rel="noopener">Parties data (Realtime Database)</a>` : "") + `</div>`;
   }
 
   return {open, placeKey};

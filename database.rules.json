@@ -1,0 +1,40 @@
+{
+  "rules": {
+    "parties": {
+      ".read": "auth != null",
+      "$pid": {
+        ".write": "auth != null && ((!data.exists() && newData.child('host').val() === auth.uid) || (data.exists() && data.child('host').val() === auth.uid) || (data.exists() && !newData.exists() && (!data.child('members').exists() || data.child('created').val() < now - 43200000)))",
+        ".validate": "newData.hasChildren(['name', 'host', 'status'])",
+        "name": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 40" },
+        "host": {
+          ".write": "auth != null && data.exists() && newData.val() === auth.uid && data.parent().child('members').child(auth.uid).exists() && !data.parent().child('members').child(data.val()).exists()",
+          ".validate": "newData.isString()"
+        },
+        "hostName": { ".validate": "newData.isString() && newData.val().length <= 20" },
+        "status": { ".validate": "newData.val() === 'lobby' || newData.val() === 'playing'" },
+        "members": {
+          "$uid": {
+            ".write": "auth != null && auth.uid === $uid && (data.exists() || data.parent().parent().child('host').exists())",
+            ".validate": "newData.hasChildren(['name', 'color']) && newData.child('name').isString() && newData.child('name').val().length <= 20 && newData.child('color').isString() && newData.child('color').val().length <= 9"
+          }
+        },
+        "answers": {
+          "$q": {
+            "$uid": {
+              ".write": "auth != null && auth.uid === $uid && data.parent().parent().parent().child('members').child($uid).exists() && data.parent().parent().parent().child('status').val() === 'playing'",
+              ".validate": "newData.hasChildren(['ok', 'pts']) && newData.child('ok').isBoolean() && newData.child('pts').isNumber() && newData.child('pts').val() >= 0 && newData.child('pts').val() <= 1000"
+            }
+          }
+        }
+      }
+    },
+    "cursors": {
+      "$pid": {
+        ".read": "auth != null",
+        "$uid": {
+          ".write": "auth != null && auth.uid === $uid && (!newData.exists() || root.child('parties').child($pid).child('members').child($uid).exists())"
+        }
+      }
+    }
+  }
+}

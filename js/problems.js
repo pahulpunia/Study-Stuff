@@ -287,12 +287,34 @@ function mStart(mode, override){
   show("mquiz");
   mShow();
 }
+/* a party round: everyone gets the same questions in the same order (see party.js) */
+function mStartParty(queue, idx, party){
+  M = {mode:"practice", queue, idx:Math.min(idx, queue.length - 1), score:0, streak:0, bestStreak:0, results:[], mastered:new Set(), total:queue.length, start:Date.now(), override:true,
+       subj:PSUBJ.id, sec:party.sec, hist:[], party};
+  show("mquiz");
+  mShow();
+}
+/* the host moved everyone on: an unanswered question just counts as missed */
+function mPartyGo(idx){
+  if (!M || !M.party || M.over) return;
+  if (idx === M.idx) return;
+  if (!M.answered){ const q = M.queue[M.idx]; M.streak = 0; M.results.push({id:q.id, src:q.src, label:qLabel(q), q, ok:false, part:"0/" + q.fields.length, pts:0, hints:M.hint, attempt:M.attempt, skipped:true}); }
+  M.idx = Math.min(idx, M.queue.length - 1);
+  mShow();
+}
+/* same "random" order for everyone in a party */
+function seededShuffle(a, seed){
+  a = a.slice(); let t = seed >>> 0;
+  const rnd = () => { t = (t + 0x6D2B79F5) >>> 0; let r = Math.imul(t ^ (t >>> 15), 1 | t); r ^= r + Math.imul(r ^ (r >>> 7), 61 | r); return ((r ^ (r >>> 14)) >>> 0) / 4294967296; };
+  for (let k = a.length - 1; k > 0; k--){ const j = Math.floor(rnd() * (k + 1)); [a[k], a[j]] = [a[j], a[k]]; }
+  return a;
+}
 
 /* ---- leaving and coming back: the round waits (in memory, and in this tab's session storage) ---- */
 const ROUND_KEY = "sq-round";
 function mPersist(){
   try {
-    if (!M || M.over || M.mode === "drill"){ sessionStorage.removeItem(ROUND_KEY); return; }
+    if (!M || M.over || M.mode === "drill" || M.party){ sessionStorage.removeItem(ROUND_KEY); return; }
     const items = PB().items, ref = q => items.indexOf(q);
     sessionStorage.setItem(ROUND_KEY, JSON.stringify({subj:M.subj, sec:M.sec, mode:M.mode, idx:M.idx, score:M.score, streak:M.streak, bestStreak:M.bestStreak,
       total:M.total, start:M.start, override:M.override, mastered:[...M.mastered], queue:M.queue.map(ref), answered:!!M.answered, hist:M.hist,
@@ -301,6 +323,7 @@ function mPersist(){
 }
 function mClearSaved(){ try { sessionStorage.removeItem(ROUND_KEY); } catch(e){} }
 function mResumable(){
+  if (M && M.party) return null;
   if (M && !M.over && M.subj === PSUBJ.id && (M.idx > 0 || M.results.length || M.answered)) return M;
   if (M && !M.over) return null;
   try {
@@ -435,7 +458,7 @@ function mShow(){
       const ch = el("div", "chips"); ch.setAttribute("role", "radiogroup"); ch.setAttribute("aria-label", f.l);
       // sentence-length options read better as a stacked list; short ones stay as side-by-side chips
       if (f.opts.some(o => String(o).replace(/\[\[|\]\]|\{\{|\}\}/g, "").length > 24)) ch.classList.add("stack");
-      const shown = f.shuffle ? shuffle(f.opts) : f.opts;
+      const shown = !f.shuffle ? f.opts : M.party ? seededShuffle(f.opts, M.party.seed + M.idx * 7919 + i) : shuffle(f.opts);
       shown.forEach((o, j) => {
         const b = el("button", "chip"); b.innerHTML = MC.renderText(o) + (f.opts.length <= 9 ? `<kbd>${j + 1}</kbd>` : ""); b.dataset.v = o; b.type = "button"; b.setAttribute("role", "radio");
         b.onclick = () => {
@@ -503,6 +526,7 @@ function mHud(){
   else if (M.mode === "drill"){ const c = M.results.filter(r => r.ok).length; $("mCount").textContent = `Drill #${M.idx + 1} · ${c} correct`; $("mProg").style.width = "100%"; }
   else { $("mCount").textContent = `Problem ${M.idx + 1} of ${M.queue.length}`; $("mProg").style.width = (M.idx / M.queue.length * 100) + "%"; }
   $("mPrev").classList.toggle("hidden", !(M.hist && M.hist[M.idx - 1]));
+  Party.strip();
   Shell.session();
 }
 
@@ -627,11 +651,13 @@ function mReveal(res, vals, skipped){
     $("mGraph").innerHTML = plotSVG(q.target, q.F, us);
   }
   M.results.push({id:q.id, src:q.src, label:qLabel(q), q, ok:all, part:nOk + "/" + q.fields.length, pts, hints:M.hint, attempt:M.attempt, skipped:!!skipped});
+  if (M.party) Party.answered(M.idx, all, pts);
   save(); mHud();
   const last = M.mode !== "drill" && M.idx >= M.queue.length - 1;
   $("mCheck").textContent = last ? "See results" : "Next →";
+  if (M.party) Party.strip();
   // optional: move on by itself after a right answer (not on the last one, so the results don't surprise you)
-  if (all && ST.settings.autoNext && !last){ const at = M.idx, r = M; setTimeout(() => { if (M === r && M.idx === at && M.answered && M.view == null && !$("mquiz").classList.contains("hidden")) mNext(); }, 1100); }
+  if (all && ST.settings.autoNext && !last && !M.party){ const at = M.idx, r = M; setTimeout(() => { if (M === r && M.idx === at && M.answered && M.view == null && !$("mquiz").classList.contains("hidden")) mNext(); }, 1100); }
   $("mSkip").disabled = true; mHintBtn();
   $("keypad").classList.add("hidden");
   M.hist = M.hist || []; M.hist[M.idx] = mSnapshot(); mPersist();
@@ -640,12 +666,14 @@ function mReveal(res, vals, skipped){
 }
 
 function mNext(){
+  if (M.party) return Party.next();
   M.idx++;
   if (M.mode === "drill"){ M.queue.push(drillMake(M.sec || mSec())); return mShow(); }
   if (M.idx >= M.queue.length) return mFinish();
   mShow();
 }
 $("mQuit").onclick = () => {
+  if (M && M.party) return Party.leave();
   if (M && M.results.length && M.mode === "drill") return mFinish();
   // quitting partway: the points you earned still count
   if (M && M.results.length && !M.sent){ M.sent = true; LB.submit(PSUBJ.id, M.score); LB.record(PSUBJ.id, M.results); }

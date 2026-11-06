@@ -35,7 +35,7 @@ $("bkRestore").onclick = () => {
    so it never appears in this file. */
 const LB = (() => {
   const V = "10.12.2", BASE = `https://www.gstatic.com/firebasejs/${V}/`;
-  let A = null, F = null, auth = null, db = null, user = null, memberName = null, ready = null, busy = false, creating = false, checked = false;
+  let A = null, F = null, appInst = null, auth = null, db = null, user = null, memberName = null, ready = null, busy = false, creating = false, checked = false;
   const cfg = () => (window.FIREBASE_CONFIG && window.FIREBASE_CONFIG.apiKey) ? window.FIREBASE_CONFIG : null;
   const emailOf = n => n.toLowerCase() + "@users.studyquiz.app";
   const NAME_RE = /^[A-Za-z0-9_]{3,16}$/;
@@ -46,7 +46,7 @@ const LB = (() => {
     ready = (async () => {
       const [app, a, f] = await Promise.all([import(BASE + "firebase-app.js"), import(BASE + "firebase-auth.js"), import(BASE + "firebase-firestore.js")]);
       A = a; F = f;
-      const inst = app.initializeApp(cfg());
+      const inst = appInst = app.initializeApp(cfg());
       auth = a.getAuth(inst); db = f.getFirestore(inst);
       const first = await new Promise(res => { const off = a.onAuthStateChanged(auth, u => { off(); res(u); }); });
       // know who's signed in before anything else runs (otherwise queued points wait for the next round)
@@ -264,7 +264,7 @@ const LB = (() => {
   // start in the background if this phone was signed in before (sends queued points)
   if (cfg() && ST.lbUser) window.addEventListener("load", () => setTimeout(() => init().catch(() => {}), 1500));
 
-  return {cfg, init, signUp, signIn, signOut, submit, top, niceError, sync, adminData, mergeProgress, qkey, record, clubStats, clubCached, get user(){ return user; }, get name(){ return memberName; }, get checked(){ return checked; }};
+  return {cfg, init, signUp, signIn, signOut, submit, top, niceError, sync, adminData, mergeProgress, qkey, record, clubStats, clubCached, base: BASE, get app(){ return appInst; }, get user(){ return user; }, get name(){ return memberName; }, get checked(){ return checked; }};
 })();
 
 /* ---- settings screen ---- */
@@ -277,6 +277,7 @@ function renderSettings(){
   paintTheme();
   resetBackupUI();
   $("toBoard").classList.toggle("hidden", !LB.cfg());
+  Party.paintCard();
   show("settings");
   Admin.placeKey();
 }
