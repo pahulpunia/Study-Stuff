@@ -31,8 +31,13 @@ const Tools = (() => {
     p.innerHTML = `<div class="tbar"><div class="ttabs" role="tablist"></div><button class="iconbtn" id="toolsClose" aria-label="Close tools">${ic("close")}</button></div>
       <div class="tbody">
         <div class="tpane" data-t="pad">
-          <div class="padtools"><button data-m="pen" class="on">Pen</button><button data-m="erase">Eraser</button><button data-m="undo">Undo</button><button data-m="clear">Clear</button></div>
-          <canvas id="padCanvas"></canvas>
+          <div class="padtools">
+            <span class="pgroup" role="radiogroup" aria-label="Draw with">${[["pen", "Pen"], ["line", "Line"], ["rect", "Box"], ["oval", "Circle"], ["text", "Text"], ["erase", "Eraser"]]
+              .map(([m, l]) => `<button data-m="${m}" class="${m === "pen" ? "on" : ""}" role="radio">${l}</button>`).join("")}</span>
+            <span class="pgroup"><button data-a="grid" aria-pressed="false">Graph</button><button data-a="undo">Undo</button><button data-a="clear">Clear</button></span>
+            <label class="onq"><input type="checkbox" id="padOnQ"> Draw on the question</label>
+          </div>
+          <div class="padarea"><canvas id="padCanvas"></canvas><div class="padnote hidden" id="padNote">Drawing on the question above</div></div>
         </div>
         <div class="tpane" data-t="calc">
           <input id="calcIn" class="calcin" inputmode="none" autocomplete="off" spellcheck="false" aria-label="Calculation">
@@ -55,6 +60,7 @@ const Tools = (() => {
     tabs.querySelectorAll("button").forEach(b => b.onclick = () => { tab = b.dataset.t; paint(); });
     document.querySelectorAll("#toolsPanel .tpane").forEach(x => x.classList.toggle("hidden", x.dataset.t !== tab));
     if (tab === "pad") sizePad();
+    layoutOver();
     if (tab === "calc" && matchMedia("(pointer:fine)").matches) $("calcIn").focus();
   }
   function toggle(){ open ? close() : show(); }
@@ -62,54 +68,137 @@ const Tools = (() => {
     if (!allowed.length) return;
     build(); open = true;
     $("toolsPanel").classList.remove("hidden"); document.body.classList.add("toolsopen");
-    $("mTools").classList.add("on"); paint();
+    $("mTools").classList.add("on"); paint(); layoutOver();
   }
   function close(){
     open = false;
     if (built) $("toolsPanel").classList.add("hidden");
     document.body.classList.remove("toolsopen"); $("mTools") && $("mTools").classList.remove("on");
+    commitText(); layoutOver();
   }
 
-  /* ---------- scratchpad ---------- */
-  let strokes = [], cur = null, mode = "pen", cv, cx;
+  /* ---------- scratchpad: a sketch on the pad, and one laid over the question ----------
+     Each sketch is a list of marks, redrawn from scratch, so undo and resizing are easy.
+     Both clear when the question changes; closing the tools only hides them. */
+  let mode = "pen", onQ = false;
+  const pad = {cv: null, items: [], grid: false}, over = {cv: null, items: [], grid: false};
+  const target = () => onQ ? over : pad;
   function buildPad(){
-    cv = $("padCanvas"); cx = cv.getContext("2d");
-    document.querySelectorAll("#toolsPanel .padtools button").forEach(b => b.onclick = () => {
-      const m = b.dataset.m;
-      if (m === "undo"){ strokes.pop(); redraw(); return; }
-      if (m === "clear"){ clearPad(); return; }
-      mode = m; document.querySelectorAll("#toolsPanel .padtools [data-m=pen], #toolsPanel .padtools [data-m=erase]").forEach(x => x.classList.toggle("on", x.dataset.m === m));
+    pad.cv = $("padCanvas");
+    over.cv = $("qInk");
+    const bar = document.querySelector("#toolsPanel .padtools");
+    bar.querySelectorAll("[data-m]").forEach(b => b.onclick = () => { mode = b.dataset.m; bar.querySelectorAll("[data-m]").forEach(x => { x.classList.toggle("on", x === b); x.setAttribute("aria-checked", x === b); }); commitText(); });
+    bar.querySelectorAll("[data-a]").forEach(b => b.onclick = () => {
+      const t = target(), a = b.dataset.a;
+      commitText();
+      if (a === "undo") t.items.pop();
+      if (a === "clear"){ t.items = []; t.grid = false; }
+      if (a === "grid") t.grid = !t.grid;
+      paintGridBtn(); redraw(t);
     });
-    const pt = e => { const r = cv.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
-    cv.addEventListener("pointerdown", e => { cv.setPointerCapture(e.pointerId); cur = {m: mode, pts: [pt(e)]}; strokes.push(cur); redraw(); e.preventDefault(); });
-    cv.addEventListener("pointermove", e => { if (!cur) return; (e.getCoalescedEvents ? e.getCoalescedEvents() : [e]).forEach(ev => cur.pts.push(pt(ev))); redraw(); });
-    const end = () => { cur = null; };
+    $("padOnQ").onchange = e => { commitText(); onQ = e.target.checked; layoutOver(); $("padNote").classList.toggle("hidden", !onQ); $("padCanvas").classList.toggle("hidden", onQ); paintGridBtn(); if (!onQ) sizePad(); else showQuestion(); };
+    [pad, over].forEach(attach);
+    window.addEventListener("resize", () => { if (open){ sizePad(); layoutOver(); } });
+    if (window.ResizeObserver) new ResizeObserver(() => { if (open) layoutOver(); }).observe(document.querySelector("#mquiz .mq-left"));
+  }
+  function paintGridBtn(){ const b = document.querySelector('#toolsPanel [data-a="grid"]'); if (b){ b.classList.toggle("on", target().grid); b.setAttribute("aria-pressed", String(target().grid)); } }
+  function attach(sk){
+    const cv = sk.cv, pt = e => { const r = cv.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
+    let cur = null;
+    cv.addEventListener("pointerdown", e => {
+      if (mode === "text"){ e.preventDefault(); placeText(sk, pt(e)); return; }
+      commitText();
+      cv.setPointerCapture(e.pointerId); const p = pt(e);
+      cur = mode === "pen" || mode === "erase" ? {m: mode, pts: [p]} : {m: mode, a: p, b: p};
+      sk.items.push(cur); redraw(sk); e.preventDefault();
+    });
+    cv.addEventListener("pointermove", e => {
+      if (!cur) return;
+      if (cur.pts) (e.getCoalescedEvents ? e.getCoalescedEvents() : [e]).forEach(ev => cur.pts.push(pt(ev)));
+      else cur.b = pt(e);
+      redraw(sk);
+    });
+    const end = () => { if (cur && !cur.pts && Math.hypot(cur.b[0] - cur.a[0], cur.b[1] - cur.a[1]) < 3) sk.items.pop(); cur = null; redraw(sk); };
     cv.addEventListener("pointerup", end); cv.addEventListener("pointercancel", end);
-    window.addEventListener("resize", () => { if (open && tab === "pad") sizePad(); });
+  }
+  // text: tap to place a box, type, Enter (or tap elsewhere) to drop it onto the sketch
+  let typing = null;
+  function placeText(sk, [x, y]){
+    commitText();
+    const box = el("input", "padtext"); box.type = "text"; box.placeholder = "Type…"; box.setAttribute("aria-label", "Text to add");
+    const host = sk.cv.parentNode, r = sk.cv.getBoundingClientRect(), hr = host.getBoundingClientRect();
+    box.style.left = (r.left - hr.left + x) + "px"; box.style.top = (r.top - hr.top + y - 14) + "px";
+    host.appendChild(box); typing = {sk, x, y, box};
+    box.addEventListener("keydown", e => { e.stopPropagation(); if (e.key === "Enter"){ e.preventDefault(); commitText(); } if (e.key === "Escape"){ box.value = ""; commitText(); } });
+    box.addEventListener("blur", () => setTimeout(commitText, 0));
+    setTimeout(() => box.focus(), 0);
+  }
+  function commitText(){
+    if (!typing) return;
+    const {sk, x, y, box} = typing; typing = null;
+    if (box.value.trim()) sk.items.push({m: "text", x, y, t: box.value.trim()});
+    box.remove(); redraw(sk);
+  }
+  function fit(sk, w, h){
+    const dpr = window.devicePixelRatio || 1;
+    sk.cv.style.width = w + "px"; sk.cv.style.height = h + "px";
+    sk.cv.width = Math.round(w * dpr); sk.cv.height = Math.round(h * dpr);
+    sk.cv.getContext("2d").setTransform(dpr, 0, 0, dpr, 0, 0); redraw(sk);
   }
   function sizePad(){
-    if (!cv) return;
-    const par = cv.parentNode, cs = getComputedStyle(par), dpr = window.devicePixelRatio || 1;
-    const w = Math.max(100, par.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight));
-    const h = Math.max(120, par.clientHeight - (cv.offsetTop - par.offsetTop) - parseFloat(cs.paddingBottom));
-    cv.style.width = w + "px"; cv.style.height = h + "px";
-    cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
-    cx.setTransform(dpr, 0, 0, dpr, 0, 0); redraw();
+    if (!pad.cv || onQ) return;
+    const area = pad.cv.parentNode;
+    fit(pad, Math.max(100, area.clientWidth), Math.max(120, area.clientHeight));
   }
-  function redraw(){
-    if (!cx) return;
-    cx.clearRect(0, 0, cv.width, cv.height);
-    const ink = getComputedStyle(document.documentElement).getPropertyValue("--ink").trim() || "#e8edf5";
-    strokes.forEach(s => {
-      cx.globalCompositeOperation = s.m === "erase" ? "destination-out" : "source-over";
-      cx.strokeStyle = ink; cx.lineWidth = s.m === "erase" ? 22 : 2.4; cx.lineCap = cx.lineJoin = "round";
-      cx.beginPath(); s.pts.forEach(([x, y], i) => i ? cx.lineTo(x, y) : cx.moveTo(x, y));
-      if (s.pts.length === 1){ cx.lineTo(s.pts[0][0] + 0.1, s.pts[0][1]); }
+  // bring the question back into view when drawing on it, so it isn't hidden above the page or under the panel
+  function showQuestion(){
+    const t = $("mText").getBoundingClientRect(), bar = document.querySelector("#mquiz .topbar"), pn = $("toolsPanel").getBoundingClientRect();
+    const floor = bar ? Math.max(0, bar.getBoundingClientRect().bottom) : 0, under = pn.left < t.right && pn.right > t.left, roof = under && pn.top > 0 ? pn.top : innerHeight;
+    if (t.top < floor + 4 || t.top > roof - 80) window.scrollBy({top: t.top - floor - 12, behavior: "auto"});
+  }
+  // the overlay covers the question (text, figure, math), never the answer area
+  function layoutOver(){
+    const cv = over.cv; if (!cv) return;
+    const show = open && (onQ || over.items.length || over.grid);
+    cv.classList.toggle("hidden", !show); cv.classList.toggle("live", open && onQ);
+    if (!show) return;
+    const left = document.querySelector("#mquiz .mq-left"), top = $("mText").offsetTop;
+    cv.style.top = top + "px";
+    fit(over, left.clientWidth, Math.max(60, left.clientHeight - top));
+  }
+  function redraw(sk){
+    if (!sk || !sk.cv) return;
+    const cx = sk.cv.getContext("2d"), W = sk.cv.clientWidth, H = sk.cv.clientHeight;
+    cx.clearRect(0, 0, sk.cv.width, sk.cv.height);
+    const css = getComputedStyle(document.documentElement), ink = css.getPropertyValue("--ink").trim() || "#e8edf5", soft = css.getPropertyValue("--line").trim() || "#2a3346";
+    const mark = css.getPropertyValue("--accent").trim() || "#7c9cff";
+    if (sk.grid){
+      // template graph: light grid, darker axes through the middle
+      const step = Math.max(16, Math.round(Math.min(W, H) / 16)), ox = Math.round(W / 2 / step) * step, oy = Math.round(H / 2 / step) * step;
+      cx.lineWidth = 1; cx.strokeStyle = soft; cx.beginPath();
+      for (let x = ox % step; x < W; x += step){ cx.moveTo(x + .5, 0); cx.lineTo(x + .5, H); }
+      for (let y = oy % step; y < H; y += step){ cx.moveTo(0, y + .5); cx.lineTo(W, y + .5); }
       cx.stroke();
+      cx.lineWidth = 1.6; cx.strokeStyle = ink; cx.globalAlpha = .7; cx.beginPath(); cx.moveTo(0, oy + .5); cx.lineTo(W, oy + .5); cx.moveTo(ox + .5, 0); cx.lineTo(ox + .5, H); cx.stroke(); cx.globalAlpha = 1;
+    }
+    sk.items.forEach(it => {
+      const ink2 = sk === over ? mark : ink;
+      cx.globalCompositeOperation = it.m === "erase" ? "destination-out" : "source-over";
+      cx.strokeStyle = ink2; cx.fillStyle = ink2; cx.lineWidth = it.m === "erase" ? 22 : 2.4; cx.lineCap = cx.lineJoin = "round";
+      cx.beginPath();
+      if (it.pts){ it.pts.forEach(([x, y], i) => i ? cx.lineTo(x, y) : cx.moveTo(x, y)); if (it.pts.length === 1) cx.lineTo(it.pts[0][0] + .1, it.pts[0][1]); cx.stroke(); }
+      else if (it.m === "line"){ cx.moveTo(...it.a); cx.lineTo(...it.b); cx.stroke(); }
+      else if (it.m === "rect"){ cx.strokeRect(Math.min(it.a[0], it.b[0]), Math.min(it.a[1], it.b[1]), Math.abs(it.b[0] - it.a[0]), Math.abs(it.b[1] - it.a[1])); }
+      else if (it.m === "oval"){ cx.ellipse((it.a[0] + it.b[0]) / 2, (it.a[1] + it.b[1]) / 2, Math.abs(it.b[0] - it.a[0]) / 2, Math.abs(it.b[1] - it.a[1]) / 2, 0, 0, Math.PI * 2); cx.stroke(); }
+      else if (it.m === "text"){ cx.font = "600 16px " + (css.getPropertyValue("--font").trim() || "system-ui"); cx.textBaseline = "middle"; cx.fillText(it.t, it.x, it.y); }
     });
     cx.globalCompositeOperation = "source-over";
   }
-  function clearPad(){ strokes = []; cur = null; redraw(); }
+  function clearPad(){
+    if (typing){ typing.box.remove(); typing = null; }
+    pad.items = []; pad.grid = false; over.items = []; over.grid = false;
+    redraw(pad); redraw(over); layoutOver(); paintGridBtn();
+  }
 
   /* ---------- calculator (no eval: a small parser) ---------- */
   let ans = 0;

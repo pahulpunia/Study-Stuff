@@ -165,6 +165,13 @@ function renderMathHome(subj){
   }
   sel.value = mSec();
   const box = $("mmodes"); box.innerHTML = "";
+  const R = mResumable();
+  if (R){
+    const b = el("button", "mode resume");
+    const where = R.mode === "drill" ? `${R.results.length} answered` : R.mode === "mastery" ? `Mastered ${R.mastered.size} of ${R.total}` : `Problem ${Math.min(R.idx + 1 + (R.answered ? 1 : 0), R.queue.length)} of ${R.queue.length}`;
+    modeTile(b, "refresh", "Resume round", `${MMODES[R.mode].name} · ${where} · ${R.score} pts`);
+    b.onclick = mResume; box.appendChild(b);
+  }
   Object.entries(MMODES).forEach(([k, m]) => {
     if (m.gen && !drillHas(mSec())) return;
     if (m.write && !Write.has(m.write, mSec())) return;
@@ -243,6 +250,12 @@ $("sheet").addEventListener("click", e => { if (e.target === $("sheet")) closeLe
 document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("sheet").classList.contains("hidden")) closeLearn(); });
 $("mLearn").onclick = () => openLearn(M.queue[M.idx]);
 $("mTools").onclick = () => Tools.toggle();
+$("mCross").onclick = () => {
+  if (!M || M.answered) return;
+  M.cross = !M.cross;
+  $("mCross").classList.toggle("on", M.cross); $("mCross").setAttribute("aria-pressed", String(M.cross));
+  $("mFields").classList.toggle("crossing", M.cross);
+};
 
 function renderMNotes(subj){
   useProblems(subj);
@@ -269,10 +282,72 @@ function mStart(mode, override){
   if (mode === "weak") list = list.slice().sort((a, b) => ((mAcc(a.id) ?? 0.5) - (mAcc(b.id) ?? 0.5)) || Math.random() - 0.5).slice(0, 8);
   let queue = mode === "drill" ? [drillMake(mSec())] : shuffle(list);
   if (mode === "practice" && !override && ST.settings.count) queue = queue.slice(0, ST.settings.count);
-  M = {mode, queue, idx:0, score:0, streak:0, bestStreak:0, results:[], mastered:new Set(), total:queue.length, start:Date.now(), override:!!override};
+  M = {mode, queue, idx:0, score:0, streak:0, bestStreak:0, results:[], mastered:new Set(), total:queue.length, start:Date.now(), override:!!override,
+       subj:PSUBJ.id, sec:mSec(), hist:[]};
   show("mquiz");
   mShow();
 }
+
+/* ---- leaving and coming back: the round waits (in memory, and in this tab's session storage) ---- */
+const ROUND_KEY = "sq-round";
+function mPersist(){
+  try {
+    if (!M || M.over || M.mode === "drill"){ sessionStorage.removeItem(ROUND_KEY); return; }
+    const items = PB().items, ref = q => items.indexOf(q);
+    sessionStorage.setItem(ROUND_KEY, JSON.stringify({subj:M.subj, sec:M.sec, mode:M.mode, idx:M.idx, score:M.score, streak:M.streak, bestStreak:M.bestStreak,
+      total:M.total, start:M.start, override:M.override, mastered:[...M.mastered], queue:M.queue.map(ref), answered:!!M.answered, hist:M.hist,
+      results:M.results.map(r => Object.assign({}, r, {q:ref(r.q)})), at:Date.now()}));
+  } catch(e){ /* storage full or blocked: resuming just won't survive a reload */ }
+}
+function mClearSaved(){ try { sessionStorage.removeItem(ROUND_KEY); } catch(e){} }
+function mResumable(){
+  if (M && !M.over && M.subj === PSUBJ.id && (M.idx > 0 || M.results.length || M.answered)) return M;
+  if (M && !M.over) return null;
+  try {
+    const d = JSON.parse(sessionStorage.getItem(ROUND_KEY) || "null");
+    if (!d || d.subj !== PSUBJ.id || Date.now() - d.at > 6 * 3600e3) return null;
+    const items = PB().items, q = i => items[i];
+    if (d.queue.some(i => !q(i)) || d.results.some(r => !q(r.q))) return null;
+    M = Object.assign({}, d, {queue:d.queue.map(q), results:d.results.map(r => Object.assign({}, r, {q:q(r.q)})), mastered:new Set(d.mastered), restored:true});
+    return M;
+  } catch(e){ return null; }
+}
+function mResume(){
+  ST.sel[PSUBJ.id] = M.sec; save();
+  show("mquiz");
+  if (M.restored){
+    M.restored = false;
+    if (M.answered){ M.idx++; if (M.idx >= M.queue.length) return mFinish(); }
+    return mShow();
+  }
+  mReviewClose(); mHud();
+}
+
+/* ---- looking back at earlier questions (read-only: answers can't change) ---- */
+function mSnapshot(){
+  const c = $("mCard").cloneNode(true);
+  c.querySelectorAll("#mDock, .qacts, canvas, .padtext, .mhint.hidden, .msol.hidden").forEach(x => x.remove());
+  c.querySelectorAll("[id]").forEach(x => x.removeAttribute("id"));
+  c.querySelectorAll("button, input").forEach(x => { x.disabled = true; x.tabIndex = -1; });
+  return c.innerHTML;
+}
+function mReviewAt(i){
+  if (!M || !M.hist || !M.hist[i]) return;
+  M.view = i; Tools.close();
+  const r = $("mReview");
+  const nextIsLive = !M.hist[i + 1] || i + 1 === M.idx;
+  r.innerHTML = `<div class="revbar"><button class="link" id="rvPrev" ${M.hist[i - 1] ? "" : "disabled"}>‹ Previous</button>` +
+    `<span class="revlab">Question ${i + 1} · looking back</span><button class="link" id="rvNext">${nextIsLive ? "Back to current" : "Next"} ›</button></div>` + M.hist[i];
+  $("rvPrev").onclick = () => mReviewAt(i - 1);
+  $("rvNext").onclick = () => nextIsLive ? mReviewClose() : mReviewAt(i + 1);
+  $("mCard").classList.add("hidden"); r.classList.remove("hidden");
+  window.scrollTo(0, 0);
+}
+function mReviewClose(){
+  if (M) M.view = null;
+  $("mReview").classList.add("hidden"); $("mReview").innerHTML = ""; $("mCard").classList.remove("hidden");
+}
+$("mPrev").onclick = () => { if (M) mReviewAt(M.idx - 1); };
 
 function mPrompt(q){
   let html = "";
@@ -292,7 +367,7 @@ function qLabel(q){
 
 /* keyboard: 1–9 taps an option, Enter checks / goes next (desktop) */
 document.addEventListener("keydown", e => {
-  if ($("mquiz").classList.contains("hidden") || !$("sheet").classList.contains("hidden") || !M) return;
+  if ($("mquiz").classList.contains("hidden") || !$("sheet").classList.contains("hidden") || !M || M.view != null) return;
   if (e.metaKey || e.ctrlKey || e.altKey) return;
   const tag = (e.target.tagName || "").toLowerCase(), typing = (tag === "input" && !e.target.classList.contains("vh")) || tag === "textarea" || tag === "select";
   if (typing) return;
@@ -365,6 +440,9 @@ function mShow(){
         const b = el("button", "chip"); b.innerHTML = MC.renderText(o) + (f.opts.length <= 9 ? `<kbd>${j + 1}</kbd>` : ""); b.dataset.v = o; b.type = "button"; b.setAttribute("role", "radio");
         b.onclick = () => {
           if (M.answered || inp.dataset.ok === "1" || b.disabled) return;
+          // cross-out mode: tapping strikes an option out (or brings it back) instead of choosing it
+          if (M.cross){ b.classList.toggle("out"); b.setAttribute("aria-label", (b.classList.contains("out") ? "Crossed out: " : "") + b.textContent); return; }
+          if (b.classList.contains("out")) return;
           ch.querySelectorAll(".chip").forEach(c => { c.classList.toggle("sel", c === b); c.setAttribute("aria-checked", c === b); });
           inp.value = o; M.lastFocus = i; mReady();
           if (q.fields.length === 1) mCheck();
@@ -376,6 +454,10 @@ function mShow(){
     w.appendChild(el("div", "mans hidden"));
     box.appendChild(w);
   });
+  // cross out: for multiple choice with 3+ options
+  M.cross = false; $("mFields").classList.remove("crossing");
+  $("mCross").classList.toggle("hidden", !q.fields.some(f => f.t === "choice" && f.opts.length >= 3));
+  $("mCross").classList.remove("on"); $("mCross").setAttribute("aria-pressed", "false");
   // the math keypad only shows for math-style answers
   const padNeeded = q.fields.some(f => ["expr","rat","set","pts","pf"].includes(f.t)) || !!q.lim;
   $("keypad").classList.toggle("hidden", !padNeeded);
@@ -383,15 +465,16 @@ function mShow(){
   window.scrollTo(0, 0);
   $("mCheck").textContent = "Check";
   $("mSkip").disabled = false;
-  mHintBtn(); mHud(); mReady();
+  mHintBtn(); mReviewClose(); mHud(); mReady();
   $("mf0").focus();
+  mPersist();
 }
 /* Check looks inactive until every box has an answer */
 function mReady(){
   if (!M) return;
   const q = M.queue[M.idx], wait = !M.answered && q.fields.some((_, i) => { const f = $("mf" + i); return f && !f.readOnly && !f.value.trim(); });
   $("mCheck").classList.toggle("dim", wait);
-  if (!wait && $("mFb").textContent === "Answer every part first."){ $("mFb").textContent = ""; $("mFb").className = "fb"; }
+  if (!wait && /^(Answer every part first\.|Can't read )/.test($("mFb").textContent)){ $("mFb").textContent = ""; $("mFb").className = "fb"; }
 }
 
 function mHints(q){
@@ -419,6 +502,7 @@ function mHud(){
   if (M.mode === "mastery"){ $("mCount").textContent = `Mastered ${M.mastered.size} of ${M.total}`; $("mProg").style.width = (M.mastered.size / M.total * 100) + "%"; }
   else if (M.mode === "drill"){ const c = M.results.filter(r => r.ok).length; $("mCount").textContent = `Drill #${M.idx + 1} · ${c} correct`; $("mProg").style.width = "100%"; }
   else { $("mCount").textContent = `Problem ${M.idx + 1} of ${M.queue.length}`; $("mProg").style.width = (M.idx / M.queue.length * 100) + "%"; }
+  $("mPrev").classList.toggle("hidden", !(M.hist && M.hist[M.idx - 1]));
   Shell.session();
 }
 
@@ -454,6 +538,22 @@ function mCheck(){
     tgt.classList.remove("shake"); void tgt.offsetWidth; tgt.classList.add("shake"); setTimeout(() => tgt.classList.remove("shake"), 520);
     if (q.fields[empty].t !== "choice") inp.focus();
     if (q.fields.length > 1){ $("mFb").className = "fb warn"; $("mFb").textContent = "Answer every part first."; }
+    return;
+  }
+  // can we read every answer? fix obvious slips (like a missing parenthesis); otherwise don't count the attempt
+  for (let i = 0; i < q.fields.length; i++){
+    const f = q.fields[i], inp = $("mf" + i);
+    if (inp.readOnly || f.t === "choice" || MC.readable(f, vals[i]).ok) continue;
+    const fx = MC.autofix(f, vals[i]);
+    if (fx !== vals[i].trim() && MC.readable(f, fx).ok){
+      inp.value = vals[i] = fx;
+      const pv = inp.parentNode.querySelector(".mprev"); if (pv) pv.innerHTML = `<span class="fixed">Read as</span> ` + MC.preview(f, fx);
+      continue;
+    }
+    inp.classList.remove("shake"); void inp.offsetWidth; inp.classList.add("shake"); setTimeout(() => inp.classList.remove("shake"), 520);
+    $("mFb").className = "fb warn";
+    $("mFb").textContent = `Can't read ${q.fields.length > 1 ? "that box" : "that"}: ${MC.readable(f, vals[i]).why}.`;
+    inp.focus();
     return;
   }
   const res = q.fields.map((f, i) => $("mf" + i).dataset.ok === "1" ? {ok:true} : MC.check(f, vals[i]));
@@ -492,6 +592,7 @@ $("mSkip").onclick = () => { if (!M.answered) mReveal(M.queue[M.idx].fields.map(
 
 function mReveal(res, vals, skipped){
   $("mCheck").classList.remove("dim");
+  M.cross = false; $("mFields").classList.remove("crossing"); $("mCross").classList.add("hidden");
   const q = M.queue[M.idx]; M.answered = true;
   const nOk = res.filter(r => r.ok).length, all = nOk === q.fields.length;
   q.fields.forEach((f, i) => {
@@ -529,15 +630,18 @@ function mReveal(res, vals, skipped){
   save(); mHud();
   const last = M.mode !== "drill" && M.idx >= M.queue.length - 1;
   $("mCheck").textContent = last ? "See results" : "Next →";
+  // optional: move on by itself after a right answer (not on the last one, so the results don't surprise you)
+  if (all && ST.settings.autoNext && !last){ const at = M.idx, r = M; setTimeout(() => { if (M === r && M.idx === at && M.answered && M.view == null && !$("mquiz").classList.contains("hidden")) mNext(); }, 1100); }
   $("mSkip").disabled = true; mHintBtn();
   $("keypad").classList.add("hidden");
+  M.hist = M.hist || []; M.hist[M.idx] = mSnapshot(); mPersist();
   document.activeElement && document.activeElement.blur();
   setTimeout(() => { const t = q.graphAfter ? $("mGraph") : $("mFb"); const y = t.getBoundingClientRect().top + window.scrollY - 70; window.scrollTo({top: Math.max(0, y), behavior: "smooth"}); }, 60);
 }
 
 function mNext(){
   M.idx++;
-  if (M.mode === "drill"){ M.queue.push(drillMake(mSec())); return mShow(); }
+  if (M.mode === "drill"){ M.queue.push(drillMake(M.sec || mSec())); return mShow(); }
   if (M.idx >= M.queue.length) return mFinish();
   mShow();
 }
@@ -545,11 +649,13 @@ $("mQuit").onclick = () => {
   if (M && M.results.length && M.mode === "drill") return mFinish();
   // quitting partway: the points you earned still count
   if (M && M.results.length && !M.sent){ M.sent = true; LB.submit(PSUBJ.id, M.score); LB.record(PSUBJ.id, M.results); }
+  if (M){ M.over = true; mClearSaved(); }
   document.activeElement && document.activeElement.blur(); renderHome();
 };
 
 function mFinish(){
   document.activeElement && document.activeElement.blur();
+  M.over = true; mClearSaved(); mReviewClose();
   const n = M.results.length, c = M.results.filter(r => r.ok).length, acc = n ? Math.round(c / n * 100) : 0;
   let newBest = false;
   if (!M.override && M.score > (ST.mbest[mBestKey(M.mode)] || 0)){ ST.mbest[mBestKey(M.mode)] = M.score; newBest = true; }

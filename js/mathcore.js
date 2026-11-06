@@ -344,6 +344,42 @@ const MC = (() => {
     return {ok:false};
   }
 
+  // can we read this answer at all? (a typo shouldn't cost an attempt)
+  const hasBox = n => !!n && typeof n === "object" && (n.k === "box" || hasBox(n.a) || hasBox(n.b));
+  const stripLHS = s => s.replace(/^(y|f\s*\(\s*[a-z]\s*\)|[a-z]\s*\(\s*[a-z]\s*\))\s*=/i, "").replace(/^[a-z]\s*=/i, "").replace(/^\s*=/, "");
+  const friendly = m => /empty box/.test(m) ? "fill in the empty box" : /variables/.test(m) ? "use a number here, not a variable"
+    : /unexpected end|expected/.test(m) ? "it looks unfinished. Check the end and the parentheses" : /unexpected/.test(m) ? "there's a symbol it doesn't understand" : "check it for typos";
+  function readable(field, input){
+    const raw = (input || "").trim();
+    if (!raw) return {ok:false, why:"it's empty"};
+    const sp = SPECIAL(raw);
+    try {
+      switch (field.t){
+        case "num": if (!sp) numVal(stripLHS(raw).replace(/^f\(\s*0\s*\)\s*=/i, "")); break;
+        case "expr": case "rat": case "pf": if (!sp){ const n = parse(stripLHS(raw)); if (hasBox(n)) throw new Error("empty box"); } break;
+        case "set": if (!sp) raw.replace(/[a-z]\s*(≠|!=|=|<>)/gi, ",").replace(/\band\b|\bor\b|;|&/gi, ",").split(",").map(x => x.trim()).filter(Boolean).forEach(numVal); break;
+        case "pts": {
+          if (sp) break;
+          const pairs = [...raw.matchAll(/\(([^()]*(?:\([^()]*\)[^()]*)*)\)/g)].map(m => m[1].split(","));
+          if (!pairs.length || pairs.some(p => p.length !== 2)) return {ok:false, why:"write points like (4, 2/7)"};
+          pairs.forEach(([x, y]) => { numVal(x); numVal(y); }); break;
+        }
+        case "charge": if (parseCharge(raw) === null) return {ok:false, why:"write a charge with its sign, like 2+ or 3−"}; break;
+      }
+    } catch(e){ return {ok:false, why: friendly(String(e.message || e))}; }
+    return {ok:true};
+  }
+  // fix obvious slips: a missing or extra parenthesis, a stray "=" in front. Anything less certain is left alone.
+  function autofix(field, input){
+    const t = String(input || "").trim();
+    if (!["num", "expr", "rat", "pf", "set", "pts"].includes(field.t) || !t || SPECIAL(t)) return t;
+    let s = t.replace(/^=\s*/, "");
+    let depth = 0, lead = 0;
+    for (const c of s){ if (c === "(") depth++; else if (c === ")"){ if (depth) depth--; else lead++; } }
+    s = "(".repeat(lead) + s + ")".repeat(depth);
+    return s;
+  }
+
   // HTML for showing the correct answer of a field
   function answerHTML(f){
     const show = a => a === "DNE" ? "DNE" : a === "inf" ? "∞" : a === "-inf" ? "−∞" : a === "none" ? "none" : render(a);
@@ -372,6 +408,6 @@ const MC = (() => {
     } catch(e){ return `<span class="perr">can't read that yet</span>`; }
   }
 
-  return {parse, evaluate, render, renderLim, renderText, check, answerHTML, preview, sameExpr, numVal, vars, formulaHTML};
+  return {parse, evaluate, render, renderLim, renderText, check, answerHTML, preview, sameExpr, numVal, vars, formulaHTML, readable, autofix};
 })();
 if (typeof module !== "undefined") module.exports = MC;   // lets tools/verify.js use it in Node

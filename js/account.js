@@ -238,6 +238,23 @@ const LB = (() => {
   }
   const clubCached = subject => club[subject] ? club[subject].data : null;
 
+  /* ---- admin dashboard data. Firestore rules decide what comes back: members can read the
+     leaderboard and club stats; an account listed in admins/{uid} can also read members and progress. ---- */
+  async function adminData(subjects){
+    await init();
+    if (!user || !memberName) return {signedIn:false};
+    const out = {signedIn:true, uid:user.uid, name:memberName, isAdmin:false, scores:[], members:null, progress:null, qstats:{}};
+    const all = async col => (await F.getDocs(F.collection(db, col))).docs.map(d => Object.assign({id: d.id}, d.data()));
+    try { out.isAdmin = (await F.getDoc(F.doc(db, "admins", user.uid))).exists(); } catch(e){}
+    try { out.scores = await all("scores"); } catch(e){}
+    for (const id of subjects){ try { const d = await F.getDoc(F.doc(db, "qstats", id)); if (d.exists()) out.qstats[id] = d.data().q || {}; } catch(e){} }
+    if (out.isAdmin){
+      try { out.members = await all("members"); } catch(e){}
+      try { out.progress = await all("progress"); } catch(e){}
+    }
+    return out;
+  }
+
   async function top(){
     await init();
     const q = F.query(F.collection(db, "scores"), F.orderBy("total", "desc"), F.limit(25));
@@ -247,17 +264,21 @@ const LB = (() => {
   // start in the background if this phone was signed in before (sends queued points)
   if (cfg() && ST.lbUser) window.addEventListener("load", () => setTimeout(() => init().catch(() => {}), 1500));
 
-  return {cfg, init, signUp, signIn, signOut, submit, top, niceError, sync, mergeProgress, qkey, record, clubStats, clubCached, get user(){ return user; }, get name(){ return memberName; }, get checked(){ return checked; }};
+  return {cfg, init, signUp, signIn, signOut, submit, top, niceError, sync, adminData, mergeProgress, qkey, record, clubStats, clubCached, get user(){ return user; }, get name(){ return memberName; }, get checked(){ return checked; }};
 })();
 
 /* ---- settings screen ---- */
 function renderSettings(){
-  $("countSel").value = String(ST.settings.count);
+  paintCount();
   $("secondChance").checked = !!ST.settings.second;
+  $("autoNext").checked = !!ST.settings.autoNext;
+  $("celebrate").checked = ST.settings.confetti !== false;
+  $("bigText").checked = !!ST.settings.big;
   paintTheme();
   resetBackupUI();
   $("toBoard").classList.toggle("hidden", !LB.cfg());
   show("settings");
+  Admin.placeKey();
 }
 /* theme: dark by default, light if picked (index.html applies it before first paint) */
 function applyTheme(t){
@@ -358,3 +379,6 @@ document.addEventListener("progress-synced", () => {
   if (!$("home").classList.contains("hidden")) renderHome();
   else if (!$("stats").classList.contains("hidden")) Study.engines[Study.subject().type].stats(Study.subject());
 });
+
+$("adminKey").onclick = () => Admin.open();
+$("adBack").onclick = renderSettings;

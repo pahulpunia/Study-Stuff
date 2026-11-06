@@ -23,7 +23,6 @@ function save(){ try { localStorage.setItem(KEY, JSON.stringify(ST)); } catch(e)
     if (k.includes("|")) continue;
     ST.mbest["math3|u4:" + k] = ST.mbest[k]; delete ST.mbest[k];
   }
-  if (ST.settings.count === 15) ST.settings.count = 0;
   save();
 })();
 
@@ -38,7 +37,7 @@ function fmtTime(ms){ const s = Math.max(0, Math.round(ms / 1000)); return Math.
 const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
 const escHTML = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;");
 
-const SCREENS = ["home","quiz","end","study","stats","mquiz","mend","mnotes","settings", "write", "board"];
+const SCREENS = ["home","quiz","end","study","stats","mquiz","mend","mnotes","settings", "write", "board", "admin"];
 function show(id){
   if (id !== "mquiz" && typeof Tools !== "undefined") Tools.close();
   SCREENS.forEach(s => $(s).classList.toggle("hidden", s !== id));
@@ -79,6 +78,7 @@ function copyText(text, btn, box){
 
 /* ---------- confetti ---------- */
 function confetti(){
+  if (ST.settings.confetti === false) return;
   if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   const c = $("confetti"), ctx = c.getContext("2d");
   c.width = innerWidth; c.height = innerHeight;
@@ -235,7 +235,17 @@ function renderHome(){
   });
 }
 
-$("countSel").onchange = e => { ST.settings.count = +e.target.value; save(); };
+// question count slider: 5 … 50, then All
+const COUNT_STEPS = [5, 10, 15, 20, 25, 30, 40, 50, 0];
+function paintCount(){
+  let i = COUNT_STEPS.indexOf(ST.settings.count); if (i < 0) i = COUNT_STEPS.length - 1;
+  $("countRange").value = String(i);
+  $("countVal").textContent = COUNT_STEPS[i] ? String(COUNT_STEPS[i]) : "All";
+}
+$("countRange").oninput = e => { ST.settings.count = COUNT_STEPS[+e.target.value]; save(); paintCount(); };
+$("autoNext").onchange = e => { ST.settings.autoNext = e.target.checked; save(); };
+$("celebrate").onchange = e => { ST.settings.confetti = e.target.checked; save(); };
+$("bigText").onchange = e => { ST.settings.big = e.target.checked; save(); document.documentElement.classList.toggle("bigtext", e.target.checked); };
 $("secondChance").onchange = e => { ST.settings.second = e.target.checked; save(); };
 $("toStudy").onclick = () => Study.engines[Study.subject().type].study(Study.subject());
 $("toStats").onclick = () => Study.engines[Study.subject().type].stats(Study.subject());

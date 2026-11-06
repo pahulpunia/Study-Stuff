@@ -47,6 +47,7 @@ Study.addUnit("math3", {
   notes: {
     "4.1": [
       {p:"A rational expression is a fraction with a polynomial on top and on bottom, like {{(x^2-4)/(x+2)}}. Simplifying it works just like reducing 6/8 to 3/4: you cancel factors that the top and bottom share. To see those shared factors, you have to factor first."},
+      {p:"**What it's for:** every other skill in this unit starts here. Simplifying first makes multiplying, adding, limits, and graphing much easier, and the excluded values tell you exactly where the function doesn't exist (those become holes and asymptotes on the graph)."},
       {h:"How to simplify"},
       {steps:[
         "Factor the numerator and the denominator completely.",
@@ -66,10 +67,15 @@ Study.addUnit("math3", {
         ["Grouping","4 terms","{{x^2(x+4)-9(x+4)}} = {{(x+4)(x^2-9)}}"]
       ]}},
       {warn:"Factors that are “backwards”, like (4 − x) and (x − 4), are opposites, not matches. Rewrite one as −1 times the other: {{4-x}} = {{-(x-4)}}. That's why {{(x-y)/(y-x)}} = −1."},
-      {warn:"You can only cancel factors (things multiplied), never terms (things added). In {{(x+3)/3}}, the 3s do NOT cancel."}
+      {warn:"You can only cancel factors (things multiplied), never terms (things added). In {{(x+3)/3}}, the 3s do NOT cancel."},
+      {h:"Worked examples"},
+      {ex:{q:"Simplify {{(x^2-4)/(x^2+5x+6)}} and state the excluded values.", a:["Factor the top (difference of squares): {{x^2-4}} = (x − 2)(x + 2).", "Factor the bottom (trinomial: multiply to 6, add to 5): {{x^2+5x+6}} = (x + 2)(x + 3).", "Excluded values come from the ORIGINAL bottom: x + 2 = 0 → x = −2, and x + 3 = 0 → x = −3.", "Cancel the shared factor (x + 2).", "Answer: {{(x-2)/(x+3)}}, with x ≠ −2, −3."]}},
+      {ex:{q:"Simplify {{(3x-12)/(16-x^2)}}.", a:["Factor the top (GCF): 3(x − 4).", "Factor the bottom (difference of squares): (4 − x)(4 + x).", "(x − 4) and (4 − x) are opposites, so rewrite (4 − x) as −(x − 4).", "Now the bottom is −(x − 4)(x + 4). Excluded: x ≠ 4, −4.", "Cancel (x − 4): {{3/(-(x+4))}} = {{-3/(x+4)}}."]}},
+      {ex:{q:"Simplify {{(x^3-8)/(x^2-4)}}.", a:["Top is a difference of cubes: (x − 2)(x² + 2x + 4).", "Bottom is a difference of squares: (x − 2)(x + 2). Excluded: x ≠ 2, −2.", "Cancel (x − 2).", "Answer: {{(x^2+2x+4)/(x+2)}}. The x² + 2x + 4 doesn't factor, so you're done."]}}
     ],
     "4.1.2": [
       {p:"Multiplying and dividing rational expressions uses the same rules as regular fractions. The only extra step is factoring first so you can cancel."},
+      {p:"**What it's for:** combining several rational expressions into one simplified fraction. You'll use it whenever rates are multiplied or divided, and again when simplifying limits."},
       {h:"Multiplying"},
       {steps:[
         "Factor every numerator and denominator.",
@@ -85,10 +91,15 @@ Study.addUnit("math3", {
         "Multiply the whole top and the whole bottom by that LCD. Every little fraction clears out.",
         "Factor and simplify like normal."
       ]},
-      {ex:{q:"{{(1/a-1/(2a))/(4/a)}}", a:["The LCD of the little fractions is 2a. Multiply top and bottom by 2a: {{(2-1)/8}} = {{1/8}}."]}}
+      {ex:{q:"{{(1/a-1/(2a))/(4/a)}}", a:["The LCD of the little fractions is 2a. Multiply top and bottom by 2a: {{(2-1)/8}} = {{1/8}}."]}},
+      {h:"Worked examples"},
+      {ex:{q:"Multiply: {{(x^2-9)/(x^2+x-2) * (x-1)/(x+3)}}", a:["Factor everything: {{((x-3)(x+3))/((x+2)(x-1)) * (x-1)/(x+3)}}.", "Excluded values (all original bottoms): x ≠ −2, 1, −3.", "Cancel (x + 3) top-and-bottom, and (x − 1) top-and-bottom.", "Answer: {{(x-3)/(x+2)}}."]}},
+      {ex:{q:"Divide: {{(x^2-1)/(2x) ÷ (x+1)/(4x^2)}}", a:["Keep, change, flip: {{(x^2-1)/(2x) * (4x^2)/(x+1)}}.", "Excluded: x ≠ 0 (both bottoms) and x ≠ −1 (the second fraction's top, which is now on the bottom).", "Factor: {{((x-1)(x+1))/(2x) * (4x^2)/(x+1)}}.", "Cancel (x + 1), and 4x²/2x = 2x.", "Answer: 2x(x − 1)."]}},
+      {ex:{q:"Simplify the complex fraction {{(1+1/x)/(1-1/x^2)}}", a:["The little fractions have bottoms x and x², so the LCD is x².", "Multiply the whole top and whole bottom by x²: {{(x^2+x)/(x^2-1)}}.", "Factor: {{(x(x+1))/((x-1)(x+1))}}.", "Cancel (x + 1): {{x/(x-1)}}, with x ≠ 0, 1, −1."]}}
     ],
     "4.2": [
       {p:"You can only add or subtract fractions that have the same denominator, so the whole job is building a common denominator (the LCD)."},
+      {p:"**What it's for:** adding and subtracting combines rates and simplifies messy expressions. Partial fractions does the reverse (calculus uses it to integrate). The difference quotient measures average rate of change, which is how calculus defines the derivative."},
       {h:"Adding and subtracting"},
       {steps:[
         "Factor every denominator.",
@@ -115,10 +126,16 @@ Study.addUnit("math3", {
         "Expand. Remember {{(x+h)^2}} = {{x^2+2xh+h^2}}, NOT {{x^2+h^2}}.",
         "Subtract all of f(x). Every original term cancels out.",
         "Every term left has an h in it. Factor out the h and cancel it with the h on the bottom."
-      ]}
+      ]},
+      {h:"Worked examples"},
+      {ex:{q:"Add: {{3/(x+2) + 5/(x-1)}}", a:["The denominators share nothing, so the LCD is (x + 2)(x − 1).", "Give each fraction the factor it's missing: {{(3(x-1))/((x+2)(x-1)) + (5(x+2))/((x+2)(x-1))}}.", "Add the tops: 3x − 3 + 5x + 10 = 8x + 7.", "Answer: {{(8x+7)/((x+2)(x-1))}}. The top doesn't factor, so nothing cancels."]}},
+      {ex:{q:"Subtract: {{x/(x^2-4) - 1/(x-2)}}", a:["Factor: x² − 4 = (x − 2)(x + 2). The LCD is (x − 2)(x + 2).", "The second fraction needs (x + 2): {{(x+2)/((x-2)(x+2))}}.", "Subtract the WHOLE second top: x − (x + 2) = −2.", "Answer: {{-2/((x-2)(x+2))}}."]}},
+      {ex:{q:"Decompose {{(5x-7)/(x^2-2x-3)}}", a:["Factor the bottom: (x − 3)(x + 1).", "Set up: {{A/(x-3) + B/(x+1)}}.", "Clear fractions: 5x − 7 = A(x + 1) + B(x − 3).", "x = 3: 8 = 4A, so A = 2. x = −1: −12 = −4B, so B = 3.", "Answer: {{2/(x-3) + 3/(x+1)}}. Check: 2(x + 1) + 3(x − 3) = 5x − 7 ✓"]}},
+      {ex:{q:"Difference quotient for f(x) = x² + 3x", a:["f(x + h) = (x + h)² + 3(x + h) = x² + 2xh + h² + 3x + 3h.", "Subtract f(x): the x² and 3x cancel, leaving 2xh + h² + 3h.", "Divide by h (every term has one): 2x + h + 3.", "Answer: 2x + h + 3."]}}
     ],
     "4.3": [
       {p:"The limit of f(x) as x → a asks: as x gets closer and closer to a (from both sides), what y-value is f(x) getting close to? It only cares about what happens NEAR a, not AT a. That's why a limit can exist at a hole, where f(a) itself is undefined."},
+      {p:"**What it's for:** describing what a function is heading toward near a point, even where it's undefined (a hole or an asymptote). Limits are the foundation of calculus: derivatives and integrals are both defined with them."},
       {h:"How to evaluate a limit"},
       {steps:[
         "Plug in a (direct substitution). If you get a real number, that's the answer.",
@@ -132,10 +149,16 @@ Study.addUnit("math3", {
       {h:"Reading limits from a graph or table"},
       {p:"On a graph, trace the curve toward x = a from each side and see what height it's heading to. An open circle doesn't matter; a filled dot shows f(a), which can be different from the limit. In a table, use x-values closer and closer to a from both sides (like 1.9, 1.99, 1.999 and 2.1, 2.01, 2.001) and see what the y-values approach."},
       {h:"Discontinuities"},
-      {p:"Removable: a hole. A factor canceled, and the limit exists there. Non-removable: a vertical asymptote (the limit is ∞, −∞, or DNE) or a jump (the left and right sides don't match)."}
+      {p:"Removable: a hole. A factor canceled, and the limit exists there. Non-removable: a vertical asymptote (the limit is ∞, −∞, or DNE) or a jump (the left and right sides don't match)."},
+      {h:"Worked examples"},
+      {ex:{q:"Find the limit as x → 2 of {{(x^2+1)/(x+3)}}", a:["Plug in 2: {{(4+1)/(2+3)}} = 5/5.", "It's a real number, so the limit is 1."]}},
+      {ex:{q:"Find the limit as x → 3 of {{(x^2-9)/(x-3)}}", a:["Plug in 3: {{0/0}}. That means a factor is hiding.", "Factor the top: {{((x-3)(x+3))/(x-3)}}.", "Cancel (x − 3): x + 3.", "Plug in 3 again: 6. (The graph has a hole at (3, 6).)"]}},
+      {ex:{q:"Find the limit as x → 4 of {{(sqrt(x)-2)/(x-4)}}", a:["Plug in 4: {{0/0}}. There's a square root, so use the conjugate √x + 2.", "Multiply top and bottom by (√x + 2): the top becomes x − 4.", "Now it's {{(x-4)/((x-4)(sqrt(x)+2))}}. Cancel (x − 4): {{1/(sqrt(x)+2)}}.", "Plug in 4: 1/(2 + 2) = 1/4."]}},
+      {ex:{q:"Find the limit as x → 1 of {{1/(x-1)}}", a:["Plug in 1: 1/0, a nonzero number over 0, so there's a vertical asymptote.", "From the left (x = 0.9): 1/(−0.1) = −10, heading to −∞. From the right (x = 1.1): +10, heading to +∞.", "The two sides disagree, so the limit DNE. (Compare 1/(x − 1)², where both sides go to +∞, so the limit is ∞.)"]}}
     ],
     "4.4": [
       {p:"Now x grows without bound (x → ∞) or heads to −∞. For huge x, only the highest-power term on top and on bottom matters. In {{(3x^2+5x)/(x^2-7)}} at x = 1,000,000, the 3x² term makes the 5x look tiny. So you decide the limit by comparing the degrees (highest exponents) of the top and bottom."},
+      {p:"**What it's for:** end behavior: what happens to the function far to the left and right. That value is the horizontal asymptote, and in real problems it's the long-run value (like the concentration a mixture settles at)."},
       {h:"The three cases"},
       {table:{head:["Degrees","Limit as x → ±∞","Why"], rows:[
         ["top < bottom","0","the bottom grows faster, so the fraction shrinks"],
@@ -151,10 +174,16 @@ Study.addUnit("math3", {
       {warn:"For x → −∞, watch the signs. Odd powers of a negative number stay negative: {{x^3/x^2}} = x, which goes to −∞."},
       {tip:"With factors multiplied together, multiply their leading terms: {{4(x-2)^3(2x+1)^2}} behaves like 4 · x³ · 4x² = 16x⁵."},
       {tip:"With roots, {{sqrt(9x^2)}} acts like 3x when x → ∞, and {{cbrt(8x^3)}} acts like 2x."},
-      {p:"This limit is the horizontal asymptote, the height the graph levels off to on the far left and right. That connects straight to 4.5."}
+      {p:"This limit is the horizontal asymptote, the height the graph levels off to on the far left and right. That connects straight to 4.5."},
+      {h:"Worked examples"},
+      {ex:{q:"Find the limit as x → ∞ of {{(3x^2+5x)/(x^2-7)}}", a:["Keep only the leading terms: {{3x^2/x^2}}.", "Simplify: 3.", "Degrees are equal, so the limit is the ratio of leading coefficients: 3. (HA: y = 3.)"]}},
+      {ex:{q:"Find the limit as x → ∞ of {{(2x+1)/x^3}}", a:["Leading terms: {{2x/x^3}} = {{2/x^2}}.", "As x gets huge, 2/x² gets tiny: the limit is 0.", "Top degree < bottom degree → 0 every time."]}},
+      {ex:{q:"Find the limit as x → −∞ of {{x^3/(x^2+1)}}", a:["Leading terms: {{x^3/x^2}} = x.", "As x → −∞, x → −∞.", "Answer: −∞ (top degree is bigger, so no horizontal asymptote)."]}},
+      {ex:{q:"Find the limit as x → ∞ of {{sqrt(9x^2+1)/(2x-5)}}", a:["For huge x, √(9x² + 1) acts like √(9x²) = 3x.", "So it behaves like {{3x/(2x)}} = 3/2.", "Answer: 3/2. (For x → −∞, √(9x²) = |3x| = −3x, so the answer would be −3/2.)"]}}
     ],
     "4.5": [
       {p:"Asymptotes, holes, and intercepts are the skeleton of a rational graph: once you have them, the sketch nearly draws itself. Always factor and reduce first, since what cancels and what doesn't decides almost everything."},
+      {p:"**What it's for:** sketching a rational function by hand and understanding its graph: where it breaks, where it blows up, where it levels off, and where it crosses the axes."},
       {h:"Each feature, and how to find it"},
       {table:{head:["Feature","How to find it","Why"], rows:[
         ["Hole","a factor that cancels; plug its x into the REDUCED function to get y","undefined there, but it doesn't blow up"],
@@ -168,10 +197,14 @@ Study.addUnit("math3", {
       {p:"Look at the power (multiplicity) of the factor on the bottom. Odd power (like (x − 1)): the graph goes up on one side and down on the other. Even power (like (x − 1)²): it goes the same way on both sides."},
       {warn:"A graph can't have both a horizontal and a slant asymptote. It's one or the other (or neither). A graph CAN cross a horizontal asymptote in the middle: the HA only describes the far ends."},
       {h:"Graphing steps"},
-      {steps:["Factor and reduce.","Mark holes and asymptotes (dashed lines).","Plot the intercepts.","Sketch each piece, following the asymptotes at the ends and the multiplicity rules at each VA."]}
+      {steps:["Factor and reduce.","Mark holes and asymptotes (dashed lines).","Plot the intercepts.","Sketch each piece, following the asymptotes at the ends and the multiplicity rules at each VA."]},
+      {h:"Worked examples"},
+      {ex:{q:"Find every feature of {{(x^2-x-2)/(x^2-4)}}", a:["Factor: {{((x-2)(x+1))/((x-2)(x+2))}}. Reduced: {{(x+1)/(x+2)}}.", "Hole: (x − 2) canceled, so x = 2. Plug 2 into the reduced form: 3/4. Hole at (2, 3/4).", "VA: reduced bottom = 0 → x = −2.", "HA: degrees are equal (2 and 2), leading coefficients 1/1 → y = 1.", "x-intercept: reduced top = 0 → x = −1. y-intercept: plug in 0 → 1/2."]}},
+      {ex:{q:"Find the asymptotes of {{(x^2+1)/(x-1)}}", a:["Nothing factors or cancels, so no holes.", "VA: x − 1 = 0 → x = 1.", "Top degree (2) is exactly 1 more than the bottom (1), so there's a slant asymptote, not a horizontal one.", "Long division: x² + 1 ÷ (x − 1) = x + 1 with remainder 2. Ignore the remainder: slant asymptote y = x + 1.", "Intercepts: x² + 1 is never 0, so no x-intercept; y-intercept is 1/(−1) = −1."]}}
     ],
     "4.6": [
       {p:"This is 4.5 in reverse: read the features off the graph, turn each one into a factor, and assemble the equation."},
+      {p:"**What it's for:** building an equation that matches a graph (or a list of features). It's the reverse of 4.5 and checks that you really understand what each factor does."},
       {h:"Turning features into factors"},
       {steps:[
         "Vertical asymptote at x = d → put (x − d) in the denominator, since that makes the bottom 0 there.",
@@ -187,7 +220,10 @@ Study.addUnit("math3", {
         ["flattens out as it crosses","3"],
         ["same direction on both sides of a VA","2 (on the bottom)"]
       ]}},
-      {tip:"If the graph has a slant asymptote, the top's degree must be exactly 1 more than the bottom's. Count your factors to check."}
+      {tip:"If the graph has a slant asymptote, the top's degree must be exactly 1 more than the bottom's. Count your factors to check."},
+      {h:"Worked examples"},
+      {ex:{q:"Write a function with a VA at x = 3, a hole at x = −1, an x-intercept at x = 2, and HA y = 2.", a:["VA at 3 → (x − 3) on the bottom.", "Hole at −1 → (x + 1) on top AND bottom.", "x-intercept at 2 → (x − 2) on top.", "So far: {{((x-2)(x+1))/((x-3)(x+1))}}. Degrees are equal, so the HA is the leading coefficients' ratio, 1. Put a 2 in front to make it 2.", "Answer: {{(2(x-2)(x+1))/((x-3)(x+1))}}. Check y-intercept: 2(−2)(1)/((−3)(1)) = 4/3."]}},
+      {ex:{q:"Write a function with a VA at x = −2 where both sides go the same way, an x-intercept at 1, HA y = 0, and y-intercept −1/4.", a:["Both sides the same direction → even power: (x + 2)² on the bottom.", "x-intercept at 1 → (x − 1) on top.", "HA y = 0 needs a smaller top degree: degree 1 over degree 2 ✓.", "Start with {{a(x-1)/(x+2)^2}}. Plug in 0: a(−1)/4 = −1/4, so a = 1.", "Answer: {{(x-1)/(x+2)^2}}."]}}
     ]
   },
 

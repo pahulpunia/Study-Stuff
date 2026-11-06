@@ -682,3 +682,65 @@ body.toolsopen #mquiz{padding-bottom:54vh}
 .schart .dash{stroke-dasharray:8 6} .schart .dot{stroke-dasharray:2 5;stroke-linecap:round}
 .schart .arw{stroke:var(--ink);stroke-width:2;marker-end:none}
 .schart .lg1{fill:var(--accent)} .schart .lg2{fill:var(--good)} .schart .lg3{fill:var(--warn)}
+.mprev .fixed{font-size:.78rem;font-weight:700;color:var(--accent);margin-right:6px;text-transform:uppercase;letter-spacing:.04em}
+
+/* cross out */
+.crossbtn.on{color:var(--accent)}
+#mFields.crossing .chip:not(:disabled){outline:1px dashed var(--muted);outline-offset:-4px}
+.chip.out{opacity:.42;text-decoration:line-through;text-decoration-thickness:2px}
+.chip.out kbd{text-decoration:none}
+@media (max-width: 480px){ .qacts .toolsbtn span, .qacts .crossbtn span{display:none} .qtop .qacts{gap:16px} }
+
+/* scratchpad v2 */
+.padtools{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}
+.padtools .pgroup{display:flex;gap:4px;flex-wrap:wrap}
+.padtools .onq{display:flex;align-items:center;gap:6px;font-size:.85rem;color:var(--muted);margin-left:auto}
+.padtools .onq input{accent-color:var(--accent)}
+.padarea{position:relative;flex:1;min-height:0}
+.padarea #padCanvas{position:absolute;inset:0}
+.padnote{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:.9rem;border:1px dashed var(--line);border-radius:10px}
+.padtext{position:absolute;z-index:3;min-width:120px;font:600 16px var(--font);padding:4px 6px;border-radius:6px;border:1px solid var(--accent);background:var(--card);color:var(--ink)}
+#mquiz .mq-left{position:relative}
+.qink{position:absolute;left:0;z-index:2;pointer-events:none}
+.qink.live{pointer-events:auto;touch-action:none;cursor:crosshair;outline:1px dashed var(--accent);outline-offset:2px;border-radius:6px}
+#padCanvas.hidden{display:none}
+
+/* look back + resume */
+.ccount{display:flex;align-items:center;gap:6px;min-width:0}
+.prevq{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;width:36px;height:36px;font-size:1.3rem;line-height:1;flex:none}
+.revbar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-bottom:10px;margin-bottom:12px;border-bottom:1px solid var(--line);grid-column:1/-1}
+.revlab{font-size:.85rem;color:var(--muted);font-weight:600;text-align:center}
+.mreview .chip:disabled{opacity:1}
+.mode.resume{border-color:var(--accent)}
+.mode.resume .mico{color:var(--accent)}
+
+/* settings: slider + larger text */
+.slide{display:grid;grid-template-columns:1fr auto;gap:4px 10px;width:100%;align-items:center}
+.slide input[type=range]{grid-column:1/-1;width:100%;accent-color:var(--accent)}
+.slide b{color:var(--accent)}
+html.bigtext{font-size:18px}
+html.bigtext body{font-size:19px}
+html.bigtext .mtext, html.bigtext .chip, html.bigtext .notes{font-size:1.08em}
+
+/* admin */
+.adminkey{position:fixed;width:23px;height:23px;padding:0;border:0;background:transparent;z-index:5;cursor:default}
+.adlock form{display:flex;gap:8px;margin-top:8px}
+.adlock input{flex:1}
+.adErr{color:var(--bad);min-height:1.2em;margin-top:6px}
+.adhead{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.adhead select{max-width:55%}
+.adtiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-top:12px}
+.adtile{border:1px solid var(--line);border-radius:10px;padding:10px;display:flex;flex-direction:column}
+.adtile b{font-size:1.35rem} .adtile span{font-size:.8rem;color:var(--muted)}
+.adscroll{overflow-x:auto}
+.adtable{width:100%;border-collapse:collapse;font-size:.88rem;white-space:nowrap}
+.adtable th{text-align:left;color:var(--muted);font-weight:600;padding:6px 10px 6px 0;border-bottom:1px solid var(--line)}
+.adtable td{padding:7px 10px 7px 0;border-bottom:1px solid var(--line)}
+.adbar{display:grid;grid-template-columns:110px 1fr auto;gap:10px;align-items:center;margin:6px 0;font-size:.9rem}
+.adbar i{display:block;height:12px;border-radius:6px;background:var(--accent);min-width:2px}
+.admiss{padding-left:0;list-style:none;margin:6px 0 0}
+.admiss li{display:flex;gap:12px;padding:8px 0;border-bottom:1px solid var(--line);font-size:.9rem;color:var(--ink)}
+.admiss .miss{font-weight:800;color:var(--bad);min-width:44px}
+.admiss .mq i{display:block;font-style:normal;color:var(--muted);font-size:.8rem;margin-top:2px}
+.adlinks{display:flex;flex-direction:column;gap:8px}
+.adlinks a{color:var(--accent);font-weight:600}
