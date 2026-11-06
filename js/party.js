@@ -27,14 +27,10 @@ const Party = (() => {
   const inRound = () => !!(M && M.party && !M.over && pid && M.party.id === pid);
   const visible = id => !$(id).classList.contains("hidden");
 
+  // the Realtime Database connection is shared with presence (live.js)
   function init(){
     if (ready) return ready;
-    ready = (async () => {
-      await LB.init();
-      if (!LB.user || !LB.name) throw new Error("signin");
-      D = await import(LB.base + "firebase-database.js");
-      db = D.getDatabase(LB.app);
-    })();
+    ready = Live.init().then(() => { D = Live.D; db = Live.db; });
     ready.catch(() => { ready = null; });
     return ready;
   }
@@ -366,10 +362,20 @@ const Party = (() => {
   function openFind(){
     view = "find"; show("party"); $("pyCount").textContent = "";
     if (offList){ offList(); offList = null; }
-    $("pyBody").innerHTML = `<div class="card"><h2>Parties</h2><div id="pyList" class="small">Looking…</div></div>`;
+    $("pyBody").innerHTML = `<div class="card"><h2>Parties</h2><div id="pyList" class="small">Looking…</div></div>
+      <div class="card"><h2>Online now</h2><div id="pyOnline" class="small">Looking…</div></div>`;
     init().then(() => {
       if (view !== "find" || !visible("party")) return;
-      offList = D.onValue(R("parties"), s => { list = s.val() || {}; paintList(); }, () => { const b = $("pyList"); if (b) b.textContent = "Couldn't load parties."; });
+      const a = D.onValue(R("parties"), s => { list = s.val() || {}; paintList(); }, () => { const b = $("pyList"); if (b) b.textContent = "Couldn't load parties."; });
+      // who else is studying right now, so you can invite them
+      const b = Live.watch(rows => {
+        const box = $("pyOnline"); if (!box) return;
+        const others = rows.filter(r => r.uid !== uid());
+        box.className = "";
+        box.innerHTML = others.length ? `<ul class="ponline">${others.map(r => `<li><i class="pdot live"></i><b>${esc(r.name)}</b><span class="small">${esc(r.doing || "")}</span></li>`).join("")}</ul>`
+          : `<p class="small">Nobody else is online right now.</p>`;
+      });
+      offList = () => { a(); b(); };
     }).catch(failed);
   }
   function paintList(){

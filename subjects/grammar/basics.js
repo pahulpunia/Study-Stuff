@@ -28,6 +28,7 @@ Study.addUnit("grammar", {
 
   notes: {
     "pos": [
+      {sum:["There are eight parts of speech: noun, pronoun, verb, adjective, adverb, preposition, conjunction, interjection.", "A word's part of speech depends on its job in THIS sentence, not on the word itself.", "Adjectives describe nouns; adverbs describe verbs, adjectives, or other adverbs (and often end in -ly)."]},
       {table:{head:["Part of speech", "What it does", "Example"], rows:[
         ["Noun", "names a person, place, or thing", "Sam, Clovis, love"],
         ["Pronoun", "takes the place of a noun", "**He** is here."],
@@ -44,9 +45,11 @@ Study.addUnit("grammar", {
       {p:"**Proper adjectives** come from proper nouns and are capitalized: **Greek** salad. **Articles** (a, an, the) are adjectives too."},
       {h:"Prepositional phrases"},
       {p:"A preposition is followed by a noun or pronoun, its **object** (O.P.). Together they make a **prepositional phrase**: The bell rings __at noon__. (at = preposition, noon = O.P.)"},
-      {tip:"Adverb or adjective? Find the word it describes. If that word is a noun, it's an adjective. If it's a verb, adjective, or adverb, it's an adverb."}
+      {tip:"Adverb or adjective? Find the word it describes. If that word is a noun, it's an adjective. If it's a verb, adjective, or adverb, it's an adverb."},
+      {check:[{q:"What part of speech is __well__ in \"She sings well\"?", a:"Adverb: it tells how she sings."}, {q:"What part of speech is __run__ in \"I went for a run\"?", a:"Noun: it's the thing she went for (after the article a)."}, {q:"Is __happiness__ a concrete or an abstract noun?", a:"Abstract: you can't touch or see it."}, {q:"Find the prepositional phrase: \"The cat slept under the porch.\"", a:"under the porch (preposition under + object porch)."}]}
     ],
     "conj": [
+      {sum:["Coordinating conjunctions (FANBOYS: for, and, nor, but, or, yet, so) join equal parts.", "Subordinating conjunctions (because, although, when…) start dependent clauses.", "Action verbs show action, linking verbs connect the subject to a description (is, seems, tastes), and helping verbs go before a main verb (has, will, can)."]},
       {h:"Four kinds of conjunctions"},
       {table:{head:["Kind", "What it does", "Examples"], rows:[
         ["Coordinating", "joins equal parts (FANBOYS)", "for, and, nor, but, or, yet, so"],
@@ -57,18 +60,22 @@ Study.addUnit("grammar", {
       {ex:{q:"Case won the contest; therefore, he became famous.", a:["Therefore is a conjunctive adverb: semicolon before it, comma after."]}},
       {h:"Three kinds of verbs"},
       {p:"**Action verbs** tell what someone does (Tom screams). **Linking verbs** don't show action; they connect the subject to a word that renames or describes it: am, is, are, was, were, seem, feel, become. **Helping verbs** help the main verb: The boy **is** running. I **have** listened."},
-      {tip:"Some verbs can be either. \"The soup **tastes** salty\" is linking (soup = salty). \"Ann **tasted** the soup\" is action (she did something)."}
+      {tip:"Some verbs can be either. \"The soup **tastes** salty\" is linking (soup = salty). \"Ann **tasted** the soup\" is action (she did something)."},
+      {check:[{q:"Is __although__ coordinating or subordinating?", a:"Subordinating: it starts a dependent clause."}, {q:"Is __tastes__ action or linking in \"The soup tastes salty\"?", a:"Linking: it connects soup to salty. (In \"I tasted the soup,\" it's action.)"}, {q:"Find the helping verb: \"She has finished her essay.\"", a:"has (helping the main verb finished)."}, {q:"Which pair are correlative conjunctions: neither/nor, or and/but?", a:"Neither/nor. Correlative conjunctions work in pairs (either/or, neither/nor, both/and)."}]}
     ],
     "sva": [
+      {sum:["A singular subject takes a singular verb (She writes); a plural subject takes a plural verb (They write).", "Ignore the words between the subject and the verb; find the real subject.", "With or / nor, the verb agrees with the closer subject. Subjects joined by and are usually plural."]},
       {p:"A subject and its verb must agree in number: singular subject → singular verb, plural subject → plural verb. **She writes. They write.**"},
       {steps:[
         "Two subjects joined by **and** → plural verb: The student and the committee members **write** every day.",
         "One subject with two verbs → both verbs agree with it: Interviews **are** one way to collect data and **allow** researchers to learn more.",
         "A phrase between the subject and verb doesn't change anything. Find the real subject: The student, as well as the committee members, **is** excited. The focus of the interviews **was** nine participants.",
         "Two singular subjects joined by **or** or **nor** → singular verb: The chairperson or the CEO **approves** the proposal."]},
-      {tip:"Cross out prepositional phrases and \"as well as / along with\" phrases first. What's left is the real subject."}
+      {tip:"Cross out prepositional phrases and \"as well as / along with\" phrases first. What's left is the real subject."},
+      {check:[{q:"One of the dogs (bark / barks) at night.", a:"barks: the subject is one, not dogs."}, {q:"Neither the players nor the coach (was / were) late.", a:"was: with nor, match the closer subject (coach)."}, {q:"My brother and sister (is / are) twins.", a:"are: two subjects joined by and."}, {q:"Each of the students (has / have) a locker.", a:"has: each is singular."}]}
     ],
     "pron": [
+      {sum:["A pronoun must agree in number and gender with its antecedent (the word it replaces).", "Singular words like each, everyone, and anybody take singular pronouns in formal writing (his or her).", "Avoid vague pronouns: it should be clear which noun a pronoun points to. Use who for people and that or which for things."]},
       {p:"An **antecedent** is the word a pronoun stands for. In \"President Lincoln delivered **his** Gettysburg Address,\" Lincoln is the antecedent of his. A pronoun must agree with its antecedent in number."},
       {steps:[
         "A phrase between doesn't matter: A can of lima beans sits on **its** shelf.",
@@ -80,9 +87,11 @@ Study.addUnit("grammar", {
       {h:"Who, that, which"},
       {p:"Use **who** for people and **that** for animals and things: She is the girl **who** lives next door. Use **that** for essential (restrictive) clauses with no commas: Cupcakes **that** take hours are crowd-pleasers. Use **which** for nonessential clauses with commas: The cake, **which** was delicious, was pink."},
       {h:"Formal writing rules"},
-      {p:"Write literary analysis in **third person**, include the **title and author**, and don't use symbols (& or +) or contractions (she'll)."}
+      {p:"Write literary analysis in **third person**, include the **title and author**, and don't use symbols (& or +) or contractions (she'll)."},
+      {check:[{q:"Every student brought (their / his or her) notebook. (formal writing)", a:"his or her: every student is singular."}, {q:"What's wrong with \"When Mia called Ana, she was upset\"?", a:"She is vague: it could be Mia or Ana. Name the person."}, {q:"The teacher (who / which) helped me retired.", a:"who: use who for people."}, {q:"Find the antecedent: \"The team lost its first game.\"", a:"team (its refers to team)."}]}
     ],
     "comp": [
+      {sum:["A direct object answers \"what?\" or \"whom?\" after an action verb.", "An indirect object comes before the direct object and tells to whom or for whom.", "After a linking verb, a predicate noun renames the subject and a predicate adjective describes it."]},
       {h:"After a linking verb"},
       {p:"Linking verbs (be, am, is, are, was, sound, taste, feel, seem, become) connect the subject to a word that renames or describes it."},
       {table:{head:["Complement", "What it does", "Example"], rows:[
@@ -92,7 +101,8 @@ Study.addUnit("grammar", {
       {h:"After an action verb"},
       {p:"A **direct object** receives the action of a transitive (action) verb and answers \"what?\" or \"whom?\": Sandy took the **candy**. A linking verb can't have a direct object."},
       {p:"An **indirect object** names the person to whom or for whom something is done. It comes between the verb and the direct object, and there has to be a direct object first: He showed **us** the tricks. (us = IO, tricks = DO)"},
-      {tip:"Test for an indirect object: move it after \"to\" or \"for.\" Mom baked us a cake → Mom baked a cake **for us**."}
+      {tip:"Test for an indirect object: move it after \"to\" or \"for.\" Mom baked us a cake → Mom baked a cake **for us**."},
+      {check:[{q:"Find the direct object: \"Sam threw the ball.\"", a:"ball (threw what?)."}, {q:"Find the indirect object: \"Mom made us pancakes.\"", a:"us (made pancakes for whom?)."}, {q:"Is __tired__ a predicate adjective or predicate noun in \"She seems tired\"?", a:"Predicate adjective: it describes her after the linking verb seems."}, {q:"Is __captain__ a predicate noun or a direct object in \"Jo became captain\"?", a:"Predicate noun: became is linking, and captain renames Jo."}]}
     ]
   },
 

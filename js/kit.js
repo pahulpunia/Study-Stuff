@@ -40,7 +40,23 @@ const F = {
   text:    (l, a) => ({l, t:"text", a:[].concat(a), ph:"type the word(s)"}),
   choice:  (l, opts, a, shuffle) => ({l, t:"choice", opts, a, shuffle: !!shuffle}),   // shuffle: show options in random order
   formula: (l, a) => ({l, t:"formula", a, ph:"e.g. Al2O3"}),
-  charge:  (l, a) => ({l, t:"charge", a:+a, ph:"e.g. 2+ or 3-"})
+  charge:  (l, a) => ({l, t:"charge", a:+a, ph:"e.g. 2+ or 3-"}),
+  // underline: "The bell rang __when class ended__." → the words, and the answer as "first-last" positions
+  under:   (l, marked) => {
+    const words = [], on = [];
+    let inU = false;
+    String(marked).trim().split(/\s+/).forEach(tok => {
+      let t = tok, starts = false, ends = false;
+      if (t.startsWith("__")){ starts = true; t = t.slice(2); }
+      const m = t.match(/__([^\w]*)$/); if (m){ ends = true; t = t.slice(0, m.index) + m[1]; }
+      if (starts) inU = true;
+      words.push(t); on.push(inU);
+      if (ends) inU = false;
+    });
+    const a = on.indexOf(true), b = on.lastIndexOf(true);
+    if (a < 0) throw new Error("underline question needs __marked__ words: " + marked);
+    return {l, t:"under", words, a: a + "-" + b};
+  }
 };
 
 /* the answer for a partial-fraction problem, e.g. 3/(2x+1) + 1/(x+6) */
@@ -106,6 +122,10 @@ function makeKit(subjId, unit){
     /* tap one option */
     choice(secs, src, text, opts, ans, steps, o = {}){
       return add({secs, src, text, fields:[F.choice(o.label || "Answer", opts, ans, o.shuffle)], steps, kind:"choice", math:o.math, tip:o.tip, stim:o.stim, cite:o.cite, img:o.img, svg:o.svg});
+    },
+    /* tap the words to underline them (a clause or phrase) */
+    under(secs, src, text, marked, steps, o = {}){
+      return add({secs, src, text, fields:[F.under(o.label || "Tap the first and last word", marked)], steps, kind:"under", tip:o.tip});
     },
     /* a plain number (count, charge size…) */
     num(secs, src, text, ans, steps, o = {}){

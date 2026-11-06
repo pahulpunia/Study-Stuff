@@ -38,6 +38,7 @@ Study.addUnit("grammar", {
 
   notes: {
     "ger": [
+      {sum:["A gerund is a verb + -ing used as a NOUN.", "A gerund phrase includes the gerund and its objects and modifiers.", "It can be a subject, direct object, indirect object, predicate noun, object of a preposition, or appositive."]},
       {p:"A **phrase** is a group of related words that works as one part of speech. A phrase does **not** have both a subject and a verb (that would make it a clause)."},
       {p:"A **gerund** is a verb ending in **-ing** that's used as a **noun**. A **gerund phrase** is the gerund plus the words that go with it. Anything a noun can do, a gerund phrase can do."},
       {table:{head:["Job", "Example"], rows:[
@@ -56,9 +57,11 @@ Study.addUnit("grammar", {
         "Comes between the verb and another object (gave __running__ a chance) → **indirect object**.",
         "Set off by commas next to a noun it renames → **appositive**."]},
       {warn:"Not every -ing word is a gerund. In \"Robert is __drinking coffee__,\" drinking is part of the verb (is drinking). In \"The girl __playing the piano__ is my friend,\" playing describes girl, so it's a participle."},
-      {tip:"Quick test: if you can swap the phrase for \"it\" or \"something,\" it's a gerund. \"I love __swimming__\" → \"I love it.\""}
+      {tip:"Quick test: if you can swap the phrase for \"it\" or \"something,\" it's a gerund. \"I love __swimming__\" → \"I love it.\""},
+      {check:[{q:"Gerund or verb? \"She is __swimming__.\"", a:"Part of the verb (is swimming), not a gerund."}, {q:"Gerund or verb? \"__Swimming__ is fun.\"", a:"Gerund: it's the subject."}, {q:"What job does the gerund phrase do? \"I love __reading mysteries__.\"", a:"Direct object (love what?)."}, {q:"What job? \"She's good at __solving puzzles__.\"", a:"Object of the preposition at."}]}
     ],
     "part": [
+      {sum:["A participle is a verb form (often -ing or -ed) used as an ADJECTIVE.", "A participial phrase describes a noun or pronoun, usually the one right next to it.", "An opening participial phrase is followed by a comma and must describe the subject that comes next."]},
       {p:"A **participial phrase** works as an **adjective**: it describes a noun or pronoun. The participle often ends in **-ing, -ed, -n, -t,** or **-d** (running, built, broken, lost, said)."},
       {table:{head:["Participle with…", "Example"], rows:[
         ["a prepositional phrase", "The pool __built in our yard__ is 30 feet long. (describes pool)"],
@@ -68,9 +71,11 @@ Study.addUnit("grammar", {
       {h:"Gerund or participle?"},
       {p:"Both can end in -ing. Ask what the phrase is doing: if it **names a thing** (works as a noun), it's a gerund. If it **describes a noun**, it's a participle."},
       {ex:{q:"__Playing the piano__ is fun. / The girl __playing the piano__ is my friend.", a:["First: names an activity, the subject → gerund.", "Second: tells which girl → participle."]}},
-      {tip:"A participial phrase at the start of a sentence describes the subject that comes right after the comma."}
+      {tip:"A participial phrase at the start of a sentence describes the subject that comes right after the comma."},
+      {check:[{q:"Find the participial phrase: \"The boy wearing the red cap is my cousin.\"", a:"wearing the red cap (it describes boy)."}, {q:"Gerund or participle? \"The __crying__ baby woke up.\"", a:"Participle: it describes baby."}, {q:"What does the phrase describe? \"Tired from practice, Leo fell asleep.\"", a:"Leo."}, {q:"Name two common participle endings.", a:"-ing and -ed (also -n, -t, -d, as in broken, lost, said)."}]}
     ],
     "inf": [
+      {sum:["An infinitive is to + a verb (to run, to eat).", "Infinitive phrases can act as nouns, adjectives, or adverbs.", "To + a noun (to the store) is a prepositional phrase, not an infinitive."]},
       {p:"An **infinitive** is **to + the base form of a verb** (to run, to see). An **infinitive phrase** can work as a **noun**, an **adjective**, or an **adverb**."},
       {table:{head:["Job", "Example"], rows:[
         ["Subject (noun)", "__To reach this conclusion__ took a lot of study."],
@@ -84,9 +89,11 @@ Study.addUnit("grammar", {
         "After a linking verb, renames the subject → **predicate noun**.",
         "Right after a noun, tells which one or what kind (a place __to eat__) → **adjective**.",
         "Tells why, or follows an adjective (happy __to help__) → **adverb**."]},
-      {warn:"\"To\" + a noun is a prepositional phrase, not an infinitive: __to the store__, __to Sam__. An infinitive needs a verb after to: __to go__."}
+      {warn:"\"To\" + a noun is a prepositional phrase, not an infinitive: __to the store__, __to Sam__. An infinitive needs a verb after to: __to go__."},
+      {check:[{q:"Infinitive or prepositional phrase? \"to the park\"", a:"Prepositional: to is followed by a noun."}, {q:"What job? \"__To win__ was our goal.\"", a:"Noun (the subject)."}, {q:"What job? \"She has homework __to finish__.\"", a:"Adjective: it describes homework."}, {q:"What job? \"He studied __to pass the test__.\"", a:"Adverb: it tells why he studied."}]}
     ],
     "prep": [
+      {sum:["A prepositional phrase starts with a preposition and ends with its object (a noun or pronoun).", "It works as an adjective (which one?) or an adverb (where, when, how?).", "An appositive phrase renames the noun next to it, has no verb, and is often set off by commas."]},
       {p:"A **prepositional phrase** starts with a preposition and ends with a noun or pronoun called the **object of the preposition**. It works as an adjective or an adverb, often showing position or direction."},
       {table:{head:["Used as", "Example"], rows:[
         ["Adjective (describes a noun)", "A story __in the newspaper__ described her life."],
@@ -96,9 +103,11 @@ Study.addUnit("grammar", {
       {h:"Appositive phrases"},
       {p:"An **appositive phrase** is a noun phrase that renames or explains the noun right next to it. It's often set off with commas, and it has **no verb**."},
       {ex:{q:"Mary, __a real sleepy head__, can't stay up late. / Mary, __who is a sleepy head__, can sleep anytime.", a:["First: no verb, renames Mary → appositive phrase.", "Second: has a subject and verb (who is) → adjective clause."]}},
-      {tip:"Adjective or adverb? If the phrase answers \"which one?\" about a noun, it's an adjective. If it answers where, when, or how about the action, it's an adverb."}
+      {tip:"Adjective or adverb? If the phrase answers \"which one?\" about a noun, it's an adjective. If it answers where, when, or how about the action, it's an adverb."},
+      {check:[{q:"Find the object of the preposition: \"The keys are on the table.\"", a:"table."}, {q:"Adjective or adverb? \"The house __on the hill__ is old.\"", a:"Adjective: it tells which house."}, {q:"Adjective or adverb? \"We hiked __after lunch__.\"", a:"Adverb: it tells when."}, {q:"Find the appositive: \"My friend Sam, a great cook, made dinner.\"", a:"a great cook (it renames Sam)."}]}
     ],
     "mod": [
+      {sum:["Essential phrases (needed to know which one) get no commas; nonessential ones get commas.", "Misplaced modifier: the describing phrase is too far from the word it describes. Move it closer.", "Dangling modifier: the word it describes is missing. Add it (usually as the subject)."]},
       {h:"Commas with phrases"},
       {p:"**Essential** (restrictive) phrases are needed to know which one you mean, so they get **no commas**. **Nonessential** (nonrestrictive) phrases just add extra information, so they get **commas**."},
       {ex:{q:"The clothes __flapping in the breeze__ are old. / Karen, __acting alone__, sneaked into the theater.", a:["First: tells which clothes → essential, no commas.", "Second: we already know who → nonessential, commas."]}},
@@ -108,7 +117,8 @@ Study.addUnit("grammar", {
       {h:"Dangling participles"},
       {p:"A **dangling participle** has nothing in the sentence to describe. Fix it by adding the person or thing doing the action."},
       {ex:{q:"Walking over the hill, the valley lay in its splendor.", a:["Who was walking? Not the valley.", "Better: Walking over the hill, we saw the valley in its splendor."]}},
-      {tip:"Misplaced: the right word is in the sentence, just in the wrong spot. Dangling: the right word is missing entirely."}
+      {tip:"Misplaced: the right word is in the sentence, just in the wrong spot. Dangling: the right word is missing entirely."},
+      {check:[{q:"Fix it: \"I found a dog walking to school.\"", a:"Walking to school, I found a dog. (The dog wasn't walking to school.)"}, {q:"Misplaced or dangling? \"Running late, the bus left without me.\"", a:"Dangling: the person running late isn't in the sentence. Fix: Running late, I missed the bus."}, {q:"Commas or not? \"The girl holding the trophy is my sister.\"", a:"No commas: the phrase tells which girl."}, {q:"Commas or not? \"Maya holding the trophy smiled.\"", a:"Commas: Maya, holding the trophy, smiled. (Maya is already named.)"}]}
     ]
   },
 
@@ -276,6 +286,44 @@ Study.addUnit("grammar", {
     mc("mod", "Which sentence is punctuated correctly?",
       ["Karen, acting alone, sneaked into the theater.", "Karen acting alone, sneaked into the theater.", "Karen, acting alone sneaked into the theater.", "Karen acting, alone sneaked into the theater."],
       "A nonessential phrase in the middle of a sentence needs a comma on both sides.");
+    /* ===== Underline it: tap the first and last word ===== */
+    const un = (sec, prompt) => (marked, why) => k.under([sec], S[sec], prompt, marked, [why]);
+    const g = un("ger", "Underline the **gerund phrase**.");
+    g("My grandfather loves __telling stories about his childhood__.", "Loves what? The whole -ing phrase, including what comes after the gerund.");
+    g("__Getting enough sleep__ helps you focus in class.", "The phrase is the subject: getting plus its object (enough sleep).");
+    g("Elena raised her grade by __studying a little every night__.", "It's the object of by, and a little every night belongs to studying.");
+    g("The best part of camp was __swimming across the lake__.", "It renames the best part after was.");
+    g("Mr. Patel suggested __starting the essay tonight__.", "Suggested what? Starting the essay tonight.");
+    g("Nobody thanked Ray for __fixing the printer__.", "It's the object of the preposition for.");
+    const upart = un("part", "Underline the **participial phrase**.");
+    upart("The girl __playing the piano__ is my friend.", "It describes girl (which girl?).");
+    upart("__Exhausted from the hike__, the campers fell asleep early.", "It describes campers.");
+    upart("We found a wallet __stuffed with old receipts__.", "It describes wallet.");
+    upart("The cookies __baked by my aunt__ disappeared in minutes.", "It tells which cookies.");
+    upart("__Hoping for a snow day__, Jamal checked the news at six.", "It describes Jamal, the one hoping.");
+    upart("The window __broken by the storm__ was replaced on Monday.", "Broken is a participle; the phrase tells which window.");
+    const inf = un("inf", "Underline the **infinitive phrase**.");
+    inf("Lena needs __to borrow a calculator__.", "To + a verb (borrow), plus its object.");
+    inf("His plan is __to leave before sunrise__.", "To leave before sunrise renames plan.");
+    inf("Ava saved her allowance __to buy a new bike__.", "It tells why she saved.");
+    inf("This is the best spot __to watch the fireworks__.", "It describes spot.");
+    inf("__To finish the marathon__ was Dad's only goal.", "It's the subject of was.");
+    inf("We drove to the beach __to see the sunset__.", "To the beach is a prepositional phrase (to + a noun). To see the sunset is the infinitive (to + a verb).");
+    const uap = un("prep", "Underline the **appositive phrase**.");
+    uap("Ms. Kim, __the new librarian__, waited outside.", "It renames Ms. Kim and has no verb.");
+    uap("Mary, __a real sleepy head__, can't stay up late.", "It renames Mary.");
+    uap("Our dog, __a shaggy old terrier__, sleeps all day.", "It renames our dog.");
+    uap("We visited Sacramento, __the capital of California__.", "It renames Sacramento. Of California is part of the appositive phrase.");
+    const pr = un("prep", "Underline the **prepositional phrase**.");
+    pr("The story begins __in Canada__.", "In is the preposition; Canada is its object.");
+    pr("She hid the key __under the mat__.", "Under is the preposition; mat is its object.");
+    pr("The cat jumped __onto the counter__.", "Onto is the preposition; counter is its object.");
+    pr("A story __in the newspaper__ described her life.", "It describes story (which story?).");
+    const mm = un("mod", "Underline the **misplaced modifier** (the phrase in the wrong spot).");
+    mm("We enjoyed the autumn leaves __walking along the path__.", "It sounds like the leaves were walking. Move it: Walking along the path, we enjoyed the autumn leaves.");
+    mm("Ms. Diaz served cake to the children __on paper plates__.", "It sounds like the children were on the plates. Better: Ms. Diaz served cake on paper plates to the children.");
+    mm("I saw a deer __driving to school this morning__.", "It sounds like the deer was driving. Better: Driving to school this morning, I saw a deer.");
+    mm("The waiter brought a steak to the man __covered in onions__.", "It sounds like the man was covered in onions. Better: The waiter brought the man a steak covered in onions.");
   },
 
   drills: {

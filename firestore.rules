@@ -56,6 +56,47 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    // round history: each finished round, saved to the account that played it.
+    // You see your own; the admin sees everyone's. Nobody can edit history.
+    match /rounds/{id} {
+      allow read: if signedIn() && (resource.data.uid == request.auth.uid || isAdmin());
+      allow create: if isMember()
+        && request.resource.data.keys().hasOnly(['uid', 'name', 'subj', 'mode', 'sec', 'score', 'right', 'total', 'secs', 'quit', 'at', 'when'])
+        && request.resource.data.uid == request.auth.uid && request.resource.data.name == memberName()
+        && request.resource.data.score is int && request.resource.data.score >= 0 && request.resource.data.score <= 100000
+        && request.resource.data.total is int && request.resource.data.total > 0 && request.resource.data.total <= 500
+        && request.resource.data.right is int && request.resource.data.right >= 0 && request.resource.data.right <= request.resource.data.total
+        && request.resource.data.secs is int && request.resource.data.at == request.time;
+      allow update: if false;
+      allow delete: if isAdmin();
+    }
+
+    // problem reports. Anyone can read them (they show in Settings → Issues without names);
+    // members can file one; only the admin can change the status, reply, or delete.
+    match /issues/{id} {
+      allow read: if true;
+      allow create: if isMember()
+        && request.resource.data.keys().hasOnly(['kind', 'reason', 'text', 'subj', 'where', 'q', 'qk', 'status', 'reply', 'created', 'updated'])
+        && request.resource.data.status == 'open' && request.resource.data.reply == ''
+        && request.resource.data.text is string && request.resource.data.text.size() <= 600
+        && request.resource.data.q is string && request.resource.data.q.size() <= 400
+        && request.resource.data.created == request.time
+        && existsAfter(/databases/$(database)/documents/issueAuthors/$(id));
+      allow update: if isAdmin()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'reply', 'updated']);
+      allow delete: if isAdmin();
+    }
+    // who filed each report, kept separately so names stay private (you see your own; the admin sees all)
+    match /issueAuthors/{id} {
+      allow read: if signedIn() && (resource.data.uid == request.auth.uid || isAdmin());
+      allow create: if isMember()
+        && request.resource.data.keys().hasOnly(['uid', 'name', 'created'])
+        && request.resource.data.uid == request.auth.uid && request.resource.data.name == memberName()
+        && existsAfter(/databases/$(database)/documents/issues/$(id));
+      allow update: if false;
+      allow delete: if isAdmin();
+    }
+
     // leaderboard: members can see everyone, but only write their own row
     match /scores/{uid} {
       allow read: if isMember();

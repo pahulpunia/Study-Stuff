@@ -88,6 +88,7 @@ Study.addUnit("hchem", {
 
   notes: {
     "4.1": [
+      {sum:["**Ionic**: a metal gives electrons to a nonmetal; the ions attract.", "**Covalent**: nonmetals share electrons to form molecules.", "**Metallic**: metal atoms share a \"sea\" of free-moving electrons."]},
       {p:"Atoms bond so they can end up with a full outer (valence) shell, usually 8 electrons (the octet rule). There are three ways to get there, and which one happens depends on what kinds of elements are involved."},
       {table:{head:["","Ionic","Covalent","Metallic"], rows:[
         ["Made of","metal + nonmetal","nonmetals only","metals only"],
@@ -102,9 +103,11 @@ Study.addUnit("hchem", {
       {p:"Two nonmetals both want electrons, so neither gives any up. Instead they share pairs of valence electrons, and each shared pair counts toward both atoms' octets. The result is a molecule. Molecules have no free charges, so they don't conduct, even dissolved."},
       {warn:"Hydrogen is the exception to the octet rule: it only needs 2 electrons, since it has just one energy level."},
       {h:"Metallic"},
-      {p:"Metal atoms give their valence electrons to a shared “sea” that moves around all of the atoms. That moving sea is why metals conduct electricity. There are no fixed bonds between specific atoms, so atoms can slide past each other without breaking apart, which is why metals bend instead of shattering. More valence electrons in the sea usually means a harder metal with a higher melting point."}
+      {p:"Metal atoms give their valence electrons to a shared “sea” that moves around all of the atoms. That moving sea is why metals conduct electricity. There are no fixed bonds between specific atoms, so atoms can slide past each other without breaking apart, which is why metals bend instead of shattering. More valence electrons in the sea usually means a harder metal with a higher melting point."},
+      {check:[{q:"What type of bonding is in [[NaCl]]?", a:"Ionic: sodium (a metal) gives an electron to chlorine (a nonmetal)."}, {q:"What type of bonding is in [[CO2]]?", a:"Covalent: carbon and oxygen are both nonmetals, so they share electrons."}, {q:"Why do metals conduct electricity?", a:"Their electrons aren't tied to one atom; the sea of electrons can flow through the metal."}, {q:"Which conducts electricity as a solid: an ionic compound, a covalent compound, or a metal?", a:"A metal. Ionic compounds conduct only when melted or dissolved (when the ions can move)."}]}
     ],
     "4.2": [
+      {sum:["Metals lose electrons to become positive ions; nonmetals gain electrons to become negative ions, usually reaching 8 valence electrons.", "An ionic formula has to be neutral: the total positive charge equals the total negative charge.", "Criss-cross shortcut: each ion's charge number becomes the other ion's subscript, then reduce."]},
       {h:"Lewis dot structures"},
       {p:"A Lewis dot structure shows ONLY the valence electrons (the outer shell) as dots around the element symbol. The group number tells you how many: groups 1–2 have 1–2, and groups 13–18 have the last digit (3–8). Place one dot on each side before pairing them up."},
       {h:"Ions"},
@@ -127,9 +130,11 @@ Study.addUnit("hchem", {
         "Cross the charge NUMBERS over to become the other ion's subscript: Al gets 2, O gets 3 → [[Al2O3]].",
         "Reduce if both subscripts share a factor: [[Mg^2+]] and [[O^2-]] give Mg₂O₂, which reduces to [[MgO]]."
       ]},
-      {tip:"Check it: the total positive charge should cancel the total negative. In [[Al2O3]], 2 × (3+) = 6+ and 3 × (2−) = 6−."}
+      {tip:"Check it: the total positive charge should cancel the total negative. In [[Al2O3]], 2 × (3+) = 6+ and 3 × (2−) = 6−."},
+      {check:[{q:"What's the charge on an aluminum ion?", a:"3+ (it's in group 13 and loses 3 valence electrons)."}, {q:"Write the formula for aluminum and oxygen.", a:"Al³⁺ and O²⁻ → criss-cross: [[Al2O3]]."}, {q:"Write the formula for magnesium and oxygen.", a:"Mg²⁺ and O²⁻ → [[Mg2O2]] reduces to [[MgO]]."}, {q:"How many valence electrons does a nitrogen atom have, and what ion does it form?", a:"5, so it gains 3 to make N³⁻."}]}
     ],
     "4.3": [
+      {sum:["Ionic compounds form a repeating 3-D **crystal lattice**, not separate molecules.", "Coulomb's law: the attraction is stronger with **bigger charges** and **smaller ions** (closer together).", "A stronger attraction means a higher melting point and more energy needed to pull the lattice apart."]},
       {h:"The crystal lattice"},
       {p:"Ionic compounds don't form separate molecules. They form a crystal lattice: a highly ordered, three-dimensional repeating pattern of positive and negative ions. Each positive ion is surrounded by negative ions and vice versa. The formula only gives the ratio of ions: [[NaCl]] means one Na⁺ for every Cl⁻, not a pair stuck together."},
       {h:"Coulomb's law: what makes an ionic bond stronger"},
@@ -144,9 +149,11 @@ Study.addUnit("hchem", {
         ["more hard and more brittle","the ions hold tighter; when the layers shift, like charges line up and repel, so it cracks"],
         ["higher melting point","more energy is needed to pull the ions apart"],
         ["less soluble in water","water has a harder time pulling the ions out of the lattice"]
-      ]}}
+      ]}},
+      {check:[{q:"Which has the stronger ionic bond: [[NaCl]] or [[MgO]]?", a:"MgO: its ions have charges of 2+ and 2−, versus 1+ and 1− in NaCl."}, {q:"Which has a higher melting point: [[NaF]] or [[NaI]]?", a:"NaF: the fluoride ion is smaller than the iodide ion, so the ions are closer and attract more strongly."}, {q:"Why are ionic solids hard but brittle?", a:"The lattice holds ions tightly, but a hard hit shifts the layers so like charges line up and repel, and the crystal cracks."}, {q:"In Coulomb's law, what happens to the force if the distance between ions doubles?", a:"It drops to one-fourth, because force depends on 1 over the distance squared."}]}
     ],
     "4.4": [
+      {sum:["Covalent bonds are shared pairs of electrons between nonmetals.", "Seven elements exist as diatomic molecules: H₂, N₂, O₂, F₂, Cl₂, Br₂, I₂.", "Lewis structures: count the valence electrons, connect the atoms, give everyone an octet (hydrogen gets 2), and use double or triple bonds if you run short."]},
       {h:"Diatomic elements"},
       {p:"There are 7 elements that never exist as single atoms. They are always found as molecules of two of the same atom bonded together: [[H2]], [[N2]], [[O2]], [[F2]], [[Cl2]], [[Br2]], [[I2]]."},
       {tip:"Memory trick: they make a “7” on the periodic table (N, O, F, Cl, Br, I), plus H."},
@@ -172,9 +179,11 @@ Study.addUnit("hchem", {
         "Count the electrons in your drawing. If it matches step 1, you're done.",
         "If you used too many: extra bonds needed = (electrons used − electrons you started with) ÷ 2. For each extra bond, take 1 lone pair off each of the two atoms and make one more line between them."
       ]},
-      {ex:{q:"[[O2]]: 6 + 6 = 12 valence electrons.", a:["With a single bond and full octets, the drawing uses 14. (14 − 12) ÷ 2 = 1 extra bond, so it's a double bond: O=O."]}}
+      {ex:{q:"[[O2]]: 6 + 6 = 12 valence electrons.", a:["With a single bond and full octets, the drawing uses 14. (14 − 12) ÷ 2 = 1 extra bond, so it's a double bond: O=O."]}},
+      {check:[{q:"How many valence electrons are in [[CO2]]?", a:"4 + 6 + 6 = 16."}, {q:"How many bonds are between the two nitrogens in [[N2]]?", a:"A triple bond, so each nitrogen has an octet."}, {q:"In [[H2O]], how many lone pairs does oxygen have?", a:"Two (plus two single bonds to hydrogen)."}, {q:"Name the seven diatomic elements.", a:"Hydrogen, nitrogen, oxygen, fluorine, chlorine, bromine, iodine (H, N, O, F, Cl, Br, I)."}]}
     ],
     "4.5": [
+      {sum:["VSEPR: electron domains (bonds and lone pairs) around the central atom spread as far apart as they can.", "Count the domains to get the arrangement; lone pairs change the shape's name.", "Lone pairs push harder than bonds, so they squeeze the bond angles a little."]},
       {p:"Molecules are 3-D. Their shape comes from electron domains around the central atom pushing each other as far apart as possible. That's VSEPR theory (Valence Shell Electron Pair Repulsion)."},
       {h:"Counting electron domains"},
       {p:"An electron domain is any area around the central atom where electrons are. Each bond counts as ONE domain, whether it's single, double, or triple. Each lone pair on the central atom is also one domain."},
@@ -188,9 +197,11 @@ Study.addUnit("hchem", {
         ["3","1","4","Trigonal pyramidal","[[NH3]], [[PH3]]"],
         ["2","2","4","Bent","[[H2O]]"]
       ]}},
-      {tip:"Lone pairs take up room but don't count in the shape's name. [[NH3]] has 4 domains like [[CH4]], but one is a lone pair, so you only “see” a pyramid of 3 H's."}
+      {tip:"Lone pairs take up room but don't count in the shape's name. [[NH3]] has 4 domains like [[CH4]], but one is a lone pair, so you only “see” a pyramid of 3 H's."},
+      {check:[{q:"What is the shape of [[CH4]]?", a:"Tetrahedral (4 bonds, no lone pairs), about 109.5°."}, {q:"What is the shape of [[NH3]]?", a:"Trigonal pyramidal (3 bonds and 1 lone pair), about 107°."}, {q:"What is the shape of [[H2O]]?", a:"Bent (2 bonds and 2 lone pairs), about 104.5°."}, {q:"What is the shape of [[CO2]]?", a:"Linear (2 double bonds, no lone pairs on carbon), 180°."}]}
     ],
     "4.6": [
+      {sum:["Electronegativity is how strongly an atom pulls on shared electrons.", "A bigger electronegativity difference makes a more polar bond; very large differences are ionic.", "The more electronegative atom gets a partial negative charge (δ−)."]},
       {p:"Electronegativity (EN) is how strongly an atom pulls on shared electrons. When two different atoms share, it's a tug of war: the electrons sit closer to the more electronegative atom. That's a polar bond. Only covalent bonds can be polar."},
       {h:"Partial charges"},
       {p:"The more electronegative atom gets a partial negative charge (δ−), and the less electronegative atom gets a partial positive charge (δ+). A dipole arrow points toward the NEGATIVE end."},
@@ -203,9 +214,11 @@ Study.addUnit("hchem", {
       ]},
       {table:{head:["H","C","N","O","F","P","S","Cl","Br","I"], rows:[["2.1","2.5","3.0","3.5","4.0","2.1","2.5","3.0","2.8","2.5"]]}},
       {p:"Metals for reference: Li 1.0, Na 0.9, K 0.8, Mg 1.2, Ca 1.0, Al 1.5. Use your class's table if its numbers differ slightly."},
-      {tip:"EN goes up toward the top right of the periodic table (F is the highest), ignoring noble gases."}
+      {tip:"EN goes up toward the top right of the periodic table (F is the highest), ignoring noble gases."},
+      {check:[{q:"Which atom is δ− in an H–Cl bond?", a:"Chlorine: it's more electronegative, so it pulls the shared electrons closer."}, {q:"Is the bond in [[Cl2]] polar?", a:"No. Both atoms are the same, so they share equally (nonpolar covalent)."}, {q:"Which bond is more polar: H–F or H–Cl?", a:"H–F, because fluorine is more electronegative than chlorine."}, {q:"What's the most electronegative element?", a:"Fluorine."}]}
     ],
     "4.7": [
+      {sum:["A molecule is polar if it has polar bonds AND an uneven shape, so the pulls don't cancel.", "Symmetric shapes with identical surrounding atoms (like CO₂ or CH₄) are nonpolar even with polar bonds.", "Like dissolves like: polar dissolves polar, nonpolar dissolves nonpolar."]},
       {p:"A molecule can have polar bonds and still be nonpolar overall. What matters is whether the pulls cancel out, which depends on the shape."},
       {steps:[
         "Symmetrical molecules are NONPOLAR: the bond pulls cancel, so there's no net dipole. [[CO2]] has two polar C=O bonds pulling in opposite directions.",
@@ -220,9 +233,11 @@ Study.addUnit("hchem", {
         ["[[BF3]]","no","yes","nonpolar"]
       ]}},
       {h:"Like dissolves like"},
-      {p:"Polar molecules are hydrophilic: they dissolve in water (which is polar). Nonpolar molecules are hydrophobic: they don't dissolve in water. That's why oil (nonpolar) and water separate."}
+      {p:"Polar molecules are hydrophilic: they dissolve in water (which is polar). Nonpolar molecules are hydrophobic: they don't dissolve in water. That's why oil (nonpolar) and water separate."},
+      {check:[{q:"Is [[CO2]] polar?", a:"No. Its bonds are polar, but it's linear and symmetric, so the pulls cancel."}, {q:"Is [[H2O]] polar?", a:"Yes. Its bent shape means the bond pulls don't cancel."}, {q:"Why doesn't oil mix with water?", a:"Oil is nonpolar and water is polar. Like dissolves like."}, {q:"Is [[NH3]] polar?", a:"Yes. It's trigonal pyramidal with a lone pair, so it's uneven."}]}
     ],
     "4.8": [
+      {sum:["Intermolecular forces (IMFs) are attractions between molecules, much weaker than bonds.", "From weakest to strongest: London dispersion (all molecules), dipole–dipole (polar molecules), hydrogen bonding (H bonded to N, O, or F).", "Stronger IMFs mean higher boiling and melting points."]},
       {p:"Intermolecular forces (IMFs) are attractions BETWEEN molecules, not the bonds inside them. They're what holds a liquid or solid together, so they get loosened or broken during a phase change (melting, boiling). Boiling water doesn't break H₂O apart; it just pulls the molecules away from each other."},
       {h:"The three types (weakest to strongest)"},
       {table:{head:["Force","Between","How it works"], rows:[
@@ -240,16 +255,19 @@ Study.addUnit("hchem", {
       {ex:{q:"[[NaCl]]: ionic. [[O2]]: LDF only. [[PH3]]: LDF + dipole-dipole. [[HF]]: LDF + dipole-dipole + H-bonding.", a:[]}},
       {h:"Strength and properties"},
       {p:"Strength: ionic > hydrogen bonding > dipole-dipole > LDF. Stronger IMFs mean higher boiling and melting points, since more energy is needed to pull the particles apart. Weaker IMFs mean faster evaporation."},
-      {ex:{q:"Order by boiling point: [[SO2]], [[H2O]], [[N2]], [[CaCl2]]", a:["Strongest force in each: [[N2]] LDF, [[SO2]] dipole-dipole, [[H2O]] H-bonding, [[CaCl2]] ionic. So [[N2]] < [[SO2]] < [[H2O]] < [[CaCl2]]."]}}
+      {ex:{q:"Order by boiling point: [[SO2]], [[H2O]], [[N2]], [[CaCl2]]", a:["Strongest force in each: [[N2]] LDF, [[SO2]] dipole-dipole, [[H2O]] H-bonding, [[CaCl2]] ionic. So [[N2]] < [[SO2]] < [[H2O]] < [[CaCl2]]."]}},
+      {check:[{q:"What IMF does every molecule have?", a:"London dispersion forces."}, {q:"Why does water have such a high boiling point for its size?", a:"Hydrogen bonding: H is bonded to O, so water molecules attract each other strongly."}, {q:"Which has the higher boiling point: [[CH4]] or [[NH3]]?", a:"NH₃, because it has hydrogen bonding and CH₄ has only dispersion forces."}, {q:"When water boils, are the O–H bonds breaking?", a:"No. Boiling only overcomes the forces between molecules; the molecules stay whole."}]}
     ],
     "4.9": [
+      {sum:["Breaking bonds takes energy; forming bonds releases energy.", "More shared pairs make a shorter, stronger bond: triple > double > single.", "Reaction energy ≈ energy to break the old bonds − energy released forming the new ones."]},
       {p:"Bonds hold energy. Energy must be ADDED to break a bond, and energy is RELEASED when a bond forms. (You'll also hear these called endothermic and exothermic.)"},
       {table:{head:["Bond","Strength","Length"], rows:[
         ["Single (C–C)","weakest","longest"],
         ["Double (C=C)","middle","middle"],
         ["Triple (C≡C)","strongest","shortest"]
       ]}},
-      {p:"More shared electrons pull the two nuclei closer together and hold them tighter. So the stronger the bond, the shorter the bond length."}
+      {p:"More shared electrons pull the two nuclei closer together and hold them tighter. So the stronger the bond, the shorter the bond length."},
+      {check:[{q:"Which is stronger: a C=C double bond or a C–C single bond?", a:"The double bond (it's also shorter)."}, {q:"Is breaking a bond endothermic or exothermic?", a:"Endothermic: it takes energy."}, {q:"If forming the new bonds releases more energy than breaking the old ones takes, is the reaction endo- or exothermic?", a:"Exothermic: energy is released overall."}, {q:"Why is [[N2]] so unreactive?", a:"Its triple bond is very strong, so breaking it takes a lot of energy."}]}
     ]
   },
 

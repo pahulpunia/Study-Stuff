@@ -76,6 +76,7 @@ Study.addUnit("apbio", {
 
   notes: {
     "3.1a": [
+      {sum:["Metabolism is all the chemical reactions in a cell; pathways either build molecules (anabolic) or break them down (catabolic).", "First law: energy can't be created or destroyed, only changed in form.", "Second law: every energy change increases the universe's entropy (disorder) and loses some energy as heat."]},
       {p:"**Metabolism** is all of an organism's chemical reactions, organized into **metabolic pathways**. Each step of a pathway is catalyzed by its own enzyme, so a 4-step pathway (V → W → X → Y → Z) needs 4 enzymes."},
       {table:{head:["", "Catabolic", "Anabolic"], rows:[
         ["Does what", "breaks complex molecules into simpler ones", "builds complex molecules from simpler ones"],
@@ -88,9 +89,11 @@ Study.addUnit("apbio", {
       {steps:["**First law:** energy can be transferred and transformed but not created or destroyed. (A bear eating a fish turns the fish's chemical energy into its own chemical energy and movement.)",
         "**Second law:** every energy transfer increases the **entropy** (disorder) of the universe, because some energy is lost as heat.",
         "Organisms decrease entropy inside themselves (building proteins) but increase it more in their surroundings (heat, CO₂ and H₂O), so the second law still holds."]},
-      {tip:"Life needs a constant input of energy to stay ordered. Loss of order or energy flow means death."}
+      {tip:"Life needs a constant input of energy to stay ordered. Loss of order or energy flow means death."},
+      {check:[{q:"What kind of energy is stored in glucose's bonds?", a:"Potential (chemical) energy."}, {q:"Is building a protein from amino acids anabolic or catabolic?", a:"Anabolic: it builds a bigger molecule and needs energy."}, {q:"How can living things be so organized if entropy always increases?", a:"They use energy to stay organized, and they release heat and simple molecules that increase the entropy of their surroundings, so the universe's total entropy still rises."}, {q:"Why does no energy transfer in a cell work at 100% efficiency?", a:"The second law: some energy is always lost as heat."}]}
     ],
     "3.1b": [
+      {sum:["ΔG < 0: exergonic (releases energy, can happen on its own). ΔG > 0: endergonic (needs energy).", "Enzymes speed reactions by lowering activation energy; they do NOT change ΔG.", "Cells drive endergonic reactions by coupling them to ATP hydrolysis (ΔG = −7.3 kcal/mol), usually by phosphorylating a molecule."]},
       {p:"**Free energy (G)** is the part of a system's energy that can do work; think of it as instability. **ΔG = G(final) − G(initial)**."},
       {table:{head:["", "Exergonic", "Endergonic"], rows:[
         ["ΔG", "negative", "positive"],
@@ -106,9 +109,11 @@ Study.addUnit("apbio", {
       {h:"ATP coupling"},
       {p:"ATP hydrolysis (ATP → ADP + Pᵢ) is exergonic: **ΔG = −7.3 kcal/mol**, because the three negative phosphates repel each other. Cells couple it to endergonic reactions. It only works if the **overall** ΔG is negative, so ATP can drive a reaction that needs **less than 7.3 kcal/mol**."},
       {ex:{q:"Which can ATP drive? Rxn 1: ΔG = +8.5. Rxn 2: ΔG = −9.0. Rxn 3: ΔG = +4.5. Rxn 4: ΔG = −4.0.", a:["Only Rxn 3: it's endergonic and needs less than 7.3.", "Rxn 1 needs too much (+8.5 − 7.3 = +1.2, still positive). Rxns 2 and 4 are already spontaneous."]}},
-      {p:"Cells use ATP for **chemical, transport, and mechanical work**, usually by **phosphorylating** another molecule. ATP is regenerated from ADP + Pᵢ (endergonic), powered by catabolism, mainly cellular respiration."}
+      {p:"Cells use ATP for **chemical, transport, and mechanical work**, usually by **phosphorylating** another molecule. ATP is regenerated from ADP + Pᵢ (endergonic), powered by catabolism, mainly cellular respiration."},
+      {check:[{q:"A reaction has ΔG = +5 kcal/mol. Can ATP hydrolysis drive it?", a:"Yes: −7.3 + 5 = −2.3, so the coupled reaction is exergonic overall."}, {q:"What does an enzyme change: the activation energy or ΔG?", a:"Only the activation energy. ΔG stays the same."}, {q:"Name the three kinds of work ATP powers.", a:"Chemical, transport, and mechanical work."}, {q:"Is cellular respiration exergonic or endergonic?", a:"Exergonic: it breaks glucose down and releases energy."}]}
     ],
     "3.1c": [
+      {sum:["Smaller animals have a higher metabolic rate per gram of body mass.", "Endotherms make their own heat from metabolism; ectotherms get heat mostly from their surroundings.", "Torpor lowers metabolic rate and body temperature to save energy."]},
       {table:{head:["", "Endotherms", "Ectotherms"], rows:[
         ["Heat source", "metabolic heat", "the environment"],
         ["Body temperature", "stays fairly constant", "changes with the environment"],
@@ -117,9 +122,11 @@ Study.addUnit("apbio", {
         ["Main way to regulate", "metabolism (plus behavior)", "behavior (basking, burrowing)"]
       ]}},
       {p:"Both can regulate their body temperature, and in both, metabolic rate rises with activity. **Smaller** organisms have **higher** per-gram metabolic rates (more surface area per gram, so they lose heat faster)."},
-      {p:"**Torpor** is a state of lowered metabolic rate and body temperature that saves energy when food is scarce or it's cold (daily torpor in hummingbirds, hibernation in bears and ground squirrels)."}
+      {p:"**Torpor** is a state of lowered metabolic rate and body temperature that saves energy when food is scarce or it's cold (daily torpor in hummingbirds, hibernation in bears and ground squirrels)."},
+      {check:[{q:"Which uses more energy per gram: a mouse or an elephant?", a:"The mouse. Smaller animals have more surface area for their volume and lose heat faster."}, {q:"Why do endotherms need more food than ectotherms of the same size?", a:"They burn energy to keep their body temperature up."}, {q:"What is torpor?", a:"A state of lowered activity, metabolism, and body temperature that saves energy (hibernation is long-term torpor)."}, {q:"Why might a hummingbird go into torpor at night?", a:"Its small size gives it a very high metabolic rate, so lowering it overnight saves energy when it can't feed."}]}
     ],
     "3.2a": [
+      {sum:["Redox: oxidation is losing electrons, reduction is gaining them (LEO goes GER).", "In respiration, glucose is oxidized and oxygen is reduced.", "Glycolysis (cytoplasm) splits glucose into 2 pyruvate; the Krebs cycle (mitochondrial matrix) finishes breaking it to CO₂, filling NADH and FADH₂ with electrons."]},
       {h:"Redox"},
       {p:"**LEO goes GER**: Loses Electrons is Oxidation, Gains Electrons is Reduction. Electrons usually travel with hydrogen atoms. Oxidized: loses H / gains O. Reduced: gains H / loses O."},
       {p:"In respiration, **glucose is oxidized** to CO₂ and **oxygen is reduced** to H₂O. The carriers **NAD⁺ + 2e⁻ + H⁺ → NADH** and **FAD + 2e⁻ + 2H⁺ → FADH₂** are reductions; they carry the electrons to the electron transport chain."},
@@ -130,9 +137,11 @@ Study.addUnit("apbio", {
       ]}},
       {p:"Glycolysis: 10 reactions. **Energy investment** (2 ATP phosphorylate glucose, which splits into two 3-carbon G3P) then **energy harvest** (each G3P → pyruvate, making 2 NADH and 4 ATP by **substrate-level phosphorylation**: an enzyme moves a phosphate from a substrate to ADP)."},
       {p:"Krebs: acetyl CoA (2C) + oxaloacetate (4C) → citrate (6C), which is oxidized back to oxaloacetate. 8 reactions; runs twice per glucose; uses 3 H₂O per turn."},
-      {tip:"Totals before the ETC: 10 NADH, 2 FADH₂, 4 ATP, 6 CO₂."}
+      {tip:"Totals before the ETC: 10 NADH, 2 FADH₂, 4 ATP, 6 CO₂."},
+      {check:[{q:"Where does glycolysis happen?", a:"In the cytoplasm."}, {q:"When NAD⁺ becomes NADH, is it oxidized or reduced?", a:"Reduced: it gains electrons."}, {q:"What's the net ATP from glycolysis?", a:"2 ATP (4 made, 2 invested), by substrate-level phosphorylation."}, {q:"Where does the CO₂ you breathe out come from?", a:"From pyruvate oxidation and the Krebs cycle, as the carbons from glucose are removed."}]}
     ],
     "3.2b": [
+      {sum:["NADH and FADH₂ hand electrons to the electron transport chain in the inner mitochondrial membrane.", "The chain pumps H⁺ into the intermembrane space; H⁺ flows back through ATP synthase, making most of the ATP (chemiosmosis).", "Oxygen is the final electron acceptor and becomes water."]},
       {p:"**Oxidative phosphorylation** = electron transport chain + chemiosmosis, on the **inner mitochondrial membrane**."},
       {steps:["NADH and FADH₂ drop their electrons off at protein complexes in the ETC.",
         "Electrons lose free energy as they pass down the chain; that energy pumps H⁺ from the **matrix** into the **intermembrane space** (active transport). In the class model: each NADH pumps 3 H⁺ (complexes I, III, IV), each FADH₂ pumps 2 H⁺ (III, IV).",
@@ -142,9 +151,11 @@ Study.addUnit("apbio", {
       {h:"Uncoupling"},
       {p:"If H⁺ leaks back through **uncoupling proteins** instead of ATP synthase, the energy becomes **heat** instead of ATP. Endotherms (like animals with brown fat) use this to stay warm. Less ATP, more heat."},
       {h:"More to know"},
-      {p:"Aerobic **prokaryotes** do all four stages, but their ETC is on the **cell (plasma) membrane**, so H⁺ is pumped **out of the cell**. Fats, proteins, and other carbs can also feed respiration; a gram of fat yields **more than twice** the ATP of a gram of carbohydrate. **Feedback inhibition**: lots of ATP inhibits an enzyme early in glycolysis; low ATP speeds respiration up. Glycolysis is found in all three domains and needs no O₂ or mitochondria, evidence that it **evolved early**."}
+      {p:"Aerobic **prokaryotes** do all four stages, but their ETC is on the **cell (plasma) membrane**, so H⁺ is pumped **out of the cell**. Fats, proteins, and other carbs can also feed respiration; a gram of fat yields **more than twice** the ATP of a gram of carbohydrate. **Feedback inhibition**: lots of ATP inhibits an enzyme early in glycolysis; low ATP speeds respiration up. Glycolysis is found in all three domains and needs no O₂ or mitochondria, evidence that it **evolved early**."},
+      {check:[{q:"What would happen if oxygen ran out?", a:"Electrons would back up in the chain, H⁺ pumping would stop, and ATP synthase would make very little ATP."}, {q:"What directly powers ATP synthase?", a:"H⁺ ions flowing down their gradient from the intermembrane space back into the matrix."}, {q:"What do uncoupling proteins do?", a:"They let H⁺ leak back without going through ATP synthase, so the energy is released as heat instead of ATP."}, {q:"Where does oxidative phosphorylation happen in prokaryotes?", a:"Across the plasma membrane (they have no mitochondria)."}]}
     ],
     "3.2c": [
+      {sum:["Without oxygen, cells can make ATP only by glycolysis; fermentation recycles NADH back to NAD⁺ so glycolysis can continue.", "Alcohol fermentation (yeast) makes ethanol and CO₂; lactic acid fermentation (muscle) makes lactate.", "Facultative anaerobes can switch between respiration and fermentation; obligate anaerobes can't use oxygen."]},
       {p:"Without O₂ the ETC stops, NADH piles up, and NAD⁺ runs out, which would stop glycolysis. **Fermentation = glycolysis + steps that regenerate NAD⁺** so glycolysis can keep making 2 ATP. It happens in the **cytoplasm**."},
       {table:{head:["", "Alcohol fermentation", "Lactic acid fermentation"], rows:[
         ["Steps", "pyruvate → acetaldehyde + CO₂; acetaldehyde reduced by NADH → ethanol", "pyruvate reduced by NADH → lactate"],
@@ -153,9 +164,11 @@ Study.addUnit("apbio", {
         ["ATP", "2 per glucose (from glycolysis)", "2 per glucose"]
       ]}},
       {p:"Final electron acceptor: an organic molecule in fermentation (pyruvate or acetaldehyde) vs. O₂ in aerobic respiration (more than 30 ATP per glucose)."},
-      {p:"**Anaerobic respiration** still uses an ETC, but the final acceptor isn't O₂: sulfate, nitrate, sulfur, or CO₂. **Facultative anaerobes** switch between aerobic respiration and anaerobic pathways depending on O₂. **Obligate anaerobes** can only live without O₂; oxygen is toxic to them."}
+      {p:"**Anaerobic respiration** still uses an ETC, but the final acceptor isn't O₂: sulfate, nitrate, sulfur, or CO₂. **Facultative anaerobes** switch between aerobic respiration and anaerobic pathways depending on O₂. **Obligate anaerobes** can only live without O₂; oxygen is toxic to them."},
+      {check:[{q:"Why is fermentation needed if it makes no extra ATP?", a:"It regenerates NAD⁺, which glycolysis needs to keep making its 2 ATP."}, {q:"Which makes more ATP per glucose: aerobic respiration or fermentation?", a:"Aerobic respiration (about 30–32 ATP vs. 2)."}, {q:"What does yeast make in alcohol fermentation?", a:"Ethanol and CO₂ (the CO₂ makes bread rise)."}, {q:"Where does fermentation happen?", a:"In the cytoplasm."}]}
     ],
     "3.3a": [
+      {sum:["Photosynthesis: 6 CO₂ + 6 H₂O + light → C₆H₁₂O₆ + 6 O₂. Water is oxidized; CO₂ is reduced.", "Pigments absorb some wavelengths and reflect others; leaves look green because chlorophyll reflects green.", "Chlorophyll a is the main pigment; chlorophyll b and carotenoids are accessory pigments that widen the range of light absorbed."]},
       {p:"**Autotrophs** make their own food: **photoautotrophs** use light (plants, algae, cyanobacteria); **chemoautotrophs** use energy from inorganic compounds like H₂S (bacteria and archaea at hydrothermal vents). **Heterotrophs** (animals, fungi, many prokaryotes) eat other organisms."},
       {p:"**6 CO₂ + 6 H₂O + light → C₆H₁₂O₆ + 6 O₂**, the reverse of cellular respiration. It's redox: **water is oxidized** (→ O₂) and **CO₂ is reduced** (→ sugar)."},
       {table:{head:["Structure", "What it is"], rows:[
@@ -167,18 +180,22 @@ Study.addUnit("apbio", {
         ["Stroma", "fluid outside the thylakoids; Calvin cycle here"]
       ]}},
       {h:"Light and pigments"},
-      {p:"Light travels as photons in waves. Pigments absorb some wavelengths and **reflect or transmit** the rest, which is the color you see. Chlorophyll reflects green. **Chlorophyll a** is the main pigment; **chlorophyll b** and **carotenoids** are accessory pigments that broaden the range of light used. Very little 500–600 nm (green–yellow) light is absorbed."}
+      {p:"Light travels as photons in waves. Pigments absorb some wavelengths and **reflect or transmit** the rest, which is the color you see. Chlorophyll reflects green. **Chlorophyll a** is the main pigment; **chlorophyll b** and **carotenoids** are accessory pigments that broaden the range of light used. Very little 500–600 nm (green–yellow) light is absorbed."},
+      {check:[{q:"Where does the O₂ released in photosynthesis come from?", a:"From splitting water."}, {q:"Why are plants green?", a:"Chlorophyll absorbs red and blue light and reflects green."}, {q:"What's the difference between photoautotrophs and chemoautotrophs?", a:"Both make their own food; photoautotrophs use light energy and chemoautotrophs use energy from chemicals."}, {q:"Why do leaves turn yellow and orange in fall?", a:"Chlorophyll breaks down, revealing the carotenoids that were there all along."}]}
     ],
     "3.3b": [
+      {sum:["The light reactions happen in the thylakoid membranes and turn light energy into ATP and NADPH.", "Photosystem II splits water (releasing O₂); electrons move down a transport chain to Photosystem I, pumping H⁺ into the thylakoid lumen.", "H⁺ flows through ATP synthase into the stroma (chemiosmosis); NADP⁺ is the final electron acceptor and becomes NADPH."]},
       {p:"The light reactions (thylakoid membrane) move electrons from **water** to **NADP⁺**, making **ATP and NADPH** for the Calvin cycle and releasing O₂."},
       {steps:["**Photosystem II (P680):** light excites electrons from two special chlorophyll a molecules. Water is split (2 H⁺ + ½ O₂ + 2e⁻) and its electrons replace the ones P680 lost.",
         "**Electron transport chain:** electrons lose energy, which pumps H⁺ from the stroma into the **thylakoid lumen** (high H⁺, low pH).",
         "**Photosystem I (P700):** light excites electrons again; they're replaced by the electrons arriving from PSII.",
         "**NADP⁺ reductase:** gives the electrons to NADP⁺ → **NADPH**. NADP⁺ is the **final electron acceptor** (O₂ is the final acceptor in respiration).",
         "**Chemiosmosis:** H⁺ flows from the lumen to the stroma through ATP synthase, making ATP in the **stroma**."]},
-      {tip:"Mitochondria pump H⁺ into the intermembrane space; chloroplasts pump H⁺ into the thylakoid lumen. ATP is made on the matrix side and the stroma side."}
+      {tip:"Mitochondria pump H⁺ into the intermembrane space; chloroplasts pump H⁺ into the thylakoid lumen. ATP is made on the matrix side and the stroma side."},
+      {check:[{q:"What are the products of the light reactions?", a:"ATP, NADPH, and O₂."}, {q:"Where do the H⁺ ions build up during the light reactions?", a:"In the thylakoid lumen (space)."}, {q:"What replaces the electrons Photosystem II loses?", a:"Electrons from splitting water."}, {q:"What's the final electron acceptor in the light reactions?", a:"NADP⁺ (it becomes NADPH)."}]}
     ],
     "3.3c": [
+      {sum:["The Calvin cycle (in the stroma) uses ATP and NADPH to turn CO₂ into sugar.", "Rubisco fixes CO₂ onto RuBP; the products are reduced to G3P, and most G3P is recycled to rebuild RuBP.", "It takes 6 turns (6 CO₂) to make the 2 G3P that become one glucose."]},
       {p:"The Calvin cycle (stroma) uses **ATP and NADPH** to build sugar from CO₂. Like the Krebs cycle, it regenerates its starting molecule, **RuBP** (5 carbons)."},
       {table:{head:["Phase (3 turns)", "What happens"], rows:[
         ["1. Carbon fixation", "3 CO₂ + 3 RuBP → 6 3-PGA (catalyzed by **rubisco**)"],
@@ -186,7 +203,8 @@ Study.addUnit("apbio", {
         ["3. Regeneration", "5 G3P + ATP → 3 RuBP"]
       ]}},
       {p:"Per G3P exported: 3 CO₂, 3 turns, 9 ATP, 6 NADPH. One glucose needs **2 G3P = 6 CO₂ and 6 turns**. G3P is also used to build fructose, starch, cellulose, fatty acids and glycerol, and amino acids."},
-      {ex:{q:"The lights go out. What happens to RuBP and 3-PGA?", a:["No light → no ATP or NADPH.", "3-PGA can't be reduced, so it **builds up**; RuBP can't be regenerated, so it **drops**."]}}
+      {ex:{q:"The lights go out. What happens to RuBP and 3-PGA?", a:["No light → no ATP or NADPH.", "3-PGA can't be reduced, so it **builds up**; RuBP can't be regenerated, so it **drops**."]}},
+      {check:[{q:"What enzyme fixes CO₂ in the Calvin cycle?", a:"Rubisco."}, {q:"If the light stops, what happens to RuBP and 3-PGA?", a:"RuBP drops (it can't be rebuilt without ATP and NADPH) and 3-PGA builds up."}, {q:"Does the Calvin cycle need light directly?", a:"Not directly, but it needs the ATP and NADPH the light reactions make."}, {q:"How many CO₂ molecules does it take to make one glucose?", a:"6."}]}
     ]
   },
 

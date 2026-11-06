@@ -37,11 +37,14 @@ function fmtTime(ms){ const s = Math.max(0, Math.round(ms / 1000)); return Math.
 const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
 const escHTML = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;");
 
-const SCREENS = ["home","quiz","end","study","stats","mquiz","mend","mnotes","settings", "write", "board", "admin", "party"];
+const SCREENS = ["home","quiz","end","study","stats","mquiz","mend","mnotes","settings", "write", "board", "admin", "party", "issues"];
 function show(id){
   if (id !== "mquiz" && typeof Tools !== "undefined") Tools.close();
   SCREENS.forEach(s => $(s).classList.toggle("hidden", s !== id));
   window.scrollTo(0, 0);
+  if (typeof Live !== "undefined") Live.update();
+  if (id !== "issues" && id !== "admin" && typeof Issues !== "undefined") Issues.stop();
+  if (id !== "admin" && typeof Admin !== "undefined") Admin.stop();
 }
 
 /* Levenshtein with backtrace: ops describe how to turn typed into correct */
@@ -244,6 +247,7 @@ function paintCount(){
 }
 $("countRange").oninput = e => { ST.settings.count = COUNT_STEPS[+e.target.value]; save(); paintCount(); };
 $("autoNext").onchange = e => { ST.settings.autoNext = e.target.checked; save(); };
+$("showOnline").onchange = e => { ST.settings.online = e.target.checked; save(); if (e.target.checked) Live.update(); else Live.hide(); };
 $("celebrate").onchange = e => { ST.settings.confetti = e.target.checked; save(); };
 $("bigText").onchange = e => { ST.settings.big = e.target.checked; save(); document.documentElement.classList.toggle("bigtext", e.target.checked); };
 $("secondChance").onchange = e => { ST.settings.second = e.target.checked; save(); };

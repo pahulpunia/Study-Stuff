@@ -327,6 +327,13 @@ const MC = (() => {
           return {ok: [].concat(field.a).some(x => normWords(x) === normWords(raw))};
         }
         case "choice": return {ok: raw === String(field.a).trim()};   // the value always comes from a tapped option
+        case "under": {
+          // underline: the words tapped, as "first-last" word positions
+          if (raw === field.a) return {ok:true};
+          const [a, b] = field.a.split("-").map(Number), [x, y] = raw.split("-").map(Number);
+          const why = x <= a && y >= b ? "you underlined a little too much" : x >= a && y <= b ? "part of it is missing" : null;
+          return {ok:false, why};
+        }
         case "formula": {
           const want = [].concat(field.a), got = normFormula(raw);
           if (want.some(w => normFormula(w) === got)) return {ok:true};
@@ -349,6 +356,10 @@ const MC = (() => {
   const stripLHS = s => s.replace(/^(y|f\s*\(\s*[a-z]\s*\)|[a-z]\s*\(\s*[a-z]\s*\))\s*=/i, "").replace(/^[a-z]\s*=/i, "").replace(/^\s*=/, "");
   const friendly = m => /empty box/.test(m) ? "fill in the empty box" : /variables/.test(m) ? "use a number here, not a variable"
     : /unexpected end|expected/.test(m) ? "it looks unfinished. Check the end and the parentheses" : /unexpected/.test(m) ? "there's a symbol it doesn't understand" : "check it for typos";
+  // a sentence with words a..b underlined (for showing the right answer)
+  function underHTML(words, a, b){
+    return '<span class="usent">' + words.map((w, i) => i >= a && i <= b ? `<u>${esc(w)}</u>` : esc(w)).join(" ").replace(/<\/u> <u>/g, " ") + "</span>";
+  }
   function readable(field, input){
     const raw = (input || "").trim();
     if (!raw) return {ok:false, why:"it's empty"};
@@ -365,6 +376,7 @@ const MC = (() => {
           pairs.forEach(([x, y]) => { numVal(x); numVal(y); }); break;
         }
         case "charge": if (parseCharge(raw) === null) return {ok:false, why:"write a charge with its sign, like 2+ or 3−"}; break;
+        case "under": if (!/^\d+-\d+$/.test(raw)) return {ok:false, why:"tap the first and last word to underline"}; break;
       }
     } catch(e){ return {ok:false, why: friendly(String(e.message || e))}; }
     return {ok:true};
@@ -389,6 +401,7 @@ const MC = (() => {
       case "pts": return f.a.length ? f.a.map(([x,y]) => `(${render(x)}, ${render(y)})`).join(", ") : "none";
       case "text": return renderText([].concat(f.a)[0]);
       case "choice": return renderText(f.a);
+      case "under": { const [a, b] = f.a.split("-").map(Number); return underHTML(f.words, a, b); }
       case "formula": return formulaHTML([].concat(f.a)[0]);
       case "charge": { const a = +f.a; return Math.abs(a) + (a < 0 ? "−" : "+"); }
     }
@@ -398,7 +411,7 @@ const MC = (() => {
     const raw = (input || "").trim(); if (!raw) return "";
     const sp = SPECIAL(raw);
     if (sp) return sp === "inf" ? "∞" : sp === "-inf" ? "−∞" : sp;
-    if (f.t === "text" || f.t === "choice" || f.t === "charge") return "";
+    if (f.t === "text" || f.t === "choice" || f.t === "charge" || f.t === "under") return "";
     if (f.t === "formula") return formulaHTML(raw);
     try {
       if (f.t === "set") return raw.replace(/[a-z]\s*(≠|!=|=)/gi, ",").split(/,|\band\b/).map(x => x.trim()).filter(Boolean).map(x => R(parse(x))).join(", ");
@@ -408,6 +421,6 @@ const MC = (() => {
     } catch(e){ return `<span class="perr">can't read that yet</span>`; }
   }
 
-  return {parse, evaluate, render, renderLim, renderText, check, answerHTML, preview, sameExpr, numVal, vars, formulaHTML, readable, autofix};
+  return {parse, evaluate, render, renderLim, renderText, check, answerHTML, preview, sameExpr, numVal, vars, formulaHTML, readable, autofix, underHTML};
 })();
 if (typeof module !== "undefined") module.exports = MC;   // lets tools/verify.js use it in Node

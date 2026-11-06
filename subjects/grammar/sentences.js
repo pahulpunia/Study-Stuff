@@ -16,6 +16,7 @@ Study.addUnit("grammar", {
 
   notes: {
     "parts": [
+      {sum:["Every sentence has a subject (who or what it's about) and a predicate (what the subject does or is).", "The simple subject is the main noun or pronoun; the complete subject includes all the words that describe it.", "The simple predicate is the verb; the complete predicate is the verb plus everything that goes with it."]},
       {table:{head:["Part", "What it is"], rows:[
         ["Complete subject", "all the words that tell who or what the sentence is about"],
         ["Simple subject", "the main noun or pronoun in the complete subject"],
@@ -25,9 +26,11 @@ Study.addUnit("grammar", {
         ["Compound predicate", "two or more verbs joined by and or or"]
       ]}},
       {ex:{q:"The tall boy in the red hat laughed loudly.", a:["Complete subject: The tall boy in the red hat. Simple subject: boy.", "Complete predicate: laughed loudly. Simple predicate: laughed."]}},
-      {tip:"In a command, the subject is the understood \"you\": Pick up your socks = (You) pick up your socks."}
+      {tip:"In a command, the subject is the understood \"you\": Pick up your socks = (You) pick up your socks."},
+      {check:[{q:"Find the simple subject: \"The old wooden bridge creaked.\"", a:"bridge."}, {q:"Find the complete predicate: \"My cousins live in Texas.\"", a:"live in Texas."}, {q:"Find the subject: \"Here are your keys.\"", a:"keys (the subject can come after the verb)."}, {q:"What's the subject of \"Close the door\"?", a:"You (understood)."}]}
     ],
     "struct": [
+      {sum:["Simple: one independent clause. Compound: two or more independent clauses.", "Complex: one independent clause and at least one dependent clause.", "Compound-complex: two or more independent clauses and at least one dependent clause."]},
       {table:{head:["Structure", "Clauses", "Example"], rows:[
         ["Simple", "one independent clause", "The cat and dog chased and caught the mice."],
         ["Compound", "two or more independent clauses, no dependent", "I went shopping, but I didn't buy anything."],
@@ -35,9 +38,11 @@ Study.addUnit("grammar", {
         ["Compound-complex", "two or more independent + at least one dependent", "The garage __that Roman built__ had one bay, so he added a second one."]
       ]}},
       {warn:"A compound subject or compound predicate doesn't make a sentence compound. \"The cat and dog chased and caught the mice\" is still simple: one subject group, one verb group, one clause."},
-      {steps:["Count the independent clauses (subject + verb, can stand alone).", "Look for dependent clauses (start with because, when, although, who, that…).", "1 independent, 0 dependent → simple. 2+ independent, 0 dependent → compound. 1 independent + dependent → complex. 2+ independent + dependent → compound-complex."]}
+      {steps:["Count the independent clauses (subject + verb, can stand alone).", "Look for dependent clauses (start with because, when, although, who, that…).", "1 independent, 0 dependent → simple. 2+ independent, 0 dependent → compound. 1 independent + dependent → complex. 2+ independent + dependent → compound-complex."]},
+      {check:[{q:"Name the structure: \"I ran, and she walked.\"", a:"Compound."}, {q:"Name the structure: \"When it rained, we stayed inside.\"", a:"Complex."}, {q:"Name the structure: \"Tom and Jo ate pizza and drank soda.\"", a:"Simple: one clause, with a compound subject and a compound verb."}, {q:"Name the structure: \"Because I overslept, I missed the bus, and I was late.\"", a:"Compound-complex: two independent clauses plus a dependent one."}]}
     ],
     "frag": [
+      {sum:["A fragment is missing a subject, a verb, or a complete thought.", "A run-on (or comma splice) joins two independent clauses without the right punctuation.", "Fix run-ons with a period, a semicolon, or a comma + FANBOYS. The four sentence types are declarative, interrogative, imperative, and exclamatory."]},
       {h:"Fragments"},
       {p:"A **fragment** is missing a subject, a predicate, or both, or it's a dependent clause on its own."},
       {table:{head:["Missing", "Example"], rows:[["Subject", "Can run fast."], ["Predicate", "My friend Susan."], ["Both", "In a yard."]]}},
@@ -49,7 +54,8 @@ Study.addUnit("grammar", {
         ["Interrogative", "asks something", "question mark"],
         ["Imperative", "gives an order or makes a request", "period"],
         ["Exclamatory", "shows strong feeling", "exclamation point"]
-      ]}}
+      ]}},
+      {check:[{q:"Fragment or sentence? \"Running down the hall.\"", a:"Fragment: no subject and no complete verb."}, {q:"Fix the comma splice: \"It was late, we went home.\"", a:"It was late, so we went home. (or: It was late; we went home.)"}, {q:"What type is \"Please sit down.\"?", a:"Imperative (a command)."}, {q:"Fragment or sentence? \"Although she studied.\"", a:"Fragment: a dependent clause can't stand alone."}]}
     ]
   },
 
@@ -107,6 +113,19 @@ Study.addUnit("grammar", {
     mc("frag", "Which fixes the run-on? \"My aunt is a fine teacher she teaches seventh grade.\"",
       ["My aunt is a fine teacher; she teaches seventh grade.", "My aunt is a fine teacher, she teaches seventh grade.", "My aunt is a fine teacher she teaches, seventh grade.", "My aunt, is a fine teacher she teaches seventh grade."],
       "A semicolon can join two independent clauses. A comma alone can't.");
+
+    /* ===== Underline it: tap the first and last word ===== */
+    const un = (sec, prompt) => (marked, why) => k.under([sec], S[sec], prompt, marked, [why]);
+    const cs = un("parts", "Underline the **complete subject**.");
+    cs("__The tall girl in the red jacket__ won the race.", "Who won? The tall girl in the red jacket: the simple subject (girl) plus every word that describes it.");
+    cs("__My older brother and his best friend__ built a treehouse.", "A compound subject: both people did the building.");
+    cs("__Everyone in my class__ passed the test.", "Everyone is the simple subject, and in my class describes it.");
+    cs("__The old house on the corner__ finally sold.", "What sold? The old house on the corner.");
+    const cp = un("parts", "Underline the **complete predicate**.");
+    cp("The tall girl __won the race easily__.", "The verb (won) and everything that goes with it.");
+    cp("My cousins __are visiting us next weekend__.", "The verb phrase are visiting plus the words that complete it.");
+    cp("Dogs __bark at strangers__.", "Bark is the verb; at strangers completes it.");
+    cp("The old house on the corner __finally sold__.", "Finally tells when it sold, so it belongs to the predicate.");
   }
 });
 })();

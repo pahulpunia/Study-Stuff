@@ -46,6 +46,8 @@ const ICONS = {
   clock:    '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
   home:     '<path d="M4 11 12 4l8 7"/><path d="M6.2 9.4V20h11.6V9.4"/>',
   arrow:    '<path d="M5 12h14M13 6l6 6-6 6"/>',
+  flag:     '<path d="M5 21V4"/><path d="M5 4.5c4.5-2.4 7.5 2.4 13 0v9c-5.5 2.4-8.5-2.4-13 0"/>',
+  chat:     '<path d="M4 5h16v11H9l-5 4z"/>',
   alert:    '<path d="M12 4 2.8 19.5h18.4z"/><path d="M12 10v4.2M12 17.2v.1"/>'
 };
 function ic(name, cls = ""){

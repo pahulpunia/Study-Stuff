@@ -17,6 +17,7 @@ Study.addUnit("grammar", {
 
   notes: {
     "abbr": [
+      {sum:["Capitalize proper nouns, proper adjectives, the first word of a sentence, and titles used as names.", "Mom and Dad are capitalized when used as names, but not after my (my mom).", "Capitalize historical events and periods (the Civil War, the Dust Bowl Era)."]},
       {p:"An **abbreviation** is a shortened word, often with a period: Mr., Dr., M.D., D.D.S. (dentist), Esq. (attorney). An **acronym** uses the first letter of each word: FBI, IRS, YMCA."},
       {table:{head:["Abbreviation", "Means", "Example"], rows:[
         ["i.e.", "that is, in other words", "Mary likes Tom, Stan, and Bob (i.e., Mary likes boys)."],
@@ -25,9 +26,11 @@ Study.addUnit("grammar", {
       ]}},
       {h:"Capitals"},
       {p:"Capitalize names of people, specific places, oceans, ships, planes, buildings, organizations, and religious names: Atlantic Ocean, Fido, Buddha. **Mom** is capitalized when it's used as a name, but not after my: **my mom**."},
-      {p:"Capitalize named time periods and events: the **Dust Bowl Era**, the **Civil War**. But not a general word: an era, a period in history."}
+      {p:"Capitalize named time periods and events: the **Dust Bowl Era**, the **Civil War**. But not a general word: an era, a period in history."},
+      {check:[{q:"Capitalize? \"I asked mom for help.\"", a:"Yes: Mom (it's used as her name)."}, {q:"Capitalize? \"My mom drove us.\"", a:"No: after my, it's not a name."}, {q:"What's the difference between an abbreviation and an acronym?", a:"An acronym is said as a word (NASA); an abbreviation is a shortened form (Dr., Mr.)."}, {q:"Capitalize? \"We studied the civil war.\"", a:"Yes: the Civil War is a historical event."}]}
     ],
     "titles": [
+      {sum:["Italicize (or underline) long works: books, movies, magazines, albums.", "Use quotation marks for short works: songs, poems, articles, chapters, short stories.", "Spell out numbers that start a sentence, and usually spell out numbers you can write in one or two words."]},
       {table:{head:["Italics (or underline)", "Quotation marks"], rows:[
         ["books, newspapers, magazines", "chapters, articles"],
         ["long poems (The Iliad), plays", "short poems (\"The Road Not Taken\")"],
@@ -37,9 +40,11 @@ Study.addUnit("grammar", {
       ]}},
       {tip:"Big, whole works get italics. Parts of a bigger work, or short works, get quotation marks."},
       {h:"Numbers"},
-      {p:"Spell out numbers one through ten (three apples) and use numerals above that (23 apples). **Always** spell out a number that starts a sentence: One hundred cats sat in the room."}
+      {p:"Spell out numbers one through ten (three apples) and use numerals above that (23 apples). **Always** spell out a number that starts a sentence: One hundred cats sat in the room."},
+      {check:[{q:"Italics or quotation marks: a novel?", a:"Italics."}, {q:"Italics or quotation marks: a song?", a:"Quotation marks."}, {q:"Fix it: \"25 students went on the trip.\"", a:"Twenty-five students went on the trip. (Spell out a number at the start of a sentence.)"}, {q:"Italics or quotation marks: a chapter in a book?", a:"Quotation marks (it's part of a larger work)."}]}
     ],
     "punct": [
+      {sum:["Semicolons join two independent clauses that are closely related.", "Colons introduce a list or explanation, but only after a complete sentence.", "Commas go after introductory elements, between items in a series, and before FANBOYS joining two independent clauses."]},
       {table:{head:["Mark", "Use", "Example"], rows:[
         ["Semicolon ;", "joins two independent clauses without a conjunction", "I love cake; I love pie."],
         ["Colon :", "formal letters; introduces a list after a complete sentence", "Bring these items: a pencil, an eraser, and a pen."],
@@ -50,9 +55,11 @@ Study.addUnit("grammar", {
         ["Ellipsis . . .", "shows words left out of a quotation", "\"No man is an island . . . every man is here.\""]
       ]}},
       {warn:"A colon can't come right after a verb. Wrong: The items to bring are: a pencil… Right: Bring these items: a pencil…"},
-      {tip:"[sic] means the mistake was in the original, not yours. An ellipsis at the end of a sentence gets a fourth dot (the period): . . . ."}
+      {tip:"[sic] means the mistake was in the original, not yours. An ellipsis at the end of a sentence gets a fourth dot (the period): . . . ."},
+      {check:[{q:"Fix it: \"I was tired, I went to bed.\"", a:"Use a semicolon (I was tired; I went to bed) or a comma + conjunction (I was tired, so I went to bed)."}, {q:"Is this colon correct? \"We need: eggs, milk, and bread.\"", a:"No. A colon must follow a complete sentence: We need three things: eggs, milk, and bread."}, {q:"Where does the comma go? \"After the game we ate pizza.\"", a:"After game: After the game, we ate pizza."}, {q:"Does \"I like tea but not coffee\" need a comma before but?", a:"No: \"not coffee\" isn't an independent clause."}]}
     ],
     "apos": [
+      {sum:["Singular possessive: add 's (the dog's bowl). Plural ending in s: add just ' (the dogs' bowls).", "Irregular plurals add 's (children's, women's).", "Possessive pronouns never use apostrophes (its, yours, theirs); it's always means \"it is\" or \"it has.\""]},
       {table:{head:["Noun", "Rule", "Example"], rows:[
         ["Singular", "add 's", "the cat's tail, the woman's house"],
         ["Singular, one syllable, ends in s", "add 's", "James's house"],
@@ -60,7 +67,8 @@ Study.addUnit("grammar", {
         ["Plural ending in s", "add just '", "the girls' books, the Smiths' pool"],
         ["Plural not ending in s", "add 's", "children's toys, women's meeting"]
       ]}},
-      {tip:"Make the noun plural first (if it's plural), then add the apostrophe."}
+      {tip:"Make the noun plural first (if it's plural), then add the apostrophe."},
+      {check:[{q:"Its or it's? \"The cat licked ___ paw.\"", a:"its (possessive, no apostrophe)."}, {q:"Make it possessive: the books of the students.", a:"the students' books."}, {q:"Make it possessive: the toys of the children.", a:"the children's toys."}, {q:"Fix it: \"The Smith's are coming over.\"", a:"The Smiths are coming over. (Plural, not possessive, so no apostrophe.)"}]}
     ]
   },
 

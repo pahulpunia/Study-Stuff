@@ -203,7 +203,8 @@ $("munitSel").onchange = e => {
 
 /* ---- notes summary ---- */
 /* notes can be plain strings (bullets) or blocks:
-   {h:"heading"} {p:"paragraph"} {steps:[…]} {tip:"…"} {warn:"…"} {ex:{q, a:[…]}} {table:{head:[…], rows:[[…]]}} */
+   {h:"heading"} {p:"paragraph"} {steps:[…]} {tip:"…"} {warn:"…"} {ex:{q, a:[…]}} {table:{head:[…], rows:[[…]]}}
+   {sum:[…]} "In short" summary · {exam:"…"} "On the test" · {timeline:[[when, what]]} · {check:[{q, a}]} tap-to-reveal questions */
 function notesHTML(u, sid){
   const notes = (u.notes || {})[sid] || [], graphs = (u.graphs || {})[sid] || [];
   const T = t => MC.renderText(String(t));
@@ -218,6 +219,10 @@ function notesHTML(u, sid){
     if (n.tip) out += `<div class="ncall ntip">${ic("bulb", "ic-s")}<span>${T(n.tip)}</span></div>`;
     if (n.warn) out += `<div class="ncall nwarn">${ic("alert", "ic-s")}<span><b>Watch out:</b> ${T(n.warn)}</span></div>`;
     if (n.ex) out += `<div class="nex"><div class="nexq"><b>Example:</b> ${T(n.ex.q)}</div>${(n.ex.a || []).map(x => `<div class="nexa">${T(x)}</div>`).join("")}</div>`;
+    if (n.sum) out += `<div class="nsum"><div class="nsumh">${ic("bulb", "ic-s")}In short</div><ul>${n.sum.map(x => `<li>${T(x)}</li>`).join("")}</ul></div>`;
+    if (n.exam) out += `<div class="ncall nexam">${ic("target", "ic-s")}<span><b>On the test:</b> ${T(n.exam)}</span></div>`;
+    if (n.timeline) out += `<ol class="ntime">${n.timeline.map(([when, what]) => `<li><b>${T(when)}</b><span>${T(what)}</span></li>`).join("")}</ol>`;
+    if (n.check) out += `<div class="ncheck"><div class="ncheckh">Check yourself <span>tap a question to see the answer</span></div>${n.check.map(c => `<details><summary>${T(c.q)}</summary><div>${T(c.a)}</div></details>`).join("")}</div>`;
     if (n.table) out += `<div class="ntable"><table><thead><tr>${n.table.head.map(c => `<th>${T(c)}</th>`).join("")}</tr></thead><tbody>${n.table.rows.map(r => `<tr>${r.map(c => `<td>${T(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
   });
   flush();
@@ -384,7 +389,8 @@ function qLabel(q){
   const u = PB().units.find(x => x.id === q.unit);
   if (u && !u._srcN){ u._srcN = {}; u.items.forEach(i => u._srcN[i.src] = (u._srcN[i.src] || 0) + 1); }
   if (!q.gen && u && u._srcN[q.src] === 1) return q.src;
-  const t = String(q.text || "").replace(/\[\[(.+?)\]\]/g, (_, f) => f.replace(/\^/g, "")).replace(/\{\{(.+?)\}\}/g, "$1").replace(/__(?=[^_\s])|(?<=[^_\s])__|\*\*/g, "").replace(/\s+/g, " ").trim();
+  const under = q.fields && q.fields[0] && q.fields[0].t === "under" ? q.fields[0].words.join(" ") : null;
+  const t = String(under || q.text || "").replace(/\[\[(.+?)\]\]/g, (_, f) => f.replace(/\^/g, "")).replace(/\{\{(.+?)\}\}/g, "$1").replace(/__(?=[^_\s])|(?<=[^_\s])__|\*\*/g, "").replace(/\s+/g, " ").trim();
   return t.length > 48 ? t.slice(0, 46).trim() + "…" : t;
 }
 
@@ -476,6 +482,25 @@ function mShow(){
       });
       w.appendChild(ch);
     }
+    if (f.t === "under"){
+      // underline: tap the first word, then the last word (tap a word twice to start over)
+      inp.classList.add("vh"); inp.tabIndex = -1; lab.htmlFor = "";
+      const ub = el("div", "uwords"); ub.setAttribute("role", "group"); ub.setAttribute("aria-label", f.l);
+      f.words.forEach((wd, j) => {
+        const b = el("button", "uw", wd); b.type = "button"; b.dataset.j = j;
+        b.onclick = () => {
+          if (M.answered || inp.dataset.ok === "1") return;
+          const anc = ub.dataset.anchor === undefined || ub.dataset.anchor === "" ? null : +ub.dataset.anchor;
+          if (anc === null){ ub.dataset.anchor = j; inp.value = j + "-" + j; }
+          else if (anc === j && inp.value === j + "-" + j){ ub.dataset.anchor = ""; inp.value = ""; }
+          else { inp.value = Math.min(anc, j) + "-" + Math.max(anc, j); ub.dataset.anchor = ""; }
+          M.lastFocus = i; paintUnder(i); mReady();
+          if (M.party && !M.applying) Party.typed(M.idx, i, inp.value);
+        };
+        ub.appendChild(b);
+      });
+      w.appendChild(ub);
+    }
     w.appendChild(el("div", "mans hidden"));
     box.appendChild(w);
   });
@@ -493,6 +518,13 @@ function mShow(){
   mHintBtn(); mReviewClose(); mHud(); mReady();
   $("mf0").focus();
   mPersist();
+}
+/* show which words are underlined (and the word you tapped first, while picking the last) */
+function paintUnder(i){
+  const inp = $("mf" + i), ub = inp && inp.parentNode.querySelector(".uwords"); if (!ub) return;
+  const [a, b] = /^\d+-\d+$/.test(inp.value) ? inp.value.split("-").map(Number) : [-1, -2];
+  const anc = ub.dataset.anchor === undefined || ub.dataset.anchor === "" ? -1 : +ub.dataset.anchor;
+  ub.querySelectorAll(".uw").forEach(w => { const j = +w.dataset.j; w.classList.toggle("on", j >= a && j <= b); w.classList.toggle("start", j === anc); });
 }
 /* Check looks inactive until every box has an answer */
 function mReady(){
@@ -568,14 +600,14 @@ function mCheck(){
   if (empty >= 0){
     const inp = $("mf" + empty), tgt = q.fields[empty].t === "choice" ? inp.parentNode.querySelector(".chips") : inp;
     tgt.classList.remove("shake"); void tgt.offsetWidth; tgt.classList.add("shake"); setTimeout(() => tgt.classList.remove("shake"), 520);
-    if (q.fields[empty].t !== "choice") inp.focus();
+    if (!["choice", "under"].includes(q.fields[empty].t)) inp.focus();
     if (q.fields.length > 1){ $("mFb").className = "fb warn"; $("mFb").textContent = "Answer every part first."; }
     return;
   }
   // can we read every answer? fix obvious slips (like a missing parenthesis); otherwise don't count the attempt
   for (let i = 0; i < q.fields.length; i++){
     const f = q.fields[i], inp = $("mf" + i);
-    if (inp.readOnly || f.t === "choice" || MC.readable(f, vals[i]).ok) continue;
+    if (inp.readOnly || f.t === "choice" || f.t === "under" || MC.readable(f, vals[i]).ok) continue;
     const fx = MC.autofix(f, vals[i]);
     if (fx !== vals[i].trim() && MC.readable(f, fx).ok){
       inp.value = vals[i] = fx;
@@ -613,7 +645,8 @@ function mJudge(vals, remote){
           if (picked){ picked.classList.remove("sel"); picked.classList.add("wrong"); picked.disabled = true; }
           inp.value = "";
         }
-        inp.className = "retry" + (q.fields[i].t === "choice" ? " vh" : ""); inp.classList.add("shake"); setTimeout(() => inp.classList.remove("shake"), 520);
+        if (q.fields[i].t === "under"){ inp.value = ""; const ub = inp.parentNode.querySelector(".uwords"); ub.dataset.anchor = ""; paintUnder(i); ub.classList.add("shake"); setTimeout(() => ub.classList.remove("shake"), 520); }
+        inp.className = "retry" + (["choice", "under"].includes(q.fields[i].t) ? " vh" : ""); inp.classList.add("shake"); setTimeout(() => inp.classList.remove("shake"), 520);
         if (r.why){ note.textContent = "↳ " + r.why.charAt(0).toUpperCase() + r.why.slice(1) + "."; note.className = "mans mwhy"; }
         else note.classList.add("hidden");
       }
@@ -637,6 +670,7 @@ function mApplyTeam(s){
     const inp = $("mf" + i); if (inp.readOnly) return;
     inp.value = vals[i];
     if (f.t === "choice") inp.parentNode.querySelectorAll(".chip").forEach(c => { c.classList.toggle("sel", c.dataset.v === vals[i]); c.setAttribute("aria-checked", c.dataset.v === vals[i]); });
+    else if (f.t === "under") paintUnder(i);
     else inp.dispatchEvent(new Event("input"));
   });
   M.applying = false;
@@ -655,6 +689,7 @@ function mSetLive(v){
       if (!chip || chip.disabled) return;          // already ruled out on the first try
       inp.value = val; inp.parentNode.querySelectorAll(".chip").forEach(c => { c.classList.toggle("sel", c === chip); c.setAttribute("aria-checked", c === chip); }); return;
     }
+    if (f.t === "under"){ inp.value = val; const ub = inp.parentNode.querySelector(".uwords"); if (ub) ub.dataset.anchor = ""; paintUnder(i); return; }
     if (document.activeElement === inp && Date.now() - ((M.edit || {})[i] || 0) < 1500) return;
     const at = document.activeElement === inp ? inp.selectionStart : null;
     inp.value = val; inp.dispatchEvent(new Event("input"));
@@ -677,7 +712,12 @@ function mReveal(res, vals, skipped){
   const q = M.queue[M.idx]; M.answered = true;
   const nOk = res.filter(r => r.ok).length, all = nOk === q.fields.length;
   q.fields.forEach((f, i) => {
-    const inp = $("mf" + i); inp.readOnly = true; inp.className = (res[i].ok ? "good" : "bad") + (f.t === "choice" ? " vh" : "");
+    const inp = $("mf" + i); inp.readOnly = true; inp.className = (res[i].ok ? "good" : "bad") + (["choice", "under"].includes(f.t) ? " vh" : "");
+    if (f.t === "under"){
+      const [a, b] = f.a.split("-").map(Number), [x, y] = /^\d+-\d+$/.test(vals[i] || "") ? vals[i].split("-").map(Number) : [-1, -2];
+      inp.parentNode.querySelectorAll(".uw").forEach(w => { const j = +w.dataset.j; w.disabled = true; w.classList.remove("start");
+        w.classList.toggle("on", j >= x && j <= y); w.classList.toggle("right", j >= a && j <= b); w.classList.toggle("wrong", j >= x && j <= y && !(j >= a && j <= b)); });
+    }
     if (f.t === "choice") inp.parentNode.querySelectorAll(".chip").forEach(c => {
       c.disabled = true;
       if (c.dataset.v === f.a) c.classList.add("right");
@@ -729,15 +769,30 @@ function mNext(){
   if (M.idx >= M.queue.length) return mFinish();
   mShow();
 }
+/* the question as plain text, for a problem report */
+function mPlainQ(q){
+  const f0 = q.fields[0] || {};
+  const strip = t => String(t || "").replace(/\[\[(.+?)\]\]/g, "$1").replace(/\{\{(.+?)\}\}/g, "$1").replace(/__|\*\*/g, "").replace(/\s+/g, " ").trim();
+  return [strip(q.text), q.math ? (q.pre || "") + q.math : "", f0.t === "under" ? "“" + f0.words.join(" ") + "”" : "", f0.t === "choice" ? "Choices: " + f0.opts.map(strip).join(" / ") : ""].filter(Boolean).join(" ").slice(0, 400);
+}
+$("mReport").onclick = () => {
+  const q = M && M.queue[M.idx]; if (!q) return;
+  Issues.open({kind: "question", subj: PSUBJ.id, where: questionSection(q).name || mSecInfo(M.sec).name, q: mPlainQ(q), qk: LB.qkey(q)});
+};
 $("mQuit").onclick = () => {
   if (M && M.party) return Party.leave();
   if (M && M.results.length && M.mode === "drill") return mFinish();
   // quitting partway: the points you earned still count
-  if (M && M.results.length && !M.sent){ M.sent = true; LB.submit(PSUBJ.id, M.score); LB.record(PSUBJ.id, M.results); }
+  if (M && M.results.length && !M.sent){ M.sent = true; LB.submit(PSUBJ.id, M.score); LB.record(PSUBJ.id, M.results); mLog(true); }
   if (M){ M.over = true; mClearSaved(); }
   document.activeElement && document.activeElement.blur(); renderHome();
 };
 
+/* save this round to your history (account) */
+function mLog(quit){
+  const n = M.results.length; if (!n || M.party) return;
+  LB.logRound({subj: PSUBJ.id, mode: MMODES[M.mode].name, sec: (mSecInfo(M.sec) || {}).name || M.sec || "", score: M.score, right: M.results.filter(r => r.ok).length, total: n, secs: (Date.now() - M.start) / 1000, quit});
+}
 function mFinish(){
   document.activeElement && document.activeElement.blur();
   M.over = true; mClearSaved(); mReviewClose();
@@ -745,7 +800,7 @@ function mFinish(){
   let newBest = false;
   if (!M.override && M.score > (ST.mbest[mBestKey(M.mode)] || 0)){ ST.mbest[mBestKey(M.mode)] = M.score; newBest = true; }
   save();
-  if (!M.sent){ M.sent = true; LB.submit(PSUBJ.id, M.score); LB.record(PSUBJ.id, M.results); }
+  if (!M.sent){ M.sent = true; LB.submit(PSUBJ.id, M.score); LB.record(PSUBJ.id, M.results); mLog(false); }
   const secName = mSecInfo().name;
   $("meMode").textContent = `${secName} · ${MMODES[M.mode].name}` + (M.override ? " · retry" : "");
   countUp($("meScore"), M.score);

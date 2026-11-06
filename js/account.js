@@ -212,10 +212,19 @@ const LB = (() => {
   });
 
   /* ---- club stats: which questions members miss most (one write per round, one read per visit) ---- */
+  const hashKey = (q, str) => { let h = 5381; for (let i = 0; i < str.length; i++) h = ((h << 5) + h + str.charCodeAt(i)) | 0; return q.unit + "-" + (h >>> 0).toString(36); };
+  const baseKey = q => hashKey(q, q.unit + "|" + q.text + "|" + q.fields.map(f => f.t === "under" ? f.words.join(" ") + "#" + f.a : f.a).join("|"));   // underline: the sentence too, since many share a prompt
+  // a question's id. Questions that share wording and answers (e.g. two limits that both equal 1) also
+  // include their expression, so each gets its own id; every other question keeps its original id.
   function qkey(q){
-    const str = q.unit + "|" + q.text + "|" + q.fields.map(f => f.a).join("|");
-    let h = 5381; for (let i = 0; i < str.length; i++) h = ((h << 5) + h + str.charCodeAt(i)) | 0;
-    return q.unit + "-" + (h >>> 0).toString(36);
+    if (q._qk) return q._qk;
+    const bank = Object.values(Study.problems || {}).find(b => b.items && b.items.includes(q));
+    if (bank && !bank._keyed){
+      bank._keyed = true;
+      const by = {}; bank.items.forEach(i => { const k = baseKey(i); (by[k] = by[k] || []).push(i); });
+      Object.entries(by).forEach(([k, list]) => list.forEach(i => { i._qk = list.length > 1 ? hashKey(i, k + "|" + (i.math || "") + "|" + (i.target || "") + "|" + (i.stim || "") + "|" + JSON.stringify(i.lim || "")) : k; }));
+    }
+    return q._qk || baseKey(q);
   }
   function record(subject, results){
     if (!ST.lbUser || !cfg()) return;
@@ -251,8 +260,40 @@ const LB = (() => {
     if (out.isAdmin){
       try { out.members = await all("members"); } catch(e){}
       try { out.progress = await all("progress"); } catch(e){}
+      try { out.rounds = (await F.getDocs(F.query(F.collection(db, "rounds"), F.orderBy("at", "desc"), F.limit(500)))).docs.map(d => Object.assign({id: d.id}, d.data())); } catch(e){ out.rounds = null; }
+    } else {
+      try { out.rounds = await myRounds(); out.roundsMineOnly = true; } catch(e){}
     }
     return out;
+  }
+
+  /* ---- round history: every finished round goes to your account, so it follows you to any device.
+     Queued if you're offline. Party rounds aren't saved (they don't count). ---- */
+  function logRound(r){
+    if (!cfg() || !ST.lbUser || !r || !r.total) return;
+    ST.histPending = (ST.histPending || []).concat([Object.assign({t: Date.now()}, r)]).slice(-30); save();
+    init().then(flushHist).catch(() => {});
+  }
+  let histBusy = false;
+  async function flushHist(){
+    if (histBusy || !user || !memberName || !(ST.histPending || []).length) return;
+    histBusy = true;
+    const int = v => Math.max(0, Math.round(+v || 0));
+    try {
+      for (const r of ST.histPending.slice()){
+        await F.setDoc(F.doc(db, "rounds", user.uid.slice(0, 8) + "-" + r.t.toString(36)), {
+          uid: user.uid, name: memberName, subj: String(r.subj || ""), mode: String(r.mode || ""), sec: String(r.sec || "").slice(0, 80),
+          score: Math.min(100000, int(r.score)), right: Math.min(int(r.right), int(r.total)), total: Math.min(500, int(r.total)), secs: Math.min(86400, int(r.secs)),
+          quit: !!r.quit, at: F.serverTimestamp(), when: int(r.t)});
+        ST.histPending = (ST.histPending || []).filter(x => x.t !== r.t); save();
+      }
+    } catch(e){} finally { histBusy = false; }
+  }
+  // your own rounds, newest first (from every device)
+  async function myRounds(){
+    await init(); if (!user) return [];
+    const snap = await F.getDocs(F.query(F.collection(db, "rounds"), F.where("uid", "==", user.uid), F.limit(200)));
+    return snap.docs.map(d => Object.assign({id: d.id}, d.data())).sort((a, b) => (b.when || 0) - (a.when || 0));
   }
 
   async function top(){
@@ -262,9 +303,9 @@ const LB = (() => {
     return snap.docs.map(d => ({uid: d.id, ...d.data()}));
   }
   // start in the background if this phone was signed in before (sends queued points)
-  if (cfg() && ST.lbUser) window.addEventListener("load", () => setTimeout(() => init().catch(() => {}), 1500));
+  if (cfg() && ST.lbUser) window.addEventListener("load", () => setTimeout(() => init().then(flushHist).catch(() => {}), 1500));
 
-  return {cfg, init, signUp, signIn, signOut, submit, top, niceError, sync, adminData, mergeProgress, qkey, record, clubStats, clubCached, base: BASE, get app(){ return appInst; }, get user(){ return user; }, get name(){ return memberName; }, get checked(){ return checked; }};
+  return {cfg, init, signUp, signIn, signOut, submit, top, niceError, sync, adminData, mergeProgress, qkey, record, clubStats, clubCached, logRound, myRounds, base: BASE, get F(){ return F; }, get db(){ return db; }, get app(){ return appInst; }, get user(){ return user; }, get name(){ return memberName; }, get checked(){ return checked; }};
 })();
 
 /* ---- settings screen ---- */
@@ -272,6 +313,8 @@ function renderSettings(){
   paintCount();
   $("secondChance").checked = !!ST.settings.second;
   $("autoNext").checked = !!ST.settings.autoNext;
+  $("showOnline").checked = ST.settings.online !== false;
+  $("onlineRow").classList.toggle("hidden", !(LB.cfg() && ST.lbUser));
   $("celebrate").checked = ST.settings.confetti !== false;
   $("bigText").checked = !!ST.settings.big;
   paintTheme();

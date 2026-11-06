@@ -81,6 +81,7 @@
       <div class="bar"><div id="prog"></div></div>
     </div>
     <div class="card qcard">
+      <button class="link rptbtn vrpt" id="vReport" data-ic="flag" aria-label="Report a problem with this question" title="Report a problem"></button>
       <span class="pos" id="pos"></span>
       <div id="promptWrap"></div>
       <div class="hint hidden" id="hint"></div>
@@ -149,11 +150,13 @@
         <label><input type="checkbox" id="autoNext"> Go to the next question after a right answer</label>
         <label><input type="checkbox" id="celebrate"> Confetti for new bests</label>
         <label><input type="checkbox" id="bigText"> Larger text</label>
+        <label id="onlineRow"><input type="checkbox" id="showOnline"> Show friends when I'm online and what I'm studying</label>
       </div>
       <div class="themerow"><span>Theme</span><div class="seg" id="themeSeg" role="radiogroup" aria-label="Theme"><button data-t="dark" role="radio">Dark</button><button data-t="light" role="radio">Light</button></div></div>
     </div>
     <button class="card rowbtn" id="toBoard" data-ic="trophy">Account &amp; leaderboard</button>
     <div class="card hidden" id="partyCard"><h2>Party</h2><div id="partyBox"></div></div>
+    <button class="card rowbtn" id="toIssues" data-ic="flag">Issues &amp; reports</button>
     <div class="card">
       <h2>Backup</h2>
       <div class="row"><button class="grow" id="bkCopy"></button><button class="grow" id="bkRestore"></button></div>
@@ -178,6 +181,18 @@
     <div class="card" id="acctCard"><h2>Leaderboard</h2><div id="acct"></div></div>
   </section>
 
+  <!-- ISSUES (reported problems, public, no names) -->
+  <section id="issues" class="hidden">
+    <div class="topbar"><button class="link" id="isBack" data-ic="back">Settings</button><span class="chip" id="isCount"></span></div>
+    <div class="card">
+      <h2>Issues</h2>
+      <p class="small">Problems people have reported and what's been done about them. Names aren't shown.</p>
+      <button class="primary" id="isNew" data-ic="flag">Report a problem</button>
+      <div class="seg isfilter" id="isFilter" role="radiogroup" aria-label="Show"><button role="radio" data-f="open">Open</button><button role="radio" data-f="done">Done</button><button role="radio" data-f="all">All</button></div>
+      <div id="isList"></div>
+    </div>
+  </section>
+
   <!-- PARTY (find a party / the lobby) -->
   <section id="party" class="hidden">
     <div class="topbar"><button class="link" id="pyBack" data-ic="back">Settings</button><span class="chip" id="pyCount"></span></div>
@@ -198,7 +213,7 @@
     <div class="card qcard mcard mreview hidden" id="mReview" aria-live="polite"></div>
     <div class="card qcard mcard" id="mCard">
       <div class="mq-left">
-        <div class="qtop"><span class="srcchip" id="mSrc"></span><span class="qacts"><button class="link toolsbtn hidden" id="mTools" data-ic="pencil">Tools</button><button class="link crossbtn hidden" id="mCross" data-ic="strike" aria-pressed="false">Cross out</button><button class="link learnbtn" id="mLearn" data-ic="book">Learn this</button></span></div>
+        <div class="qtop"><span class="srcchip" id="mSrc"></span><span class="qacts"><button class="link toolsbtn hidden" id="mTools" data-ic="pencil">Tools</button><button class="link crossbtn hidden" id="mCross" data-ic="strike" aria-pressed="false">Cross out</button><button class="link learnbtn" id="mLearn" data-ic="book">Learn this</button><button class="link rptbtn" id="mReport" data-ic="flag" aria-label="Report a problem with this question" title="Report a problem"></button></span></div>
         <div class="mtext" id="mText"></div>
         <div class="mdisplay" id="mMath"></div>
         <div class="mgraph" id="mGraph"></div>
@@ -261,6 +276,14 @@
 
 <div class="curlayer" id="curLayer" aria-hidden="true"></div>
 
+<!-- REPORT A PROBLEM -->
+<div class="sheet hidden" id="rpt" role="dialog" aria-modal="true" aria-labelledby="rptTitle">
+  <div class="sheetbox rptbox">
+    <div class="sheethead"><h2 id="rptTitle">Report a problem</h2><button class="link" id="rptClose" data-ic="close">Close</button></div>
+    <div class="sheetbody" id="rptBody"></div>
+  </div>
+</div>
+
 <!-- LEARN SHEET (notes for the current problem) -->
 <div class="sheet hidden" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
   <div class="sheetbox">
@@ -281,7 +304,9 @@
 <script src="js/tools.js"></script>
 <script src="js/admin.js"></script>
 <script src="js/account.js"></script>
+<script src="js/live.js"></script>
 <script src="js/party.js"></script>
+<script src="js/issues.js"></script>
 <script src="js/shell.js"></script>
 <script src="js/boot.js"></script>
 </body>

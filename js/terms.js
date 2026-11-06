@@ -199,14 +199,23 @@ $("form").addEventListener("submit", e => {
   reveal(false, typed);
 });
 $("skip").onclick = () => { if (!S.answered) reveal(false, ""); };
+$("vReport").onclick = () => {
+  const q = S && S.queue[S.idx]; if (!q) return;
+  Issues.open({kind: "question", subj: TSUBJ.id, where: `${L().setLabel} ${CH.n}`, q: `${q.w.w} (${q.w.pos}): ${q.w.d}`.slice(0, 400), qk: "w:" + q.w.w});
+};
 $("sayBtn").onclick = () => say(S.queue[S.idx].w.w);
 ["hintBtn","skip","check","sayBtn"].forEach(id => $(id).addEventListener("mousedown", e => e.preventDefault()));
 $("quit").onclick = () => {
   clearTimers(); $("answer").blur();
-  if (S && S.results && S.results.length && !S.sent){ S.sent = true; LB.submit(TSUBJ.id, S.score); }   // partway points still count
+  if (S && S.results && S.results.length && !S.sent){ S.sent = true; LB.submit(TSUBJ.id, S.score); tLog(true); }   // partway points still count
   renderHome();
 };
 
+/* save this round to your history (account) */
+function tLog(quit){
+  const n = S.results.length; if (!n) return;
+  LB.logRound({subj: TSUBJ.id, mode: fill(MODES[S.mode].name), sec: `${L().setLabel} ${CH.n}`, score: S.score, right: S.results.filter(r => r.ok).length, total: n, secs: (Date.now() - S.start) / 1000, quit});
+}
 function reveal(ok, typed){
   const q = S.queue[S.idx], w = q.w.w;
   S.answered = true;
@@ -272,7 +281,7 @@ function finish(){
   if (!S.override && S.score > (ST.best[bestKey(S.mode)] || 0)){ ST.best[bestKey(S.mode)] = S.score; newBest = true; }
   ST.bestStreak = Math.max(ST.bestStreak || 0, S.bestStreak);
   save();
-  if (!S.sent){ S.sent = true; LB.submit(TSUBJ.id, S.score); }
+  if (!S.sent){ S.sent = true; LB.submit(TSUBJ.id, S.score); tLog(false); }
 
   const mname = fill(MODES[S.mode].name);
   $("endMode").textContent = `${TSUBJ.name} · ${L().setLabel} ${CH.n} · ${mname}` + (S.override ? " · retry" : "");

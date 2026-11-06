@@ -119,7 +119,11 @@ function verifyNotes(unit){
     if (b.ex) [b.ex.q].concat(b.ex.a || []).forEach(t => texts.push([sid, t]));
     if (b.table){ b.table.head.forEach(t => texts.push([sid, t])); b.table.rows.forEach(r => r.forEach(t => texts.push([sid, t])));
       if (b.table.rows.some(r => r.length !== b.table.head.length)) fail({src:`${unit.id} notes ${sid}`}, 'table row length != header length'); }
-    const known = ['h','p','tip','warn','steps','ex','table'];
+    (b.sum || []).forEach(t => texts.push([sid, t]));
+    if (b.exam) texts.push([sid, b.exam]);
+    (b.timeline || []).forEach(r => { if (r.length !== 2) fail({src:`${unit.id} notes ${sid}`}, 'timeline rows are [when, what]'); r.forEach(t => texts.push([sid, t])); });
+    (b.check || []).forEach(c => { if (!c.q || !c.a) fail({src:`${unit.id} notes ${sid}`}, 'check items need q and a'); texts.push([sid, c.q], [sid, c.a]); });
+    const known = ['h','p','tip','warn','steps','ex','table','sum','exam','timeline','check'];
     Object.keys(b).forEach(k => { if (!known.includes(k)) fail({src:`${unit.id} notes ${sid}`}, 'unknown notes block key: ' + k); });
   }));
   texts.forEach(([sid, t]) => (String(t).match(/\{\{(.+?)\}\}/g) || []).forEach(m => {
@@ -214,7 +218,7 @@ for (const s of subjects){
     unit.items.forEach(q => lintItem(q, s.id));
     for (const [sec, f] of Object.entries(unit.drills)) for (let i = 0; i < 300; i++){ const q = f(unit.kit); q.src = `${unit.id} drill ${sec}`; lintItem(q, s.id); }
     Object.entries(unit.notes || {}).forEach(([sid, bl]) => bl.forEach(b => { const q = {src:`${unit.id} notes ${sid}`};
-      [].concat(typeof b === 'string' ? b : [b.h, b.p, b.tip, b.warn, ...(b.steps || [])]).forEach(t => lintText(q, t, 'notes')); }));
+      [].concat(typeof b === 'string' ? b : [b.h, b.p, b.tip, b.warn, b.exam, ...(b.steps || []), ...(b.sum || []), ...(b.timeline || []).flat(), ...(b.check || []).flatMap(c => [c.q, c.a])]).forEach(t => lintText(q, t, 'notes')); }));
     // answer-length giveaway: on multiple choice, the right answer shouldn't usually be the longest option
     const mc = unit.items.filter(q => q.fields[0].t === 'choice' && q.fields[0].opts.length >= 3);
     const L = lintSubj[s.id] || (lintSubj[s.id] = {n:0, longest:0, much:0});
