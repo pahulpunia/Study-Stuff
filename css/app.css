@@ -701,8 +701,13 @@ body.toolsopen #mquiz{padding-bottom:54vh}
 .padnote{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:.9rem;border:1px dashed var(--line);border-radius:10px}
 .padtext{position:absolute;z-index:3;min-width:120px;font:600 16px var(--font);padding:4px 6px;border-radius:6px;border:1px solid var(--accent);background:var(--card);color:var(--ink)}
 #mquiz .mq-left{position:relative}
-.qink{position:absolute;left:0;z-index:2;pointer-events:none}
-.qink.live{pointer-events:auto;touch-action:none;cursor:crosshair;outline:1px dashed var(--accent);outline-offset:2px;border-radius:6px}
+#mquiz{position:relative}
+.qink{position:absolute;left:0;top:0;z-index:5;pointer-events:none}
+/* drawing on the page: dragging draws instead of scrolling (top bar and answers still work) */
+#mquiz.inking,body:has(#mquiz.inking) .wrap{touch-action:none;cursor:crosshair;-webkit-user-select:none;user-select:none}
+#mquiz.inking .qhead,#mquiz.inking .mq-right{cursor:auto}
+.toolsbtn.ping{position:relative}
+.toolsbtn.ping::after{content:"";position:absolute;top:2px;right:-4px;width:8px;height:8px;border-radius:50%;background:var(--warn)}
 #padCanvas.hidden{display:none}
 
 /* look back + resume */
@@ -791,3 +796,9 @@ html.bigtext .mtext, html.bigtext .chip, html.bigtext .notes{font-size:1.08em}
 .pcur.gone{opacity:0}
 .pcur.hidden{display:none}
 @media (prefers-reduced-motion:reduce){ .pcur{transition:none} }
+.fbby{display:inline-flex;align-items:center;gap:5px;margin-left:8px;font-size:.82rem;font-weight:600;color:var(--muted)}
+.pm.me{color:var(--ink)}
+.pteam{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:6px 0 4px}
+.pteam b{font-size:1.4rem}
+.pteam span{color:var(--muted)}
+.pteam .ic-s{color:var(--warn);align-self:center}

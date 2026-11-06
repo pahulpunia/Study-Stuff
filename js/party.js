@@ -1,7 +1,8 @@
 /* =====================================================================
    Parties: signed-in members study the same questions together, live.
-   Everyone answers on their own; the host moves the group on. You can see
-   everyone's pointer over the question.
+   The party answers as a team: whoever checks answers for everyone, and
+   everyone sees what teammates type, their pointers and their drawings.
+   The host moves the group on.
 
    Uses Firebase Realtime Database (fast, and free for this kind of traffic).
    Who can change what is set by database.rules.json.
@@ -12,6 +13,8 @@ const Party = (() => {
   const MAX = 8, KEEP = "sq-party", COUNTS = [5, 10, 15, 20], OLD = 12 * 3600e3;
   let D = null, db = null, ready = null;
   let pid = null, P = null, offs = [], view = "find", offList = null, list = null, note = "", lobbySig = "", wasDown = false, myColor = null;
+  let team = null, sketches = null, sketchAt = null;
+  const qk = () => (M && M.party ? M.party.n : 0) + "-" + (M ? M.idx : 0);       // this round + question
 
   const uid = () => LB.user && LB.user.uid;
   const esc = s => escHTML(String(s == null ? "" : s));
@@ -96,14 +99,18 @@ const Party = (() => {
   // start listening to a party we're a member of
   async function enter(id){
     stop();
-    pid = id; note = ""; lobbySig = "";
+    pid = id; note = ""; lobbySig = ""; view = "lobby"; wasDown = false;
     try { sessionStorage.setItem(KEEP, id); } catch(e){}
     const me = uid();
     // if the connection drops (tab closed, phone asleep), take us out of the party
     await D.onDisconnect(R(`parties/${id}/members/${me}`)).remove();
     await D.onDisconnect(R(`cursors/${id}/${me}`)).remove();
+    await D.onDisconnect(R(`sketch/${id}/${me}`)).remove();
     offs.push(D.onValue(R("parties/" + id), s => onParty(id, s.val())));
     offs.push(D.onValue(R("cursors/" + id), s => { if (pid === id) Cursors.update(s.val() || {}); }));
+    offs.push(D.onValue(R("team/" + id), s => { if (pid !== id) return; team = s.val() || {}; applyTeam(); }));
+    offs.push(D.onValue(R("sketch/" + id), s => { if (pid !== id) return; sketches = s.val() || {}; applySketch(); }));
+    Tools.hook = sketchHook;
     offs.push(D.onValue(R(".info/connected"), s => {
       if (s.val() === false){ wasDown = true; return; }
       if (s.val() === true && wasDown && pid === id){
@@ -114,12 +121,12 @@ const Party = (() => {
         D.get(R(`parties/${id}/host`)).then(h => { if (h.exists()) D.set(R(`parties/${id}/members/${me}`), {name: LB.name, color: myColor || COLORS[0], joined: D.serverTimestamp()}).catch(() => {}); });
       }
     }));
-    view = "lobby";
   }
 
   function stop(){
     offs.forEach(f => { try { f(); } catch(e){} }); offs = [];
-    Cursors.clear();
+    Cursors.clear(); team = null; sketches = null; sketchAt = null;
+    Tools.hook = null; Tools.clearOthers();
   }
 
   async function leave(toSettings){
@@ -131,11 +138,13 @@ const Party = (() => {
       try {
         D.onDisconnect(R(`parties/${id}/members/${me}`)).cancel();
         D.onDisconnect(R(`cursors/${id}/${me}`)).cancel();
+        D.onDisconnect(R(`sketch/${id}/${me}`)).cancel();
+        await D.remove(R(`sketch/${id}/${me}`)).catch(() => {});
         const rest = people(p).filter(m => m.id !== me);
         if (p && p.host === me && rest.length) await D.update(R("parties/" + id), {host: rest[0].id, hostName: rest[0].name, ["members/" + me]: null});
         else await D.remove(R(`parties/${id}/members/${me}`));
         await D.remove(R(`cursors/${id}/${me}`));
-        if (!rest.length) await D.remove(R("parties/" + id));
+        if (!rest.length){ await D.remove(R("parties/" + id)); await D.remove(R("team/" + id)).catch(() => {}); }
       } catch(e){}
     }
     if (toSettings !== false) renderSettings();
@@ -170,8 +179,7 @@ const Party = (() => {
       // the host ended the round: everyone back to the lobby to see how it went
       M.over = true; Tools.close();
       openLobby();
-      const rows = (p.last && p.last.rows) || {}, top = Object.entries(rows).sort((a, b) => b[1].pts - a[1].pts)[0];
-      if (top && top[0] === me && top[1].pts > 0 && Object.keys(rows).length > 1) confetti();
+      if (p.last && p.last.total >= 3 && p.last.right === p.last.total) confetti();
       return;
     }
     if (inRound()) strip();
@@ -189,14 +197,15 @@ const Party = (() => {
     const sig = JSON.stringify([P.name, P.host, P.status, P.round && P.round.n, P.set, P.last, ms.map(m => [m.id, m.name, m.color]), note]);
     if (sig === lobbySig) return; lobbySig = sig;
     $("pyCount").textContent = `${ms.length} ${ms.length === 1 ? "person" : "people"}`;
-    const last = P.last && P.last.rows ? Object.entries(P.last.rows).sort((a, b) => b[1].pts - a[1].pts || b[1].right - a[1].right) : null;
+    const last = P.last && P.last.total ? P.last : null, who = last ? Object.entries(last.rows || {}).filter(([, r]) => r.n > 0).sort((a, b) => b[1].n - a[1].n) : [];
     $("pyBody").innerHTML = `
       <div class="card">
         <h2>${esc(P.name)}</h2>
         <ul class="pmembers">${ms.map(m => `<li><i class="pdot" style="--c:${esc(m.color)}"></i><span>${esc(m.name)}</span>${m.id === P.host ? `<em>host</em>` : ""}${m.id === me ? `<em>you</em>` : ""}</li>`).join("")}</ul>
         <p class="small">Friends can join from Settings → Find party.</p>
       </div>
-      ${last ? `<div class="card"><h2>Last round</h2><ol class="pstand">${last.map(([id, r], i) => `<li><span class="prank">${i === 0 && r.pts > 0 ? ic("trophy", "ic-s") : i + 1}</span><i class="pdot" style="--c:${esc(r.color)}"></i><span class="pname">${esc(r.name)}</span><span class="small">${r.right}/${P.last.total} right</span><b>${r.pts} pts</b></li>`).join("")}</ol></div>` : ""}
+      ${last ? `<div class="card"><h2>Last round</h2><div class="pteam">${last.right === last.total ? ic("trophy", "ic-s") : ""}<b>${last.right}/${last.total} right</b><span>${last.pts} pts as a team</span></div>
+        ${who.length ? `<ul class="pstand">${who.map(([id, r]) => `<li><i class="pdot" style="--c:${esc(r.color)}"></i><span class="pname">${esc(r.name)}</span><span class="small">answered ${r.n}</span></li>`).join("")}</ul>` : ""}</div>` : ""}
       <div class="card">
         <h2>Round</h2>
         ${host && !playing ? `
@@ -206,7 +215,7 @@ const Party = (() => {
             <div class="slide"><label>Questions</label><div class="seg" id="pyCnt" role="radiogroup" aria-label="Questions">${COUNTS.map(n => `<button role="radio" data-n="${n}" class="${(s.count || 10) === n ? "on" : ""}" aria-checked="${(s.count || 10) === n}">${n}</button>`).join("")}</div></div>
           </div>
           <button class="primary pgo" id="pyStart">${ic("arrow")}<span>Start round</span></button>
-          <p class="small">Rounds in a party don't count toward the leaderboard.</p>`
+          <p class="small">You answer as a team: anyone can answer, and it counts for everyone. Party rounds don't count toward the leaderboard.</p>`
         : `<p id="pyWhat" class="small">${esc(subj.name)} · ${s.count || 10} questions</p>
           ${playing ? `<button class="primary pgo" id="pyIn">${ic("arrow")}<span>Join the round</span></button>`
                     : `<p>Waiting for <b>${esc(P.hostName || "the host")}</b> to start.</p>`}`}
@@ -253,6 +262,7 @@ const Party = (() => {
       if (!items.length){ note = "That section has no questions."; lobbySig = ""; return renderLobby(); }
       const n = (P.rounds || 0) + 1;
       note = "";
+      await D.remove(R("team/" + pid)).catch(() => {});
       await D.update(PP(), {status: "playing", rounds: n, answers: null, round: {n, subj: subj.id, sec, keys: items.map(LB.qkey).join(","), idx: 0, seed: Math.floor(Math.random() * 1e9)}});
     } catch(e){ note = "Couldn't start the round. Try again."; lobbySig = ""; renderLobby(); }
   }
@@ -268,9 +278,55 @@ const Party = (() => {
     mStartParty(queue, P.round.idx, {id: pid, n: r.n, seed: r.seed, sec: r.sec});
   }
 
-  function answered(idx, ok, pts){
+  function answered(idx, ok, pts, by, skipped){
     if (!pid || !D) return;
-    D.set(PP("answers", "q" + idx, uid()), {ok: !!ok, pts: Math.max(0, Math.round(pts || 0))}).catch(() => {});
+    D.set(PP("answers", "q" + idx, uid()), {ok: !!ok, pts: Math.max(0, Math.round(pts || 0)), by: by || uid(), skip: !!skipped}).catch(() => {});
+  }
+
+  /* ---------- answering as a team ---------- */
+  const tq = () => R(`team/${pid}/${qk()}`);
+  function submit(idx, attempt, vals, skip){
+    if (!pid || !D || !inRound()) return;
+    M.applied["a" + attempt] = true; M.by = uid();
+    const v = {}; (vals || []).forEach((x, i) => v["f" + i] = x);
+    D.update(tq(), {["s/a" + attempt]: {vals: v, by: uid(), skip: !!skip}, v: null}).catch(() => {});
+  }
+  const typing = {};
+  function typed(idx, i, val){
+    if (!pid || !D || !inRound()) return;
+    const k = qk() + "/" + i; clearTimeout(typing[k]);
+    typing[k] = setTimeout(() => { if (inRound() && qk() + "/" + i === k) D.set(R(`team/${pid}/${qk()}/v/f${i}`), String(val).slice(0, 200)).catch(() => {}); }, 120);
+  }
+  function hint(idx, n){ if (pid && D && inRound()) D.set(R(`team/${pid}/${qk()}/h`), n).catch(() => {}); }
+  // bring this question's shared state onto the screen: hints, a teammate's check, what they're typing
+  function applyTeam(){
+    if (!inRound() || !team) return;
+    const t = team[qk()]; if (!t) return;
+    if (t.h > M.hint && !M.answered) mHintTo(t.h);
+    for (let k = 1; k <= 2; k++){
+      const sub = t.s && t.s["a" + k];
+      if (!sub || M.answered || M.applied["a" + k] || M.attempt !== k) continue;
+      M.applied["a" + k] = true; M.by = sub.by;
+      mApplyTeam(sub);
+      const m = ((P && P.members) || {})[sub.by];
+      if (sub.by !== uid() && m) $("mFb").insertAdjacentHTML("beforeend", ` <span class="fbby"><i class="pdot" style="--c:${esc(m.color)}"></i>${esc(m.name)} ${sub.skip ? "skipped" : "answered"}</span>`);
+    }
+    if (t.v && !M.answered) mSetLive(t.v);
+  }
+
+  /* ---------- shared scratchpad ---------- */
+  const sketchHook = {
+    item: (name, id, it) => { if (inRound()) D.update(R(`sketch/${pid}/${uid()}`), {q: qk(), [`${name}/i/${id}`]: it ? JSON.parse(JSON.stringify(it)) : null}).catch(() => {}); },
+    grid: (name, g) => { if (inRound()) D.update(R(`sketch/${pid}/${uid()}`), {q: qk(), [`${name}/g`]: g || null}).catch(() => {}); },
+    clear: name => { if (inRound()) D.update(R(`sketch/${pid}/${uid()}`), {q: qk(), [name]: null}).catch(() => {}); }
+  };
+  function applySketch(){
+    if (!inRound()){ Tools.clearOthers(); return; }
+    // a new question: start a clean sheet
+    if (sketchAt !== qk()){ sketchAt = qk(); D.remove(R(`sketch/${pid}/${uid()}`)).catch(() => {}); }
+    const me = uid(), list = {};
+    Object.entries(sketches || {}).forEach(([id, d]) => { const m = ((P && P.members) || {})[id]; if (id !== me && m && d && d.q === qk()) list[id] = {color: m.color, data: d}; });
+    Tools.setAllOthers(list);
   }
 
   // Next / See results: only the host moves the group
@@ -278,15 +334,15 @@ const Party = (() => {
     if (!pid || !P || !P.round || !amHost()) return;
     const r = P.round, last = r.idx >= r.keys.split(",").length - 1;
     if (!last) return D.update(PP("round"), {idx: r.idx + 1}).catch(() => {});
-    // round over: add up everyone's points
-    const rows = {}, total = r.keys.split(",").length;
-    const add = (id, name, color) => rows[id] || (rows[id] = {name, color, pts: 0, right: 0});
-    people().forEach(m => add(m.id, m.name, m.color));
-    Object.values(P.answers || {}).forEach(q => Object.entries(q || {}).forEach(([id, a]) => {
-      const m = (P.members || {})[id], row = rows[id] || (m ? add(id, m.name, m.color) : null);
-      if (row){ row.pts += a.pts || 0; if (a.ok) row.right++; }
-    }));
-    D.update(PP(), {status: "lobby", round: null, last: {n: r.n, total, rows}}).catch(() => {});
+    // round over: the team's score, and who answered what
+    const rows = {}, total = r.keys.split(",").length; let right = 0, pts = 0;
+    people().forEach(m => rows[m.id] = {name: m.name, color: m.color, n: 0});
+    Object.values(P.answers || {}).forEach(q => {
+      const a = Object.values(q || {}).sort((x, y) => (y.pts || 0) - (x.pts || 0))[0]; if (!a) return;
+      pts += a.pts || 0; if (a.ok) right++;
+      const m = (P.members || {})[a.by]; if (a.by && !a.skip && (rows[a.by] || m)) (rows[a.by] || (rows[a.by] = {name: m.name, color: m.color, n: 0})).n++;
+    });
+    D.update(PP(), {status: "lobby", round: null, last: {n: r.n, total, right, pts, rows}}).catch(() => {});
   }
 
   /* who's done with this question, under the top bar */
@@ -295,16 +351,13 @@ const Party = (() => {
     box.classList.toggle("hidden", !on);
     setLabel($("mQuit"), "close", M && M.party ? "Leave" : "Quit");
     if (!on) return;
-    const ans = (P.answers || {})["q" + M.idx] || {}, ms = people(), done = ms.filter(m => ans[m.id]).length;
-    box.innerHTML = ms.map(m => {
-      const a = ans[m.id], st = !a ? `<i class="pwait" aria-label="still working"></i>` : M.answered ? ic(a.ok ? "check" : "close", "ic-s") : ic("check", "ic-s");
-      const cls = !a ? "" : M.answered ? (a.ok ? " ok" : " no") : " done";
-      return `<span class="pm${cls}" style="--c:${esc(m.color)}" title="${esc(m.name)}"><i class="pdot"></i><span class="pmn">${esc(m.name)}</span>${st}</span>`;
-    }).join("") + `<span class="pcount">${done}/${ms.length}</span>`;
+    const ms = people();
+    box.innerHTML = ms.map(m => `<span class="pm${m.id === uid() ? " me" : ""}" style="--c:${esc(m.color)}" title="${esc(m.name)}"><i class="pdot"></i><span class="pmn">${esc(m.name)}</span></span>`).join("") + `<span class="pcount">Team</span>`;
+    applySketch(); applyTeam();
     // the Next button: host moves everyone, others wait
     if (M.answered){
       const last = M.idx >= M.queue.length - 1, b = $("mCheck");
-      if (amHost()){ b.textContent = last ? "End round" : done < ms.length ? "Next for everyone →" : "Next →"; b.classList.remove("dim"); }
+      if (amHost()){ b.textContent = last ? "End round" : "Next →"; b.classList.remove("dim"); }
       else { b.textContent = `Waiting for ${P.hostName || "the host"}…`; b.classList.add("dim"); }
     }
   }
@@ -359,7 +412,7 @@ const Party = (() => {
       if (x < cr.left || x > cr.right || y < cr.top || y > cr.bottom) return {h: 1, q: M.idx};
       let t = document.elementFromPoint(x, y), n = t; const path = [];
       while (n && n !== card && n.parentElement){ path.unshift([...n.parentElement.children].indexOf(n)); n = n.parentElement; }
-      if (n !== card){ t = card; path.length = 0; }
+      if (n !== card) return {h: 1, q: M.idx};            // over a panel or bar that sits on top of the card
       const r = t.getBoundingClientRect(), f = (v, a, w) => w > 0 ? Math.round((v - a) / w * 1000) / 1000 : .5;
       return {p: path.join("."), x: f(x, r.left, r.width), y: f(y, r.top, r.height), cx: f(x, cr.left, cr.width), cy: f(y, cr.top, cr.height), q: M.idx};
     }
@@ -432,5 +485,5 @@ const Party = (() => {
   }
   if (LB.cfg()) window.addEventListener("load", () => setTimeout(resume, 600));
 
-  return {paintCard, openFind, openLobby, answered, next, strip, leave: () => leave(true), all, get id(){ return pid; }, repaint: () => Cursors.repaint()};
+  return {paintCard, openFind, openLobby, answered, submit, typed, hint, next, strip, leave: () => leave(true), all, get id(){ return pid; }, repaint: () => Cursors.repaint()};
 })();

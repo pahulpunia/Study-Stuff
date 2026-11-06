@@ -416,7 +416,7 @@ function stimHTML(q){
 
 function mShow(){
   const q = M.queue[M.idx];
-  Object.assign(M, {hint:0, attempt:1, answered:false, qStart:Date.now(), lastFocus:0});
+  Object.assign(M, {hint:0, attempt:1, answered:false, qStart:Date.now(), lastFocus:0, edit:{}, by:null, applied:{}});
   $("mSrc").textContent = q.src;
   Tools.forQuestion(q, PSUBJ.id);
   $("mText").innerHTML = stimHTML(q) + `<p>${MC.renderText(q.text)}</p>`;
@@ -444,6 +444,7 @@ function mShow(){
       else if (f.t !== "text") pv.innerHTML = /[\/^]|sqrt|cbrt|pi|\*/i.test(inp.value) ? MC.preview(f, inp.value) : "";
     });
     inp.addEventListener("input", mReady);
+    inp.addEventListener("input", () => { if (!M.party || M.applying) return; (M.edit || (M.edit = {}))[i] = Date.now(); Party.typed(M.idx, i, inp.value); });
     inp.addEventListener("focus", () => { M.lastFocus = i; setTimeout(() => keepVisible(inp), 350); });
     inp.addEventListener("keydown", e => {
       if (e.key !== "Enter") return; e.preventDefault();
@@ -468,6 +469,7 @@ function mShow(){
           if (b.classList.contains("out")) return;
           ch.querySelectorAll(".chip").forEach(c => { c.classList.toggle("sel", c === b); c.setAttribute("aria-checked", c === b); });
           inp.value = o; M.lastFocus = i; mReady();
+          if (M.party && q.fields.length > 1) Party.typed(M.idx, i, o);
           if (q.fields.length === 1) mCheck();
         };
         ch.appendChild(b);
@@ -509,13 +511,19 @@ function mHintBtn(){
   b.disabled = M.answered || M.hint >= n;
   b.textContent = n === 0 ? "No hints" : M.hint >= n ? "No more hints" : `Hint ${M.hint + 1}/${n}`;
 }
-$("mHintBtn").onclick = () => {
+function mHintTo(n){
   const q = M.queue[M.idx], hs = mHints(q);
-  if (M.answered || M.hint >= hs.length) return;
-  M.hint++;
+  n = Math.min(n, hs.length);
+  if (M.answered || n <= M.hint) return false;
+  M.hint = n;
   $("mHint").innerHTML = hs.slice(0, M.hint).map(h => `<div class="hrow">${ic("bulb", "ic-s")}<span>${MC.renderText(h)}</span></div>`).join("");
   $("mHint").classList.remove("hidden");
   mHintBtn();
+  return true;
+}
+$("mHintBtn").onclick = () => {
+  if (!mHintTo(M.hint + 1)) return;
+  if (M.party) Party.hint(M.idx, M.hint);      // hints are shared in a party
   $("mf" + M.lastFocus).focus();
 };
 
@@ -580,12 +588,20 @@ function mCheck(){
     inp.focus();
     return;
   }
+  // a party answers together: whoever checks answers for everyone
+  if (M.party) Party.submit(M.idx, M.attempt, vals, false);
+  mJudge(vals);
+}
+/* mark the answer: right, a second try, or show how it works. remote = a teammate's answer arriving */
+function mJudge(vals, remote){
+  const q = M.queue[M.idx];
   const res = q.fields.map((f, i) => $("mf" + i).dataset.ok === "1" ? {ok:true} : MC.check(f, vals[i]));
   const nOk = res.filter(r => r.ok).length;
   if (nOk === q.fields.length) return mReveal(res, vals);
   // no second try on a two-option question (it would just give the answer away)
   const twoWay = q.fields.length === 1 && q.fields[0].t === "choice" && q.fields[0].opts.length <= 2;
-  if (M.attempt === 1 && ST.settings.second && !twoWay){
+  // parties always get a second try, so everyone's screen agrees
+  if (M.attempt === 1 && (M.party ? true : ST.settings.second) && !twoWay){
     M.attempt = 2;
     res.forEach((r, i) => {
       const inp = $("mf" + i);
@@ -604,14 +620,55 @@ function mCheck(){
     });
     $("mFb").className = "fb warn";
     $("mFb").textContent = (q.fields.length > 1 ? `${nOk} of ${q.fields.length} right. Fix the orange ones` : "Not it. One more try") + " (half points).";
-    const firstBad = res.findIndex(r => !r.ok); $("mf" + firstBad).focus(); $("mf" + firstBad).select();
+    const firstBad = res.findIndex(r => !r.ok); if (!remote){ $("mf" + firstBad).focus(); $("mf" + firstBad).select(); }
     mReady();
     return;
   }
   mReveal(res, vals);
 }
+/* a teammate checked (or skipped): put their answer in the boxes and mark it the same way */
+function mApplyTeam(s){
+  if (!M || M.answered) return;
+  const q = M.queue[M.idx];
+  if (s.skip) return mReveal(q.fields.map(() => ({ok:false})), q.fields.map(() => ""), true);
+  const vals = q.fields.map((f, i) => { const v = (s.vals || {})["f" + i]; return v == null ? $("mf" + i).value : String(v); });
+  M.applying = true;
+  q.fields.forEach((f, i) => {
+    const inp = $("mf" + i); if (inp.readOnly) return;
+    inp.value = vals[i];
+    if (f.t === "choice") inp.parentNode.querySelectorAll(".chip").forEach(c => { c.classList.toggle("sel", c.dataset.v === vals[i]); c.setAttribute("aria-checked", c.dataset.v === vals[i]); });
+    else inp.dispatchEvent(new Event("input"));
+  });
+  M.applying = false;
+  mJudge(vals, true);
+}
+/* a teammate is typing or picking: show it in the boxes (unless you're mid-edit in that box) */
+function mSetLive(v){
+  if (!M || M.answered) return;
+  const q = M.queue[M.idx];
+  M.applying = true;
+  q.fields.forEach((f, i) => {
+    const val = v["f" + i], inp = $("mf" + i);
+    if (val == null || !inp || inp.readOnly || inp.value === val) return;
+    if (f.t === "choice"){
+      const chip = [...inp.parentNode.querySelectorAll(".chip")].find(c => c.dataset.v === val);
+      if (!chip || chip.disabled) return;          // already ruled out on the first try
+      inp.value = val; inp.parentNode.querySelectorAll(".chip").forEach(c => { c.classList.toggle("sel", c === chip); c.setAttribute("aria-checked", c === chip); }); return;
+    }
+    if (document.activeElement === inp && Date.now() - ((M.edit || {})[i] || 0) < 1500) return;
+    const at = document.activeElement === inp ? inp.selectionStart : null;
+    inp.value = val; inp.dispatchEvent(new Event("input"));
+    if (at != null) try { inp.setSelectionRange(Math.min(at, val.length), Math.min(at, val.length)); } catch(e){}
+  });
+  M.applying = false;
+  mReady();
+}
 $("mCheck").onclick = mCheck;
-$("mSkip").onclick = () => { if (!M.answered) mReveal(M.queue[M.idx].fields.map(() => ({ok:false})), M.queue[M.idx].fields.map(() => ""), true); };
+$("mSkip").onclick = () => {
+  if (M.answered) return;
+  if (M.party) Party.submit(M.idx, M.attempt, null, true);
+  mReveal(M.queue[M.idx].fields.map(() => ({ok:false})), M.queue[M.idx].fields.map(() => ""), true);
+};
 ["mCheck","mHintBtn","mSkip"].forEach(id => $(id).addEventListener("mousedown", e => e.preventDefault()));
 
 function mReveal(res, vals, skipped){
@@ -651,7 +708,7 @@ function mReveal(res, vals, skipped){
     $("mGraph").innerHTML = plotSVG(q.target, q.F, us);
   }
   M.results.push({id:q.id, src:q.src, label:qLabel(q), q, ok:all, part:nOk + "/" + q.fields.length, pts, hints:M.hint, attempt:M.attempt, skipped:!!skipped});
-  if (M.party) Party.answered(M.idx, all, pts);
+  if (M.party) Party.answered(M.idx, all, pts, M.by, !!skipped);
   save(); mHud();
   const last = M.mode !== "drill" && M.idx >= M.queue.length - 1;
   $("mCheck").textContent = last ? "See results" : "Next →";

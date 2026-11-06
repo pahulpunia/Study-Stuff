@@ -35,9 +35,9 @@ const Tools = (() => {
             <span class="pgroup" role="radiogroup" aria-label="Draw with">${[["pen", "Pen"], ["line", "Line"], ["rect", "Box"], ["oval", "Circle"], ["text", "Text"], ["erase", "Eraser"]]
               .map(([m, l]) => `<button data-m="${m}" class="${m === "pen" ? "on" : ""}" role="radio">${l}</button>`).join("")}</span>
             <span class="pgroup"><button data-a="grid" aria-pressed="false">Graph</button><button data-a="undo">Undo</button><button data-a="clear">Clear</button></span>
-            <label class="onq"><input type="checkbox" id="padOnQ"> Draw on the question</label>
+            <label class="onq"><input type="checkbox" id="padOnQ"> Draw on the page</label>
           </div>
-          <div class="padarea"><canvas id="padCanvas"></canvas><div class="padnote hidden" id="padNote">Drawing on the question above</div></div>
+          <div class="padarea"><canvas id="padCanvas"></canvas><div class="padnote hidden" id="padNote">Draw anywhere on the page, except the answers</div></div>
         </div>
         <div class="tpane" data-t="calc">
           <input id="calcIn" class="calcin" inputmode="none" autocomplete="off" spellcheck="false" aria-label="Calculation">
@@ -60,7 +60,7 @@ const Tools = (() => {
     tabs.querySelectorAll("button").forEach(b => b.onclick = () => { tab = b.dataset.t; paint(); });
     document.querySelectorAll("#toolsPanel .tpane").forEach(x => x.classList.toggle("hidden", x.dataset.t !== tab));
     if (tab === "pad") sizePad();
-    layoutOver();
+    layoutOver(); paintPing();
     if (tab === "calc" && matchMedia("(pointer:fine)").matches) $("calcIn").focus();
   }
   function toggle(){ open ? close() : show(); }
@@ -68,85 +68,159 @@ const Tools = (() => {
     if (!allowed.length) return;
     build(); open = true;
     $("toolsPanel").classList.remove("hidden"); document.body.classList.add("toolsopen");
-    $("mTools").classList.add("on"); paint(); layoutOver();
+    $("mTools").classList.add("on"); paint(); layoutOver(); redraw(over);
   }
   function close(){
     open = false;
     if (built) $("toolsPanel").classList.add("hidden");
     document.body.classList.remove("toolsopen"); $("mTools") && $("mTools").classList.remove("on");
-    commitText(); layoutOver();
+    commitText(); layoutOver(); redraw(over); paintPing();
   }
 
-  /* ---------- scratchpad: a sketch on the pad, and one laid over the question ----------
+  /* ---------- scratchpad: a sketch on the pad, and one laid over the page ----------
      Each sketch is a list of marks, redrawn from scratch, so undo and resizing are easy.
-     Both clear when the question changes; closing the tools only hides them. */
-  let mode = "pen", onQ = false;
-  const pad = {cv: null, items: [], grid: false}, over = {cv: null, items: [], grid: false};
+     Marks are stored in sizes relative to the pad (or to the question card), so they land
+     in the same place on any screen. In a party, everyone's marks show in their own color.
+     Both clear when the question changes; closing the tools only hides your own. */
+  let mode = "pen", onQ = false, seq = 0, hook = null;
+  const pad = {name: "pad", cv: null, items: [], grid: false}, over = {name: "over", cv: null, items: [], grid: false};
+  const others = {};                                   // uid -> {color, pad:{items, grid}, over:{items, grid}}
   const target = () => onQ ? over : pad;
+  const nid = () => "i" + String(++seq).padStart(5, "0") + Math.random().toString(36).slice(2, 4);
+  const send = (fn, ...a) => { if (hook && hook[fn]) try { hook[fn](...a); } catch(e){} };
+  const mq = () => $("mquiz");
   function buildPad(){
     pad.cv = $("padCanvas");
     over.cv = $("qInk");
+    mq().appendChild(over.cv);                         // the overlay spans the whole round page, not just the question
     const bar = document.querySelector("#toolsPanel .padtools");
     bar.querySelectorAll("[data-m]").forEach(b => b.onclick = () => { mode = b.dataset.m; bar.querySelectorAll("[data-m]").forEach(x => { x.classList.toggle("on", x === b); x.setAttribute("aria-checked", x === b); }); commitText(); });
     bar.querySelectorAll("[data-a]").forEach(b => b.onclick = () => {
       const t = target(), a = b.dataset.a;
       commitText();
-      if (a === "undo") t.items.pop();
-      if (a === "clear"){ t.items = []; t.grid = false; }
-      if (a === "grid") t.grid = !t.grid;
-      paintGridBtn(); redraw(t);
+      if (a === "undo"){ const it = t.items.pop(); if (it) send("item", t.name, it.id, null); }
+      if (a === "clear"){ t.items = []; t.grid = false; send("clear", t.name); }
+      if (a === "grid"){ t.grid = !t.grid; send("grid", t.name, t.grid); }
+      paintGridBtn(); redraw(t); layoutOver();
     });
     $("padOnQ").onchange = e => { commitText(); onQ = e.target.checked; layoutOver(); $("padNote").classList.toggle("hidden", !onQ); $("padCanvas").classList.toggle("hidden", onQ); paintGridBtn(); if (!onQ) sizePad(); else showQuestion(); };
-    [pad, over].forEach(attach);
-    window.addEventListener("resize", () => { if (open){ sizePad(); layoutOver(); } });
-    if (window.ResizeObserver) new ResizeObserver(() => { if (open) layoutOver(); }).observe(document.querySelector("#mquiz .mq-left"));
+    attachPad(); attachOver();
+    window.addEventListener("resize", () => { sizePad(); layoutOver(); });
+    if (window.ResizeObserver) new ResizeObserver(() => layoutOver()).observe(mq());
   }
   function paintGridBtn(){ const b = document.querySelector('#toolsPanel [data-a="grid"]'); if (b){ b.classList.toggle("on", target().grid); b.setAttribute("aria-pressed", String(target().grid)); } }
-  function attach(sk){
-    const cv = sk.cv, pt = e => { const r = cv.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
-    let cur = null;
-    cv.addEventListener("pointerdown", e => {
-      if (mode === "text"){ e.preventDefault(); placeText(sk, pt(e)); return; }
-      commitText();
-      cv.setPointerCapture(e.pointerId); const p = pt(e);
-      cur = mode === "pen" || mode === "erase" ? {m: mode, pts: [p]} : {m: mode, a: p, b: p};
-      sk.items.push(cur); redraw(sk); e.preventDefault();
-    });
-    cv.addEventListener("pointermove", e => {
-      if (!cur) return;
-      if (cur.pts) (e.getCoalescedEvents ? e.getCoalescedEvents() : [e]).forEach(ev => cur.pts.push(pt(ev)));
-      else cur.b = pt(e);
-      redraw(sk);
-    });
-    const end = () => { if (cur && !cur.pts && Math.hypot(cur.b[0] - cur.a[0], cur.b[1] - cur.a[1]) < 3) sk.items.pop(); cur = null; redraw(sk); };
-    cv.addEventListener("pointerup", end); cv.addEventListener("pointercancel", end);
+
+  /* where a mark's relative sizes sit on its canvas: origin + scale.
+     Pad: its top-left and width. Page: each mark is pinned to what it was drawn on (a line of the
+     question, the figure…, or the space below the card), scaled by the card's width, so it lands
+     on the same thing on a phone and a laptop even though text wraps differently. */
+  function frame(sk, an){
+    if (sk === pad) return {ox: 0, oy: 0, s: pad.cv.clientWidth || 1};
+    const card = $("mCard"), c = card.getBoundingClientRect(), v = over.cv.getBoundingClientRect();
+    if (an === "b") return {ox: c.left - v.left, oy: c.bottom - v.top, s: c.width || 1};
+    let r = c;
+    if (an && an !== "c"){
+      let t = card; for (const i of String(an).split(".")){ const k = t.children[+i]; if (!k){ t = null; break; } t = k; }
+      if (t){ const rr = t.getBoundingClientRect(); if (rr.width || rr.height) r = rr; }
+    }
+    return {ox: r.left - v.left, oy: r.top - v.top, s: c.width || 1};
   }
+  // what's under a point on the page: "b" below the card, "c" elsewhere, or a path to an element in the card
+  function anchorAt(x, y){
+    const card = $("mCard"), c = card.getBoundingClientRect();
+    if (y > c.bottom) return "b";
+    if (x < c.left || x > c.right || y < c.top) return "c";
+    let n = document.elementFromPoint(x, y); const path = [];
+    while (n && n !== card && n.parentElement){ path.unshift([...n.parentElement.children].indexOf(n)); n = n.parentElement; }
+    return n === card && path.length ? path.slice(0, 6).join(".") : "c";
+  }
+  const r4 = v => Math.round(v * 10000) / 10000;
+  const toN = (f, [x, y]) => [r4((x - f.ox) / f.s), r4((y - f.oy) / f.s)];
+  const toP = (f, [x, y]) => [f.ox + x * f.s, f.oy + y * f.s];
+
+  // one drawing gesture, shared by the pad and the page overlay
+  function stroke(sk, e, p0){
+    if (mode === "text"){ placeText(sk, p0, e); return; }
+    commitText();
+    const an = sk === over ? anchorAt(e.clientX, e.clientY) : null, f = frame(sk, an), id = nid();
+    const cur = mode === "pen" || mode === "erase" ? {id, m: mode, pts: [toN(f, p0)]} : {id, m: mode, a: toN(f, p0), b: toN(f, p0)};
+    if (an) cur.an = an;
+    sk.items.push(cur); redraw(sk);
+    const rel = ev => { const r = sk.cv.getBoundingClientRect(); return [ev.clientX - r.left, ev.clientY - r.top]; };
+    let last = 0;
+    const move = ev => {
+      if (ev.pointerId !== e.pointerId) return;
+      if (cur.pts){
+        (ev.getCoalescedEvents ? ev.getCoalescedEvents() : [ev]).forEach(c => {
+          const q = toN(f, rel(c)), l = cur.pts[cur.pts.length - 1];
+          if (Math.hypot(q[0] - l[0], q[1] - l[1]) * f.s >= 1.5) cur.pts.push(q);   // skip points closer than 1.5px
+        });
+      } else cur.b = toN(f, rel(ev));
+      redraw(sk);
+      const now = performance.now(); if (now - last > 120){ last = now; send("item", sk.name, cur.id, cur); }
+    };
+    const end = ev => {
+      if (ev.pointerId !== e.pointerId) return;
+      window.removeEventListener("pointermove", move); window.removeEventListener("pointerup", end); window.removeEventListener("pointercancel", end);
+      if (!cur.pts && Math.hypot(cur.b[0] - cur.a[0], cur.b[1] - cur.a[1]) * f.s < 3){ sk.items.pop(); send("item", sk.name, cur.id, null); }
+      else send("item", sk.name, cur.id, cur);
+      redraw(sk); layoutOver();
+    };
+    window.addEventListener("pointermove", move); window.addEventListener("pointerup", end); window.addEventListener("pointercancel", end);
+  }
+  function attachPad(){
+    pad.cv.addEventListener("pointerdown", e => {
+      const r = pad.cv.getBoundingClientRect();
+      e.preventDefault(); stroke(pad, e, [e.clientX - r.left, e.clientY - r.top]);
+    });
+  }
+  // drawing on the page: anywhere in the round except the top bar, the answer area and anything you can click
+  const NO_INK = ".qhead, .mq-right, #mDock, button, input, select, textarea, a, label, .chips, .padtext, #mReview, #toolsPanel, .rail, .ctx, .sheet, .topnav, nav";
+  const inside = (e, r) => e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
+  function inkable(e){
+    if (!open || !onQ || !e.target.closest || mq().classList.contains("hidden")) return false;
+    if (e.target.closest(NO_INK)) return false;
+    if (!inside(e, over.cv.getBoundingClientRect())) return false;                       // the round's column only (not the side panels)
+    const h = document.querySelector("#mquiz .qhead").getBoundingClientRect();
+    if (e.clientY <= h.bottom) return false;                                             // not the top bar
+    return !inside(e, document.querySelector("#mquiz .mq-right").getBoundingClientRect());   // not the answers
+  }
+  function attachOver(){
+    document.addEventListener("pointerdown", e => {
+      if (!inkable(e)) return;
+      const r = over.cv.getBoundingClientRect();
+      e.preventDefault(); stroke(over, e, [e.clientX - r.left, e.clientY - r.top]);
+    });
+  }
+
   // text: tap to place a box, type, Enter (or tap elsewhere) to drop it onto the sketch
   let typing = null;
-  function placeText(sk, [x, y]){
+  function placeText(sk, [x, y], e){
     commitText();
     const box = el("input", "padtext"); box.type = "text"; box.placeholder = "Type…"; box.setAttribute("aria-label", "Text to add");
     const host = sk.cv.parentNode, r = sk.cv.getBoundingClientRect(), hr = host.getBoundingClientRect();
     box.style.left = (r.left - hr.left + x) + "px"; box.style.top = (r.top - hr.top + y - 14) + "px";
-    host.appendChild(box); typing = {sk, x, y, box};
+    const an = sk === over && e ? anchorAt(e.clientX, e.clientY) : null;
+    host.appendChild(box); typing = {sk, an, at: toN(frame(sk, an), [x, y]), box};
     box.addEventListener("keydown", e => { e.stopPropagation(); if (e.key === "Enter"){ e.preventDefault(); commitText(); } if (e.key === "Escape"){ box.value = ""; commitText(); } });
     box.addEventListener("blur", () => setTimeout(commitText, 0));
     setTimeout(() => box.focus(), 0);
   }
   function commitText(){
     if (!typing) return;
-    const {sk, x, y, box} = typing; typing = null;
-    if (box.value.trim()) sk.items.push({m: "text", x, y, t: box.value.trim()});
-    box.remove(); redraw(sk);
+    const {sk, an, at, box} = typing; typing = null;
+    if (box.value.trim()){ const it = {id: nid(), m: "text", x: at[0], y: at[1], t: box.value.trim().slice(0, 80)}; if (an) it.an = an; sk.items.push(it); send("item", sk.name, it.id, it); }
+    box.remove(); redraw(sk); layoutOver();
   }
   function fit(sk, w, h){
-    const dpr = window.devicePixelRatio || 1;
+    const dpr = Math.min(sk === over ? 2 : 3, window.devicePixelRatio || 1);
     sk.cv.style.width = w + "px"; sk.cv.style.height = h + "px";
-    sk.cv.width = Math.round(w * dpr); sk.cv.height = Math.round(h * dpr);
+    const W = Math.round(w * dpr), H = Math.round(h * dpr);
+    if (sk.cv.width !== W || sk.cv.height !== H){ sk.cv.width = W; sk.cv.height = H; }
     sk.cv.getContext("2d").setTransform(dpr, 0, 0, dpr, 0, 0); redraw(sk);
   }
   function sizePad(){
-    if (!pad.cv || onQ) return;
+    if (!pad.cv || onQ || !open) return;
     const area = pad.cv.parentNode;
     fit(pad, Math.max(100, area.clientWidth), Math.max(120, area.clientHeight));
   }
@@ -156,49 +230,102 @@ const Tools = (() => {
     const floor = bar ? Math.max(0, bar.getBoundingClientRect().bottom) : 0, under = pn.left < t.right && pn.right > t.left, roof = under && pn.top > 0 ? pn.top : innerHeight;
     if (t.top < floor + 4 || t.top > roof - 80) window.scrollBy({top: t.top - floor - 12, behavior: "auto"});
   }
-  // the overlay covers the question (text, figure, math), never the answer area
+  const othersHave = name => Object.values(others).some(o => o[name] && (o[name].items.length || o[name].grid));
+  // the overlay covers the whole round page; drawing is kept out of the answer area
   function layoutOver(){
     const cv = over.cv; if (!cv) return;
-    const show = open && (onQ || over.items.length || over.grid);
-    cv.classList.toggle("hidden", !show); cv.classList.toggle("live", open && onQ);
+    const mine = open && (onQ || over.items.length || over.grid), show = mine || othersHave("over");
+    cv.classList.toggle("hidden", !show);
+    mq().classList.toggle("inking", open && onQ);
     if (!show) return;
-    const left = document.querySelector("#mquiz .mq-left"), top = $("mText").offsetTop;
-    cv.style.top = top + "px";
-    fit(over, left.clientWidth, Math.max(60, left.clientHeight - top));
+    const m = mq(), top = m.getBoundingClientRect().top + scrollY;
+    fit(over, m.clientWidth, Math.max(m.offsetHeight, innerHeight - top));   // offsetHeight leaves the overlay itself out
   }
-  function redraw(sk){
-    if (!sk || !sk.cv) return;
-    const cx = sk.cv.getContext("2d"), W = sk.cv.clientWidth, H = sk.cv.clientHeight;
-    cx.clearRect(0, 0, sk.cv.width, sk.cv.height);
-    const css = getComputedStyle(document.documentElement), ink = css.getPropertyValue("--ink").trim() || "#e8edf5", soft = css.getPropertyValue("--line").trim() || "#2a3346";
-    const mark = css.getPropertyValue("--accent").trim() || "#7c9cff";
-    if (sk.grid){
-      // template graph: light grid, darker axes through the middle
-      const step = Math.max(16, Math.round(Math.min(W, H) / 16)), ox = Math.round(W / 2 / step) * step, oy = Math.round(H / 2 / step) * step;
-      cx.lineWidth = 1; cx.strokeStyle = soft; cx.beginPath();
-      for (let x = ox % step; x < W; x += step){ cx.moveTo(x + .5, 0); cx.lineTo(x + .5, H); }
-      for (let y = oy % step; y < H; y += step){ cx.moveTo(0, y + .5); cx.lineTo(W, y + .5); }
-      cx.stroke();
-      cx.lineWidth = 1.6; cx.strokeStyle = ink; cx.globalAlpha = .7; cx.beginPath(); cx.moveTo(0, oy + .5); cx.lineTo(W, oy + .5); cx.moveTo(ox + .5, 0); cx.lineTo(ox + .5, H); cx.stroke(); cx.globalAlpha = 1;
-    }
-    sk.items.forEach(it => {
-      const ink2 = sk === over ? mark : ink;
+  function grid(cx, W, H, soft, ink){
+    // template graph: light grid, darker axes through the middle
+    const step = Math.max(16, Math.round(Math.min(W, H, 640) / 16)), ox = Math.round(W / 2 / step) * step, oy = Math.round(Math.min(H, 700) / 2 / step) * step;
+    cx.lineWidth = 1; cx.strokeStyle = soft; cx.beginPath();
+    for (let x = ox % step; x < W; x += step){ cx.moveTo(x + .5, 0); cx.lineTo(x + .5, H); }
+    for (let y = oy % step; y < H; y += step){ cx.moveTo(0, y + .5); cx.lineTo(W, y + .5); }
+    cx.stroke();
+    cx.lineWidth = 1.6; cx.strokeStyle = ink; cx.globalAlpha = .7; cx.beginPath(); cx.moveTo(0, oy + .5); cx.lineTo(W, oy + .5); cx.moveTo(ox + .5, 0); cx.lineTo(ox + .5, H); cx.stroke(); cx.globalAlpha = 1;
+  }
+  let layer = null;
+  function paintItems(cx, items, color, sk, css){
+    const frames = {};
+    items.forEach(it => {
+      const key = it.an || "c", f = frames[key] || (frames[key] = frame(sk, it.an));
       cx.globalCompositeOperation = it.m === "erase" ? "destination-out" : "source-over";
-      cx.strokeStyle = ink2; cx.fillStyle = ink2; cx.lineWidth = it.m === "erase" ? 22 : 2.4; cx.lineCap = cx.lineJoin = "round";
+      cx.strokeStyle = color; cx.fillStyle = color; cx.lineWidth = it.m === "erase" ? 22 : 2.4; cx.lineCap = cx.lineJoin = "round";
       cx.beginPath();
-      if (it.pts){ it.pts.forEach(([x, y], i) => i ? cx.lineTo(x, y) : cx.moveTo(x, y)); if (it.pts.length === 1) cx.lineTo(it.pts[0][0] + .1, it.pts[0][1]); cx.stroke(); }
-      else if (it.m === "line"){ cx.moveTo(...it.a); cx.lineTo(...it.b); cx.stroke(); }
-      else if (it.m === "rect"){ cx.strokeRect(Math.min(it.a[0], it.b[0]), Math.min(it.a[1], it.b[1]), Math.abs(it.b[0] - it.a[0]), Math.abs(it.b[1] - it.a[1])); }
-      else if (it.m === "oval"){ cx.ellipse((it.a[0] + it.b[0]) / 2, (it.a[1] + it.b[1]) / 2, Math.abs(it.b[0] - it.a[0]) / 2, Math.abs(it.b[1] - it.a[1]) / 2, 0, 0, Math.PI * 2); cx.stroke(); }
-      else if (it.m === "text"){ cx.font = "600 16px " + (css.getPropertyValue("--font").trim() || "system-ui"); cx.textBaseline = "middle"; cx.fillText(it.t, it.x, it.y); }
+      if (it.pts){ const P = it.pts.map(p => toP(f, p)); P.forEach(([x, y], i) => i ? cx.lineTo(x, y) : cx.moveTo(x, y)); if (P.length === 1) cx.lineTo(P[0][0] + .1, P[0][1]); cx.stroke(); }
+      else if (it.m === "text"){ const [x, y] = toP(f, [it.x, it.y]); cx.font = "600 16px " + (css.getPropertyValue("--font").trim() || "system-ui"); cx.textBaseline = "middle"; cx.fillText(it.t, x, y); }
+      else {
+        const a = toP(f, it.a), b = toP(f, it.b);
+        if (it.m === "line"){ cx.moveTo(...a); cx.lineTo(...b); cx.stroke(); }
+        else if (it.m === "rect"){ cx.strokeRect(Math.min(a[0], b[0]), Math.min(a[1], b[1]), Math.abs(b[0] - a[0]), Math.abs(b[1] - a[1])); }
+        else if (it.m === "oval"){ cx.ellipse((a[0] + b[0]) / 2, (a[1] + b[1]) / 2, Math.abs(b[0] - a[0]) / 2, Math.abs(b[1] - a[1]) / 2, 0, 0, Math.PI * 2); cx.stroke(); }
+      }
     });
     cx.globalCompositeOperation = "source-over";
+  }
+  function redraw(sk){
+    if (!sk || !sk.cv || !sk.cv.width) return;
+    const cx = sk.cv.getContext("2d"), W = sk.cv.clientWidth, H = sk.cv.clientHeight;
+    cx.save(); cx.setTransform(1, 0, 0, 1, 0, 0); cx.clearRect(0, 0, sk.cv.width, sk.cv.height); cx.restore();
+    const css = getComputedStyle(document.documentElement), ink = css.getPropertyValue("--ink").trim() || "#e8edf5", soft = css.getPropertyValue("--line").trim() || "#2a3346";
+    const mark = css.getPropertyValue("--accent").trim() || "#7c9cff";
+    cx.save();
+    if (sk === over){
+      // never draw over the answer area
+      const v = over.cv.getBoundingClientRect(), a = document.querySelector("#mquiz .mq-right").getBoundingClientRect();
+      cx.beginPath(); cx.rect(0, 0, W, H); cx.rect(a.left - v.left - 4, a.top - v.top - 4, a.width + 8, a.height + 8); cx.clip("evenodd");
+    }
+    const mineOn = sk === pad || open;
+    if ((mineOn && sk.grid) || Object.values(others).some(o => o[sk.name] && o[sk.name].grid)) grid(cx, W, H, soft, ink);
+    // each person on their own layer, so an eraser only rubs out your own marks
+    const layers = Object.values(others).map(o => [o[sk.name] ? o[sk.name].items : [], o.color]).filter(l => l[0].length);
+    if (mineOn && sk.items.length) layers.push([sk.items, sk === over ? mark : ink]);
+    if (layers.length){
+      layer = layer || document.createElement("canvas");
+      if (layer.width !== sk.cv.width || layer.height !== sk.cv.height){ layer.width = sk.cv.width; layer.height = sk.cv.height; }
+      const lx = layer.getContext("2d"), dpr = sk.cv.width / Math.max(1, W);
+      layers.forEach(([items, color]) => {
+        lx.setTransform(1, 0, 0, 1, 0, 0); lx.clearRect(0, 0, layer.width, layer.height); lx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        paintItems(lx, items, color, sk, css);
+        cx.save(); cx.setTransform(1, 0, 0, 1, 0, 0); cx.drawImage(layer, 0, 0); cx.restore();
+      });
+    }
+    cx.restore();
   }
   function clearPad(){
     if (typing){ typing.box.remove(); typing = null; }
     pad.items = []; pad.grid = false; over.items = []; over.grid = false;
-    redraw(pad); redraw(over); layoutOver(); paintGridBtn();
+    Object.keys(others).forEach(k => delete others[k]);
+    redraw(pad); redraw(over); layoutOver(); paintGridBtn(); paintPing();
   }
+  /* ---- party: other people's marks ---- */
+  function setOthers(uid, color, data){
+    if (!data){ delete others[uid]; }
+    else {
+      const side = d => ({grid: !!(d && d.g), items: Object.keys((d && d.i) || {}).sort().map(k => d.i[k]).filter(Boolean)});
+      others[uid] = {color, pad: side(data.pad), over: side(data.over)};
+    }
+    if (pad.cv){ redraw(pad); layoutOver(); redraw(over); }
+    paintPing();
+  }
+  function setAllOthers(list){
+    const side = d => ({grid: !!(d && d.g), items: Object.keys((d && d.i) || {}).sort().map(k => d.i[k]).filter(x => x && x.m)});
+    const next = {}; Object.entries(list).forEach(([id, o]) => next[id] = {color: o.color, pad: side(o.data.pad), over: side(o.data.over)});
+    if (JSON.stringify(next) === JSON.stringify(others)) return;
+    Object.keys(others).forEach(k => delete others[k]); Object.assign(others, next);
+    if (pad.cv){ redraw(pad); layoutOver(); redraw(over); }
+    paintPing();
+  }
+  function clearOthers(){ Object.keys(others).forEach(k => delete others[k]); if (pad.cv){ redraw(pad); layoutOver(); redraw(over); } paintPing(); }
+  // a dot on the Tools button when someone has drawn on the scratchpad and yours is closed
+  function paintPing(){ const b = $("mTools"); if (b) b.classList.toggle("ping", othersHave("pad") && !(open && tab === "pad" && !onQ)); }
+  const repaint = () => { if (over.cv && !over.cv.classList.contains("hidden")) redraw(over); };
 
   /* ---------- calculator (no eval: a small parser) ---------- */
   let ans = 0;
@@ -290,5 +417,5 @@ const Tools = (() => {
     });
   }
 
-  return {forQuestion, toggle, close, calc, spot: z => spot(z), EL};
+  return {forQuestion, toggle, close, calc, spot: z => spot(z), EL, setOthers, setAllOthers, clearOthers, set hook(h){ hook = h; }, relayout: () => { layoutOver(); repaint(); }};
 })();
