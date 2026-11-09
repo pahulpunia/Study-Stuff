@@ -263,6 +263,10 @@ function calcCheck(q){
       const [f, x0s] = c.tan || c.norm, x0 = MC.numVal(String(x0s)), y0 = ev(f, x0), m = der(f, x0), slope = c.tan ? m : -1 / m;
       pts.forEach(x => { const want = y0 + slope * (x - x0), got = ev(f0.a, x); if (!near(want, got)) fail(q, `not the ${c.tan ? 'tangent' : 'normal'} line of ${f} at ${x0s}: ${got} vs ${want}`); });
     }
+    if (c.ode){ const [rhs, x0, y0] = c.ode; let n = 0;
+      if (!near(ev(f0.a, MC.numVal(String(x0))), MC.numVal(String(y0)))) fail(q, `solution doesn't pass through (${x0}, ${y0})`);
+      pts.forEach(x => { const y = ev(f0.a, x), d = der(f0.a, x), want = MC.evaluate(MC.parse(rhs), {[v]: x, y}); if (!isFinite(d) || !isFinite(want)) return; n++; if (!near(d, want, 1e-3)) fail(q, `answer doesn't satisfy dy/d${v} = ${rhs} at ${v}=${x}: ${d} vs ${want}`); });
+      if (n < 3) fail(q, 'ode check had too few points'); }
     if (c.lim){ const [f, c0] = c.lim, want = MC.numVal(String(f0.a));
       const xs = c0 === 'inf' ? [1e5, 1e6] : [1e-5, -1e-5].map(h => MC.numVal(String(c0)) + h);
       xs.forEach(x => { const got = ev(f, x); if (isFinite(got) && !near(want, got, 1e-3)) fail(q, `limit of ${f} near ${c0} looks like ${got}, key says ${f0.a}`); }); }

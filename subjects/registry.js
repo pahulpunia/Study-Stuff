@@ -41,7 +41,7 @@ window.SUBJECTS = [
   },
   {
     id: "calc", name: "Calculus BC", short: "Calc BC", group: "math", icon: "graph", type: "problems", tools: ["pad", "calc"],
-    files: ["subjects/calc/kit.js", "subjects/calc/ch2.js", "subjects/calc/ch3.js", "subjects/calc/ch4.js", "subjects/calc/ch5.js", "subjects/calc/ch6.js"],
+    files: ["subjects/calc/kit.js", "subjects/calc/ch2.js", "subjects/calc/ch3.js", "subjects/calc/ch4.js", "subjects/calc/ch5.js", "subjects/calc/ch6.js", "subjects/calc/ch7.js", "subjects/calc/ch8.js"],
     blurb: "Exact answers work, like ln(3), π/4, or e^2. Integrals need their + C",
     defaultSection: "c2:1"
   },
