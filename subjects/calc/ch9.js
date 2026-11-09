@@ -129,7 +129,7 @@ Study.addUnit("calc", {
       ["Top: (3 − 3/2)(√3/2) − 3(√3/2)(1/2) = 3√3/4 − 3√3/4 = 0.", "Bottom: (3/2)(−1/2) − 3(3/4) = −3. Slope 0/−3 = 0."], {label:"Slope ="});
     C.num(["3"], "Ch 9 Obj 3 ex1d", "r = 3 − 3sin θ. Find the arc length from θ = π/8 to θ = π/6 (3 decimals).", "0.4147",
       ["dr/dθ = −3cos θ.", "∫ from π/8 to π/6 of √((3 − 3sin θ)² + (−3cos θ)²) dθ ≈ 0.415."], {label:"s ≈", dec:true});
-    C.pick(["3"], "Ch 9 Obj 3 ex1a", "Convert r = 3 − 3sin θ to parametric equations.", ["x = (3 − 3sin θ)cos θ, y = (3 − 3sin θ)sin θ", "x = 3cos θ − 3sin θ cos θ, y = 3 − 3sin θ", "x = (3 − 3sin θ)sin θ, y = (3 − 3sin θ)cos θ", "x = 3 − 3cos θ, y = 3 − 3sin θ"], "x = (3 − 3sin θ)cos θ, y = (3 − 3sin θ)sin θ",
+    C.pick(["3"], "Ch 9 Obj 3 ex1a", "Convert r = 3 − 3sin θ to parametric equations.", ["x = (3 − 3sin θ)cos θ, y = (3 − 3sin θ)sin θ", "x = (3 − 3sin θ)cos θ, y = 3 − 3sin θ", "x = (3 − 3sin θ)sin θ, y = (3 − 3sin θ)cos θ", "x = 3 − 3cos θ, y = 3 − 3sin θ"], "x = (3 − 3sin θ)cos θ, y = (3 − 3sin θ)sin θ",
       ["x = r cos θ, y = r sin θ. Replace r with 3 − 3sin θ."]);
     C.pick(["3"], "Ch 9 Obj 3 ex2a", "r = 2 − 4cos θ. Which θ-interval traces the inner loop?", ["(−π/3, π/3)", "(π/3, 5π/3)", "(0, π)", "(π/6, 5π/6)"], "(−π/3, π/3)",
       ["r = 0 → cos θ = 1/2 → θ = ±π/3.", "Between them r < 0, which traces the inner loop."]);
