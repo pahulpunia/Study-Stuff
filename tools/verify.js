@@ -81,6 +81,8 @@ function verifyItem(q){
     else if (Math.abs(fn(0) - NV(F.yint)) > 1e-9) fail(q, `yint ${fn(0)} vs ${F.yint}`);
     if (q.kind === 'write'){ const r = MC.check(q.fields[0], q.target); if (!r.ok) fail(q, 'target fails own check'); }
   }
+  // calculus: the answer key is checked numerically against the original function
+  if (q.chk) calcCheck(q);
   // self-check: correct answer passes the checker
   q.fields.forEach(f => {
     let a = f.t === 'set' ? (f.a.length ? f.a.join(', ') : 'none') : f.t === 'pts' ? (f.a.length ? f.a.map(p => `(${p[0]}, ${p[1]})`).join(', ') : 'none')
@@ -94,6 +96,11 @@ function verifyItem(q){
     if (f.t === 'formula') checkFormula(q, [].concat(f.a)[0]);
     if (f.t === 'charge' && !Number.isInteger(f.a)) fail(q, 'charge must be an integer');
     if (a === 'inf') a = '∞'; if (a === '-inf') a = '-∞';
+    if (f.t === 'anti'){
+      a += ' + C';
+      if (MC.check(f, String(f.a)).ok) fail(q, 'an antiderivative without + C should not pass');
+      try { const d = MC.check(f, '(' + f.a + ')*2 + C'); if (d.ok) fail(q, 'twice the antiderivative should not pass'); } catch(e){}
+    }
     const r = MC.check(f, a); if (!r.ok) fail(q, `answer "${a}" fails checker for field ${f.l}: ${r.why || ''}`);
   });
 }
@@ -239,11 +246,44 @@ for (const [id, L] of Object.entries(lintSubj)) if (L.n){
 console.log(warnN ? `⚠ ${warnN} formatting warning(s)` : '✓ formatting lint clean');
 if (warnN) bad++;
 
+/* calculus answer keys, checked with numbers: chk = {d: f} (answer is f′), {anti: g} (answer′ = g),
+   {int: [g, a, b]} (answer = ∫ₐᵇ g), {dAt: [f, x0]} (answer = f′(x0)), {val: e} (answer = e), v = variable */
+function calcCheck(q){
+  const c = q.chk, v = c.v || 'x', f0 = q.fields[0];
+  const ev = (src, x) => MC.evaluate(MC.parse(src), Object.assign({[v]: x}, c.env || {}));
+  const der = (src, x) => { const h = 1e-4; return (ev(src, x + h) - ev(src, x - h)) / (2 * h); };
+  const near = (a, b, tol = 1e-4) => Math.abs(a - b) <= tol * Math.max(1, Math.abs(a), Math.abs(b));
+  const pts = c.pts || [0.37, 0.81, 1.23, 1.71, 2.13, 2.57];
+  try {
+    if (c.d){ let n = 0; pts.forEach(x => { const want = der(c.d, x), got = ev(f0.a, x); if (!isFinite(want) || !isFinite(got)) return; n++; if (!near(want, got)) fail(q, `answer isn't the derivative of ${c.d} at ${v}=${x}: ${got} vs ${want}`); }); if (n < 3) fail(q, 'derivative check had too few points'); }
+    if (c.anti){ let n = 0; pts.forEach(x => { const want = ev(c.anti, x), got = der(f0.a, x); if (!isFinite(want) || !isFinite(got)) return; n++; if (!near(want, got)) fail(q, `answer′ isn't ${c.anti} at ${v}=${x}: ${got} vs ${want}`); }); if (n < 3) fail(q, 'antiderivative check had too few points'); }
+    if (c.int){ const [g, a, b] = c.int, A = MC.numVal(String(a)), B = MC.numVal(String(b)), N = 2000, hh = (B - A) / N; let S = ev(g, A) + ev(g, B); for (let i = 1; i < N; i++) S += (i % 2 ? 4 : 2) * ev(g, A + i * hh); S *= hh / 3; if (!near(S, MC.numVal(String(f0.a)), 1e-5)) fail(q, `integral is ${S}, key says ${f0.a}`); }
+    if (c.dAt){ const [f, x0] = c.dAt, want = der(f, MC.numVal(String(x0))); if (!near(want, MC.numVal(String(f0.a)))) fail(q, `f′(${x0}) is ${want}, key says ${f0.a}`); }
+    if (c.tan || c.norm){
+      const [f, x0s] = c.tan || c.norm, x0 = MC.numVal(String(x0s)), y0 = ev(f, x0), m = der(f, x0), slope = c.tan ? m : -1 / m;
+      pts.forEach(x => { const want = y0 + slope * (x - x0), got = ev(f0.a, x); if (!near(want, got)) fail(q, `not the ${c.tan ? 'tangent' : 'normal'} line of ${f} at ${x0s}: ${got} vs ${want}`); });
+    }
+    if (c.lim){ const [f, c0] = c.lim, want = MC.numVal(String(f0.a));
+      const xs = c0 === 'inf' ? [1e5, 1e6] : [1e-5, -1e-5].map(h => MC.numVal(String(c0)) + h);
+      xs.forEach(x => { const got = ev(f, x); if (isFinite(got) && !near(want, got, 1e-3)) fail(q, `limit of ${f} near ${c0} looks like ${got}, key says ${f0.a}`); }); }
+    if (c.val !== undefined){ const want = MC.numVal(String(c.val)); if (!near(want, MC.numVal(String(f0.a)), 1e-6)) fail(q, `value is ${want}, key says ${f0.a}`); }
+  } catch(e){ fail(q, 'calculus check crashed: ' + e.message); }
+}
+
 /* answer-checker spot checks for the chemistry field types */
 [[{t:'charge', a:2}, ['2+', '+2', '²⁺', ' 2 + '], ['2-', '2', '3+']], [{t:'charge', a:-1}, ['-', '1-', '−1', '-1', '⁻'], ['+', '1']],
  [{t:'formula', a:'Al2O3'}, ['Al2O3', 'al2o3', 'Al₂O₃', 'AL2O3'], ['Al3O2', 'AlO', 'Al2O']],
  [{t:'choice', a:'C≡C', opts:['C–C','C=C','C≡C']}, ['C≡C'], ['C=C', 'C–C']],
  [{t:'text', a:['electrostatic', 'electrostatic attraction']}, ['Electrostatic', 'electrostatic attraction', 'the electrostatic'], ['static']]
+  // calculus: e, inverse trig, sin^2, |x|, + C
+ ,[{t:'expr', a:'3(sin(x))^2*cos(x)'}, ['3sin^2(x)cos(x)', '3 sin^2 x cos x', '3cos(x)sin(x)^2'], ['3sin(x)cos(x)', '3sin(x^2)cos(x)']],
+ [{t:'expr', a:'1/(1+x^2)'}, ['(1+x^2)^-1', '1/(x^2+1)'], ['1/(1-x^2)', 'arctan(x)']],
+ [{t:'expr', a:'arcsin(x)'}, ['sin^-1(x)', 'sin⁻¹(x)', 'arcsin x'], ['1/sin(x)', 'sin(x)']],
+ [{t:'expr', a:'x*e^x'}, ['xe^x', 'x exp(x)', 'e^x*x'], ['e^x', 'x e^(2x)']],
+ [{t:'anti', a:'ln(abs(x))'}, ['ln|x| + C', 'ln(abs(x))+c', 'ln(x) + C'], ['ln|x|', '1/x + C']],
+ [{t:'anti', a:'x^3/3-cos(x)'}, ['x^3/3 - cos x + C', '(1/3)x^3 - cos(x) + 7 + C'], ['x^3/3 - cos x', 'x^3 - cos x + C', 'x^3/3 + cos x + C']],
+ [{t:'num', a:'ln(3)'}, ['ln3', 'ln(3)', '1.0986122886681098'], ['1.1', 'log(3)']],
+ [{t:'num', a:'e^2-1'}, ['e^2 - 1', 'exp(2)-1'], ['e^2', '6.4']]
 ].forEach(([f, good, badA]) => {
   good.forEach(x => { if (!MC.check(f, x).ok) { bad++; console.log('✗ checker rejects', JSON.stringify(x), 'for', JSON.stringify(f)); } });
   badA.forEach(x => { if (MC.check(f, x).ok) { bad++; console.log('✗ checker accepts', JSON.stringify(x), 'for', JSON.stringify(f)); } });

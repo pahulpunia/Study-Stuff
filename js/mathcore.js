@@ -1,6 +1,9 @@
 /* ---------- MATH CORE: parse, evaluate, render, check ---------- */
 const MC = (() => {
-  const FUN = {sqrt:Math.sqrt, cbrt:Math.cbrt, sin:Math.sin, cos:Math.cos, tan:Math.tan, ln:Math.log, log:Math.log10, abs:Math.abs};
+  const FUN = {sqrt:Math.sqrt, cbrt:Math.cbrt, sin:Math.sin, cos:Math.cos, tan:Math.tan, ln:Math.log, log:Math.log10, abs:Math.abs,
+    // calculus
+    sec:x => 1 / Math.cos(x), csc:x => 1 / Math.sin(x), cot:x => 1 / Math.tan(x), exp:Math.exp,
+    arcsin:Math.asin, arccos:Math.acos, arctan:Math.atan, arcsec:x => Math.acos(1 / x)};
   const FNAMES = Object.keys(FUN).sort((a,b) => b.length - a.length);
 
   function clean(s){
@@ -8,7 +11,12 @@ const MC = (() => {
       .replace(/[−–—]/g, "-").replace(/[×·∙•]/g, "*").replace(/÷/g, " ÷ ")
       .replace(/π/g, "pi").replace(/√/g, "sqrt").replace(/∛/g, "cbrt")
       .replace(/²/g, "^2").replace(/³/g, "^3").replace(/∞/g, "inf")
-      .replace(/[\[{]/g, "(").replace(/[\]}]/g, ")");
+      .replace(/[\[{]/g, "(").replace(/[\]}]/g, ")")
+      // calculus notation: sin^-1(x) → arcsin(x); tan⁻¹ too; sin^2(x) → (sin(x))^2; sin^2 x → (sin(x))^2
+      .replace(/\|([^|]+)\|/g, "abs($1)")
+      .replace(/⁻¹/g, "^-1").replace(/(?<![a-z])(sin|cos|tan|sec)\s*\^\s*\(?\s*-\s*1\s*\)?/gi, "arc$1")
+      .replace(/(?<![a-z])(sin|cos|tan|sec|csc|cot)\s*\^\s*(\d+)\s*\(([^()]*(?:\([^()]*\)[^()]*)*)\)/gi, "($1($3))^$2")
+      .replace(/(?<![a-z])(sin|cos|tan|sec|csc|cot)\s*\^\s*(\d+)\s*(\d*[a-z](?![a-z(]))/gi, "($1($3))^$2");
   }
 
   function tokenize(src){
@@ -28,6 +36,7 @@ const MC = (() => {
           const f = FNAMES.find(n => word.toLowerCase().startsWith(n));
           if (f){ out.push({t:"fn", n:f}); word = word.slice(f.length); continue; }
           if (word.toLowerCase().startsWith("pi")){ out.push({t:"num", v:Math.PI, s:"π"}); word = word.slice(2); continue; }
+          if (word[0] === "e"){ out.push({t:"num", v:Math.E, s:"e"}); word = word.slice(1); continue; }   // Euler's number
           out.push({t:"var", n:word[0]}); word = word.slice(1);
         }
         continue;
@@ -219,6 +228,25 @@ const MC = (() => {
     return {ok: good >= 4};
   }
 
+  // same function up to a constant (for antiderivatives)
+  function sameUpToC(uSrc, aSrc, vs, range){
+    const u = parse(uSrc), a = parse(aSrc);
+    const extra = [...vars(u)].filter(v => !vs.includes(v));
+    if (extra.length) return {ok:false, why:`unexpected variable ${extra.join(", ")}`};
+    const [lo, hi] = range || [0.2, 2.9];
+    const r = rng(777); let good = 0, d0 = null;
+    for (let t = 0; t < 50 && good < 7; t++){
+      const env = {}; vs.forEach(v => env[v] = lo + (hi - lo) * r());
+      const av = evaluate(a, env); if (!isFinite(av) || Math.abs(av) > 1e7) continue;
+      const uv = evaluate(u, env); if (!isFinite(uv)) return {ok:false};
+      const d = uv - av;
+      if (d0 === null) d0 = d;
+      else if (Math.abs(d - d0) > 1e-6 * Math.max(1, Math.abs(av))) return {ok:false};
+      good++;
+    }
+    return {ok: good >= 4};
+  }
+
   // chemistry helpers: Al₂O₃ → Al2O3, ²⁺ → 2+
   const SUBS = "₀₁₂₃₄₅₆₇₈₉", SUPS = "⁰¹²³⁴⁵⁶⁷⁸⁹";
   const plainChem = t => String(t).replace(/[₀-₉]/g, d => SUBS.indexOf(d)).replace(/[⁰¹²³⁴-⁹]/g, d => SUPS.indexOf(d)).replace(/⁺/g, "+").replace(/[⁻−–]/g, "-");
@@ -251,6 +279,8 @@ const MC = (() => {
           if (a === "none") return {ok: sp === "none"};
           if (sp) return {ok:false};
           let s = raw.replace(/^[a-z]\s*=/i, "").replace(/^f\(\s*0\s*\)\s*=/i, "");
+          // calculator answers: AP accepts 3 decimals, rounded or truncated
+          if (field.dec) return {ok: Math.abs(numVal(s) - numVal(a)) < 0.00101};
           return {ok: close(numVal(s), numVal(a))};
         }
         case "pf": {
@@ -271,6 +301,16 @@ const MC = (() => {
           };
           if (terms.length !== (field.n || 2) || !terms.every(simple))
             return {ok:false, equiv:true, why:"it's equal, but write it as separate fractions with a number on top, like A/(x+1) + B/(x−2)"};
+          return {ok:true};
+        }
+        case "anti": {
+          // an antiderivative: any answer that differs by a constant is right, but it needs its + C
+          if (sp) return {ok:false};
+          const s = raw.replace(/^(y|[a-z]\s*\(\s*[a-z]\s*\)|F\s*\(\s*[a-z]\s*\))\s*=/i, "");
+          const hasC = /[+-]\s*c(?![a-z(])/i.test(s), core = s.replace(/[+-]\s*c(?![a-z(])/gi, "").trim() || "0";
+          const res = sameUpToC(core, field.a, field.v || ["x"], field.r);
+          if (!res.ok) return res;
+          if (!hasC) return {ok:false, why:"don't forget the + C", equiv:true};
           return {ok:true};
         }
         case "expr": case "rat": {
@@ -303,7 +343,7 @@ const MC = (() => {
           let s = raw.replace(/[a-z]\s*(≠|!=|=|<>)/gi, ",").replace(/\band\b|\bor\b|;|&/gi, ",");
           const got = s.split(",").map(x => x.trim()).filter(Boolean).map(numVal);
           const left = want.slice(), extra = [];
-          for (const g of got){ const i = left.findIndex(w => close(w, g)); if (i < 0) extra.push(g); else left.splice(i, 1); }
+          for (const g of got){ const i = left.findIndex(w => field.dec ? Math.abs(w - g) < 0.00101 : close(w, g)); if (i < 0) extra.push(g); else left.splice(i, 1); }
           if (!left.length && !extra.length) return {ok:true};
           if (!extra.length && field.canceled && left.every(m => field.canceled.some(c => close(+c, m))))
             return {ok:false, why:"you're missing value(s) from a factor that canceled. Excluded values come from the ORIGINAL denominator"};
@@ -368,6 +408,7 @@ const MC = (() => {
       switch (field.t){
         case "num": if (!sp) numVal(stripLHS(raw).replace(/^f\(\s*0\s*\)\s*=/i, "")); break;
         case "expr": case "rat": case "pf": if (!sp){ const n = parse(stripLHS(raw)); if (hasBox(n)) throw new Error("empty box"); } break;
+        case "anti": if (!sp){ const n = parse(stripLHS(raw)); if (hasBox(n)) throw new Error("empty box"); } break;
         case "set": if (!sp) raw.replace(/[a-z]\s*(≠|!=|=|<>)/gi, ",").replace(/\band\b|\bor\b|;|&/gi, ",").split(",").map(x => x.trim()).filter(Boolean).forEach(numVal); break;
         case "pts": {
           if (sp) break;
@@ -384,7 +425,7 @@ const MC = (() => {
   // fix obvious slips: a missing or extra parenthesis, a stray "=" in front. Anything less certain is left alone.
   function autofix(field, input){
     const t = String(input || "").trim();
-    if (!["num", "expr", "rat", "pf", "set", "pts"].includes(field.t) || !t || SPECIAL(t)) return t;
+    if (!["num", "expr", "rat", "pf", "set", "pts", "anti"].includes(field.t) || !t || SPECIAL(t)) return t;
     let s = t.replace(/^=\s*/, "");
     let depth = 0, lead = 0;
     for (const c of s){ if (c === "(") depth++; else if (c === ")"){ if (depth) depth--; else lead++; } }
@@ -397,6 +438,7 @@ const MC = (() => {
     const show = a => a === "DNE" ? "DNE" : a === "inf" ? "∞" : a === "-inf" ? "−∞" : a === "none" ? "none" : render(a);
     switch (f.t){
       case "num": case "expr": case "rat": case "pf": return show(String(f.a));
+      case "anti": return render(f.a) + ' <span class="mo">+</span> <i class="mv">C</i>';
       case "set": return f.a.length ? f.a.map(render).join(", ") : "none";
       case "pts": return f.a.length ? f.a.map(([x,y]) => `(${render(x)}, ${render(y)})`).join(", ") : "none";
       case "text": return renderText([].concat(f.a)[0]);

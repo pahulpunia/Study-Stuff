@@ -509,7 +509,7 @@ function mShow(){
   $("mCross").classList.toggle("hidden", !q.fields.some(f => f.t === "choice" && f.opts.length >= 3));
   $("mCross").classList.remove("on"); $("mCross").setAttribute("aria-pressed", "false");
   // the math keypad only shows for math-style answers
-  const padNeeded = q.fields.some(f => ["expr","rat","set","pts","pf"].includes(f.t)) || !!q.lim;
+  const padNeeded = q.fields.some(f => ["expr","rat","set","pts","pf","anti"].includes(f.t)) || !!q.lim;
   $("keypad").classList.toggle("hidden", !padNeeded);
   $("mLearn").classList.toggle("hidden", !hasNotes(questionSection(q).u, questionSection(q).sid));
   window.scrollTo(0, 0);
