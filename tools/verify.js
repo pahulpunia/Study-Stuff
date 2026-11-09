@@ -191,9 +191,9 @@ function lintExpr(q, src, label, subj){
     if (n.k !== 'add' ) return;
     if (n.__seen) return;
     const terms = addTerms(n); terms.forEach(t => walk(t.n, m => { if (m.k === 'add') m.__seen = true; }));
-    // polynomials in standard (descending) order: flag 3+ term sums that climb in degree, like 3+13x+4x^2
+    // polynomials in standard (descending) order: flag 3+ term sums that climb in degree, like 3+13x+4x^2; calc keeps Taylor polynomials ascending, as taught
     const d = terms.map(t => polyDegree(t.n));
-    if (terms.length >= 3 && d.every(x => x != null) && d.some((x, i) => i && x > d[i - 1])) warn(q, `${label}: polynomial not in standard order in "${src}"`);
+    if (subj !== 'calc' && terms.length >= 3 && d.every(x => x != null) && d.some((x, i) => i && x > d[i - 1])) warn(q, `${label}: polynomial not in standard order in "${src}"`);
     // three or more fractions with two subtractions reads oddly for this class
     const fr = terms.filter(t => { let m = t.n; while (m.k === 'neg' || m.k === 'par') m = m.a; return m.k === 'div'; });
     if (terms.length >= 3 && fr.length === terms.length && terms.filter(t => t.op === '-').length >= 2) warn(q, `${label}: subtracts three fractions in "${src}"`);
