@@ -889,3 +889,11 @@ html.bigtext .mtext, html.bigtext .chip, html.bigtext .notes{font-size:1.08em}
 .ncheck details > div{margin:6px 0 2px 20px;color:var(--ink);opacity:.92}
 
 #msecFull{margin-top:6px;line-height:1.35}
+
+/* home: day streak strip */
+.daybar{display:flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid var(--line);border-radius:12px;margin:12px 0;font-size:.92rem;color:var(--muted)}
+.daybar b{color:var(--ink)}
+.daybar svg{width:18px;height:18px;flex:none;color:var(--accent)}
+.daydots{margin-left:auto;display:flex;gap:4px;align-items:flex-end;height:22px;flex:none}
+.daydots i{display:block;width:6px;border-radius:2px;background:var(--line)}
+.daydots i.on{background:var(--accent)}
