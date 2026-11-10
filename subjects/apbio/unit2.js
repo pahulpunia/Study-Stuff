@@ -14,10 +14,10 @@ Study.addUnit("apbio", {
   sections: [
     {id:"2.1a", name:"2.1 Types of Cells"},
     {id:"2.1b", name:"2.1 Endomembrane System"},
-    {id:"2.1c", name:"2.1 Energy Organelles & Endosymbiosis"},
-    {id:"2.1d", name:"2.1 Cytoskeleton, Walls & Junctions"},
-    {id:"2.2a", name:"2.2 Membrane Structure & Cell Size"},
-    {id:"2.2b", name:"2.2 Passive Transport & Tonicity"},
+    {id:"2.1c", name:"2.1 Energy Organelles"},
+    {id:"2.1d", name:"2.1 Cytoskeleton & Junctions"},
+    {id:"2.2a", name:"2.2 Membrane & Cell Size"},
+    {id:"2.2b", name:"2.2 Passive Transport"},
     {id:"2.2c", name:"2.2 Water Potential"},
     {id:"2.2d", name:"2.2 Active & Bulk Transport"}
   ],

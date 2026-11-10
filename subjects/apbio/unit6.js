@@ -14,15 +14,15 @@ Study.addUnit("apbio", {
   name: "Unit 6: The Genetic Material",
   short: "Unit 6",
   sections: [
-    {id:"6.1a", name:"6.1 Proving DNA Is the Genetic Material"},
+    {id:"6.1a", name:"6.1 DNA Experiments"},
     {id:"6.1b", name:"6.1 Structure of DNA & RNA"},
     {id:"6.1c", name:"6.1 DNA Replication"},
-    {id:"6.2a", name:"6.2 Transcription & mRNA Processing"},
-    {id:"6.2b", name:"6.2 Translation & the Genetic Code"},
+    {id:"6.2a", name:"6.2 Transcription"},
+    {id:"6.2b", name:"6.2 Translation & the Code"},
     {id:"6.2c", name:"6.2 Operons"},
-    {id:"6.2d", name:"6.2 Gene Regulation in Eukaryotes"},
+    {id:"6.2d", name:"6.2 Eukaryotic Regulation"},
     {id:"6.3a", name:"6.3 Mutations"},
-    {id:"6.3b", name:"6.3 Sources of Genetic Variation"}
+    {id:"6.3b", name:"6.3 Genetic Variation"}
   ],
 
   notes: {

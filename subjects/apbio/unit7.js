@@ -14,11 +14,11 @@ Study.addUnit("apbio", {
     {id:"7.1a", name:"7.1 Darwin & Natural Selection"},
     {id:"7.1b", name:"7.1 Evidence for Evolution"},
     {id:"7.1c", name:"7.1 Hardy-Weinberg"},
-    {id:"7.1d", name:"7.1 Drift, Gene Flow & Selection"},
-    {id:"7.2a", name:"7.2 Species & Reproductive Isolation"},
+    {id:"7.1d", name:"7.1 Drift, Flow & Selection"},
+    {id:"7.2a", name:"7.2 Species & Isolation"},
     {id:"7.2b", name:"7.2 Speciation"},
     {id:"7.2c", name:"7.2 Phylogenetic Trees"},
-    {id:"7.2d", name:"7.2 Origin of Life & Macroevolution"}
+    {id:"7.2d", name:"7.2 Origin of Life 7.2 Origin of Life & Extinctions Mass Loss"}
   ],
 
   notes: {

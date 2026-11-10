@@ -164,6 +164,10 @@ function renderMathHome(subj){
     const og = document.createElement("optgroup"); og.label = units[0].name; [...sel.children].forEach(c => og.appendChild(c)); sel.appendChild(og);
   }
   sel.value = mSec();
+  // long names get cut off inside the picker on a phone: show the full name underneath
+  let cap = $("msecFull"); if (!cap){ cap = el("div", "small"); cap.id = "msecFull"; $("msecPick").appendChild(cap); }
+  const curOpt = sel.selectedOptions[0], full = curOpt ? curOpt.textContent : "";
+  cap.textContent = full; cap.classList.toggle("hidden", full.length <= 30 || curU === "*all");
   const box = $("mmodes"); box.innerHTML = "";
   const R = mResumable();
   if (R){

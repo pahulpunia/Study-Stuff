@@ -887,3 +887,5 @@ html.bigtext .mtext, html.bigtext .chip, html.bigtext .notes{font-size:1.08em}
 .ncheck summary::before{content:"+";color:var(--accent);font-weight:800;width:12px;flex:none}
 .ncheck details[open] summary::before{content:"−"}
 .ncheck details > div{margin:6px 0 2px 20px;color:var(--ink);opacity:.92}
+
+#msecFull{margin-top:6px;line-height:1.35}

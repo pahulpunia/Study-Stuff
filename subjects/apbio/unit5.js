@@ -11,7 +11,7 @@ Study.addUnit("apbio", {
   name: "Unit 5: Heredity",
   short: "Unit 5",
   sections: [
-    {id:"5.1a", name:"5.1 Chromosomes & Sexual Reproduction"},
+    {id:"5.1a", name:"5.1 Chromosomes & Gametes"},
     {id:"5.1b", name:"5.1 Meiosis"},
     {id:"5.1c", name:"5.1 Mendel & Punnett Squares"},
     {id:"5.2a", name:"5.2 Non-Mendelian Inheritance"},

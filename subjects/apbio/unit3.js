@@ -63,7 +63,7 @@ Study.addUnit("apbio", {
   name: "Unit 3: Cellular Energetics",
   short: "Unit 3",
   sections: [
-    {id:"3.1a", name:"3.1 Metabolism & Thermodynamics"},
+    {id:"3.1a", name:"3.1 Metabolism & Energy Laws"},
     {id:"3.1b", name:"3.1 Free Energy & ATP Coupling"},
     {id:"3.1c", name:"3.1 Metabolic Rate & Body Temp"},
     {id:"3.2a", name:"3.2 Redox, Glycolysis & Krebs"},
