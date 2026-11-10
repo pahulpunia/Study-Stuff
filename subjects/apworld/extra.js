@@ -41,7 +41,7 @@ Study.extendUnit("apwh", "u3", {problems(k){
   ]);
   set("14", "Between 750 and 1100 China's population roughly doubled, and the balance of the country tilted south. Fast-ripening rice from Vietnam allowed two harvests a year; iron output rose many times over; and merchants who had once carried strings of copper coins began to settle accounts with printed notes. No other part of the world at the time combined so many people, so much production and so commercial an economy.",
     HIST, [
-    ["The \"fast-ripening rice\" in the passage refers to", ["Champa rice", "Wheat from Central Asia", "Millet from the Yellow River", "Sorghum from East Africa"],
+    ["The \"fast-ripening rice\" in the passage refers to", ["Champa rice from Vietnam", "Wheat from Central Asia", "Millet from the Yellow River", "Sorghum from East Africa"],
       "Champa rice from Vietnam ripened quickly and allowed two crops a year in the south."],
     ["The \"printed notes\" described in the passage developed mainly because", ["copper coins were too scarce and heavy for a growing volume of trade", "the Song government wanted to bring an end to private trade altogether", "foreign merchants refused to accept Chinese coins", "Buddhist monasteries had banned the use of metal money"],
       "Merchants first used letters of credit (\"flying cash\"), then paper money."],

@@ -41,7 +41,7 @@ window.SUBJECTS = [
   },
   {
     id: "calc", name: "Calculus BC", short: "Calc BC", group: "math", icon: "graph", type: "problems", tools: ["pad", "calc"],
-    files: ["subjects/calc/kit.js", "subjects/calc/ch2.js", "subjects/calc/ch3.js", "subjects/calc/ch4.js", "subjects/calc/ch5.js", "subjects/calc/ch6.js", "subjects/calc/ch7.js", "subjects/calc/ch8.js", "subjects/calc/ch9.js", "subjects/calc/ch10.js"],
+    files: ["subjects/calc/kit.js", "subjects/calc/ch2.js", "subjects/calc/ch3.js", "subjects/calc/ch4.js", "subjects/calc/ch5.js", "subjects/calc/ch6.js", "subjects/calc/ch7.js", "subjects/calc/ch8.js", "subjects/calc/ch9.js", "subjects/calc/ch10.js", "subjects/calc/notes-plus.js"],
     blurb: "Exact answers work, like ln(3), π/4, or e^2. Integrals need their + C",
     defaultSection: "c2:1"
   },
@@ -52,7 +52,7 @@ window.SUBJECTS = [
   },
   {
     id: "apbio", name: "AP Biology", short: "AP Bio", group: "science", icon: "leaf", type: "problems", tools: ["pad", "calc"],
-    files: ["subjects/apbio/unit0.js", "subjects/apbio/unit1.js", "subjects/apbio/unit2.js", "subjects/apbio/unit3.js", "subjects/apbio/unit4.js", "subjects/apbio/unit5.js", "subjects/apbio/unit6.js", "subjects/apbio/unit7.js", "subjects/apbio/unit8.js"],
+    files: ["subjects/apbio/unit0.js", "subjects/apbio/unit1.js", "subjects/apbio/unit2.js", "subjects/apbio/unit3.js", "subjects/apbio/unit4.js", "subjects/apbio/unit5.js", "subjects/apbio/unit6.js", "subjects/apbio/unit7.js", "subjects/apbio/unit8.js", "subjects/apbio/notes-plus.js"],
     defaultSection: "u3:3.1a"
   },
   {
