@@ -52,7 +52,7 @@ window.SUBJECTS = [
   },
   {
     id: "apbio", name: "AP Biology", short: "AP Bio", group: "science", icon: "leaf", type: "problems", tools: ["pad", "calc"],
-    files: ["subjects/apbio/unit3.js"],
+    files: ["subjects/apbio/unit0.js", "subjects/apbio/unit1.js", "subjects/apbio/unit2.js", "subjects/apbio/unit3.js", "subjects/apbio/unit4.js"],
     defaultSection: "u3:3.1a"
   },
   {
