@@ -65,6 +65,26 @@ const pfField = (d1, d2, A, B) => {
   return {l:"Partial fractions", t:"pf", n:2, a:`${A}/(${d1})${sign}${b.replace(/^-/, "")}/(${d2})`, v:["x"], ph:"e.g. 3/(x+1)+2/(x-4)"};
 };
 
+/* Add more questions and note blocks to a unit that is already loaded (used by the "extra" files).
+   New questions get their own id range so existing question ids, and the stats saved under them, never shift.
+   New note blocks go in just before a section's "check yourself" block. */
+function extendUnit(S, subjId, unitId, ext){
+  const b = S.problems[subjId], unit = b && b.units.find(u => u.id === unitId);
+  if (!unit) return;
+  if (ext.problems){
+    const before = unit.items.length;
+    ext.problems(makeKit(subjId, unit));
+    const added = unit.items.slice(before);
+    added.forEach(o => { unit.extraN = (unit.extraN || 0) + 1; o.id = unit.id + "-x" + unit.extraN; });
+    b.items.push(...added);
+  }
+  Object.entries(ext.notes || {}).forEach(([sec, blocks]) => {
+    const cur = unit.notes && unit.notes[sec]; if (!cur) return;
+    const at = cur.findIndex(x => x.check);
+    cur.splice(at < 0 ? cur.length : at, 0, ...blocks);
+  });
+}
+
 function makeKit(subjId, unit){
   let n = 0;
   const add = o => {

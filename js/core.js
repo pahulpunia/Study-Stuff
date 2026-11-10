@@ -153,7 +153,9 @@ const Study = {
     if (unit.problems) unit.problems(kit);
     bucket.units.push(unit);
     bucket.items.push(...unit.items);
-  }
+  },
+  // more questions or notes for a unit that's already loaded (see extendUnit in kit.js)
+  extendUnit(subjId, unitId, ext){ extendUnit(this, subjId, unitId, ext); }
 };
 
 function loadScript(src){

@@ -12,7 +12,7 @@ ctx.Study = {problems: {}, addUnit(subj, unit){
   unit.items = []; unit.drills = unit.drills || {};
   const kit = ctx.makeKit(subj, unit); if (unit.problems) unit.problems(kit);
   b.units.push(unit); b.items.push(...unit.items);
-}};
+}, extendUnit(subj, id, ext){ ctx.extendUnit(this, subj, id, ext); }};
 vm.createContext(ctx);
 const run = f => vm.runInContext(fs.readFileSync(path.join(root, f), "utf8"), ctx, {filename: f});
 run("js/kit.js");
