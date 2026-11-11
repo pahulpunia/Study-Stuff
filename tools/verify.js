@@ -21,7 +21,7 @@ const subjects = ctx.window.SUBJECTS.filter(s => s.type === "problems");
 subjects.forEach(s => s.files.forEach(run));
 
 const P = MC.parse, E = MC.evaluate, NV = MC.numVal;
-let bad = 0; const fail = (q, m) => { bad++; console.log('✗', q.src, q.math || q.target || '', '→', m); };
+let bad = 0; const fail = (q, m) => { bad++; console.log('✗', q.src, (q.eq && q.eq.join(' = ')) || q.math || q.target || '', '→', m); };
 const f1 = (ast, v='x') => x => { try { return E(ast, {[v]: x}); } catch(e){ return NaN; } };
 const cands = (() => { const s = new Set(); for (let q = 1; q <= 6; q++) for (let p = -72; p <= 72; p++) { const v = p / q; if (Math.abs(v) <= 12) s.add(+v.toFixed(12)); } return [...s]; })();
 function rootsOf(fn){ const r = []; for (const c of cands){ const v = fn(c); if (isFinite(v) && Math.abs(v) < 1e-9) r.push(c); }
@@ -38,7 +38,7 @@ function excluded(ast, v){ const set = new Set(); denoms(ast).forEach(d => roots
 
 function verifyItem(q){
   // parse checks
-  try { if (q.math) P(q.math); if (q.target) P(q.target); } catch(e){ fail(q, 'parse ' + e.message); return; }
+  try { if (q.eq) q.eq.forEach(P); if (q.math) P(q.math); if (q.target) P(q.target); } catch(e){ fail(q, 'parse ' + e.message); return; }
   (q.steps || []).concat([q.text]).forEach(s => (s.match(/\{\{(.+?)\}\}/g) || []).forEach(m => { const inner = m.slice(2, -2); if (/^lim$|f\(x\+h\)|\(f\/g\)|f\(x\)/.test(inner)) return; try { P(inner); } catch(e){ fail(q, 'step parse: ' + inner); } }));
   const F0 = q.fields[0];
   if (q.kind === 'simp'){
@@ -203,7 +203,8 @@ const TEXT_ODD = [[/ {2,}/, 'double space'], [/ [,.;:?!](?!\d)/, 'space before p
 function lintText(q, t, label){
   if (t == null) return; t = String(t);
   TEXT_ODD.forEach(([re, m]) => { const hit = t.replace(/\.( \.)+/g, '…').replace(/\{\{.*?\}\}/g, 'X').replace(/\[\[.*?\]\]/g, 'X').match(re); if (hit && !/^(ha ha|that that)$/i.test(hit[0])) warn(q, `${label}: ${m} in "${t.slice(0, 60)}"`); });
-  const bal = (o, c) => (t.split(o).length - 1) === (t.split(c).length - 1);
+  const tb = t.replace(/\[[^\[\]()]*\)|\([^\[\]()]*\]/g, 'I');   // half-open intervals like [0, ∞)
+  const bal = (o, c) => (tb.split(o).length - 1) === (tb.split(c).length - 1);
   if (!bal('(', ')')) warn(q, `${label}: unbalanced parentheses in "${t.slice(0, 60)}"`);
   if (/NaN|\[object|\{\{|\}\}|\*\*|(^|[^_])__[^_]|\[\[|\]\]/.test(MC.renderText(t).replace(/<[^>]+>/g, ''))) warn(q, `${label}: renders badly: "${t.slice(0, 60)}"`);
 }

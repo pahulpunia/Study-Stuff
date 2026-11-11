@@ -153,10 +153,14 @@ const MC = (() => {
       case "pow": {
         let base = n.a.k === "par" ? `<span class="mp">(</span>${R(n.a.a)}<span class="mp">)</span>` : R(n.a);
         if (["div","add","neg","mul"].includes(n.a.k) || (n.a.k === "fn" && n.a.n !== "sqrt")) base = `<span class="mp">(</span>${base}<span class="mp">)</span>`;
-        return base + `<sup>${R(strip(n.b))}</sup>`;
+        // a fraction in an exponent is written on one line (x^(2/3)), since a stacked one is too small to read
+        const e = strip(n.b), flat = d => R(strip(d.a)) + "/" + R(strip(d.b));
+        const ex = e.k === "div" && !e.ob ? flat(e) : e.k === "neg" && strip(e.a).k === "div" && !strip(e.a).ob ? "−" + flat(strip(e.a)) : R(e);
+        return base + `<sup>${ex}</sup>`;
       }
       case "fn":
         if (n.n === "sqrt" || n.n === "cbrt") return `<span class="msqrt">${n.n === "cbrt" ? `<span class="ridx">3</span>` : ""}${RAD}<span class="radi">${R(strip(n.a))}</span></span>`;
+        if (n.n === "abs") return `<span class="mp">|</span>${R(strip(n.a))}<span class="mp">|</span>`;
         return `<span class="mf">${n.n}</span><span class="mp">(</span>${R(strip(n.a))}<span class="mp">)</span>`;
     }
   }
@@ -210,6 +214,46 @@ const MC = (() => {
     if (nested(ast)) return "it's equivalent, but there's still a fraction inside a fraction. Simplify it fully";
     if (addTerms(strip0(ast)).filter(hasDiv).length >= 2) return "it's equivalent, but it's not one single fraction yet. Combine over a common denominator";
     return null;
+  }
+
+  // ---- radicals: is the answer in simplest radical form? ----
+  // flattens a product under a radical into number factors {c} and variable powers {e}; false if it isn't a plain monomial
+  function radFactors(n, out){
+    if (n.k === "par" || n.k === "neg") return radFactors(n.a, out);
+    if (n.k === "mul") return radFactors(n.a, out) && radFactors(n.b, out);
+    if (n.k === "num"){ out.push({c: n.v}); return true; }
+    if (n.k === "var"){ out.push({e: 1}); return true; }
+    if (n.k === "pow" && strip0(n.a).k === "var" && n.b.k === "num"){ out.push({e: n.b.v}); return true; }
+    return false;
+  }
+  // a sum that is still being multiplied or raised to a power, e.g. (2+√5)(2−√5) or (4+3√6)^2
+  function sumsMultiplied(n){
+    if (!n || typeof n !== "object") return false;
+    const isSum = x => x && strip0(x).k === "add";
+    if (n.k === "mul" && (isSum(n.a) || isSum(n.b))) return true;
+    if (n.k === "pow" && isSum(n.a)) return true;
+    if (n.k === "div") return sumsMultiplied(n.a);      // a denominator may stay factored
+    return sumsMultiplied(n.a) || sumsMultiplied(n.b);
+  }
+  function radicalIssue(ast){
+    let issue = null;
+    (function walk(n, inDen){
+      if (!n || typeof n !== "object" || issue) return;
+      if (n.k === "fn" && (n.n === "sqrt" || n.n === "cbrt")){
+        const idx = n.n === "sqrt" ? 2 : 3, left = `it's equivalent, but a perfect ${idx === 2 ? "square" : "cube"} is still under the radical. Pull it out`;
+        if (inDen){ issue = "it's equivalent, but there's still a radical in the denominator. Rationalize it"; return; }
+        if (strip0(n.a).k === "div"){ issue = "it's equivalent, but there's still a fraction under the radical"; return; }
+        const f = [];
+        if (radFactors(n.a, f)) for (const x of f){
+          if (x.e !== undefined && x.e >= idx){ issue = left; return; }
+          if (x.c !== undefined && Number.isInteger(x.c)) for (let q = 2; q ** idx <= Math.abs(x.c); q++) if (x.c % (q ** idx) === 0){ issue = left; return; }
+        }
+        return;
+      }
+      if (n.k === "div"){ walk(n.a, inDen); walk(n.b, true); return; }
+      walk(n.a, inDen); walk(n.b, inDen);
+    })(ast, false);
+    return issue;
   }
 
   function sameExpr(uSrc, aSrc, vs, range){
@@ -318,7 +362,19 @@ const MC = (() => {
           if (sp) return {ok:false};
           let s = raw.replace(/^(y|f\s*\(\s*[a-z]\s*\)|[a-z]\s*\(\s*[a-z]\s*\))\s*=/i, "");
           const res = sameExpr(s, field.a, field.v || ["x"], field.r);
+          if (!res.ok && field.rad && /\||abs/.test(field.a)){
+            // right for positive values only: the absolute value bars are missing or misplaced
+            let pos; try { pos = sameExpr(s, field.a, field.v || ["x"], [0.5, 4]).ok; } catch(e){ pos = false; }
+            if (pos) return {ok:false, why:"close. It works for positive values only, so check where absolute value bars are needed"};
+          }
           if (!res.ok) return res;
+          if (field.rad){ const issue = radicalIssue(parse(s)); if (issue) return {ok:false, why:issue, equiv:true}; }
+          if (field.combine){
+            const u = parse(s);
+            if (sumsMultiplied(u)) return {ok:false, why:"it's equivalent, but it's not multiplied out yet", equiv:true};
+            if (addTerms(strip0(u)).length > addTerms(strip0(parse(field.a))).length) return {ok:false, why:"it's equivalent, but like terms can still be combined", equiv:true};
+          }
+          if (field.single && addTerms(strip0(parse(s))).length >= 2) return {ok:false, why:"it's equivalent, but it's not combined yet. Write it as a single fraction", equiv:true};
           if (field.simp){
             const u = parse(s), issue = structureIssue(u);
             if (issue) return {ok:false, why:issue, equiv:true};
@@ -348,7 +404,7 @@ const MC = (() => {
           if (!extra.length && field.canceled && left.every(m => field.canceled.some(c => close(+c, m))))
             return {ok:false, why:"you're missing value(s) from a factor that canceled. Excluded values come from the ORIGINAL denominator"};
           if (!extra.length) return {ok:false, why:`missing ${left.length} value${left.length > 1 ? "s" : ""}`};
-          if (!left.length) return {ok:false, why:"you have an extra value that isn't excluded"};
+          if (!left.length) return {ok:false, why: field.sol ? "one of those doesn't work in the original equation (an extraneous solution)" : "you have an extra value that isn't excluded"};
           return {ok:false};
         }
         case "pts": {

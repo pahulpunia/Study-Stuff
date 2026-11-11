@@ -35,7 +35,7 @@ window.SUBJECTS = [
   },
   {
     id: "math3", name: "Honors Math 3", short: "Math 3", group: "math", icon: "graph", type: "problems", tools: ["pad", "calc"],
-    files: ["subjects/math3/unit4.js"],          // add "subjects/math3/unit5.js" etc. here
+    files: ["subjects/math3/unit4.js", "subjects/math3/unit5.js"],          // add "subjects/math3/unit6.js" etc. here
     blurb: "Any equivalent form works, like (2x+1)/(x-2) or DNE",
     defaultSection: "u4:4.3"
   },

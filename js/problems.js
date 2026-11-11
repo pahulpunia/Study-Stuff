@@ -384,6 +384,7 @@ $("mPrev").onclick = () => { if (M) mReviewAt(M.idx - 1); };
 function mPrompt(q){
   let html = "";
   if (q.lim) html = MC.renderLim(q.lim.v, q.lim.to, MC.render(q.math));
+  else if (q.eq) html = MC.render(q.eq[0]) + '<span class="mpre"> = </span>' + MC.render(q.eq[1]);
   else if (q.math) html = (q.pre ? `<span class="mpre">${q.pre.replace("x", "<i class='mv'>x</i>")}</span>` : "") + MC.render(q.math);
   return html;
 }
@@ -515,6 +516,8 @@ function mShow(){
   // the math keypad only shows for math-style answers
   const padNeeded = q.fields.some(f => ["expr","rat","set","pts","pf","anti"].includes(f.t)) || !!q.lim;
   $("keypad").classList.toggle("hidden", !padNeeded);
+  // cube root and absolute value keys only for radical answers
+  $("keypad").querySelectorAll(".krad").forEach(b => b.classList.toggle("hidden", !q.fields.some(f => f.rad)));
   $("mLearn").classList.toggle("hidden", !hasNotes(questionSection(q).u, questionSection(q).sid));
   window.scrollTo(0, 0);
   $("mCheck").textContent = "Check";
@@ -777,7 +780,7 @@ function mNext(){
 function mPlainQ(q){
   const f0 = q.fields[0] || {};
   const strip = t => String(t || "").replace(/\[\[(.+?)\]\]/g, "$1").replace(/\{\{(.+?)\}\}/g, "$1").replace(/__|\*\*/g, "").replace(/\s+/g, " ").trim();
-  return [strip(q.text), q.math ? (q.pre || "") + q.math : "", f0.t === "under" ? "“" + f0.words.join(" ") + "”" : "", f0.t === "choice" ? "Choices: " + f0.opts.map(strip).join(" / ") : ""].filter(Boolean).join(" ").slice(0, 400);
+  return [strip(q.text), q.eq ? q.eq.join(" = ") : q.math ? (q.pre || "") + q.math : "", f0.t === "under" ? "“" + f0.words.join(" ") + "”" : "", f0.t === "choice" ? "Choices: " + f0.opts.map(strip).join(" / ") : ""].filter(Boolean).join(" ").slice(0, 400);
 }
 $("mReport").onclick = () => {
   const q = M && M.queue[M.idx]; if (!q) return;
