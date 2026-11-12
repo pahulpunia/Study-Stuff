@@ -12,6 +12,7 @@
    tools    round tools: "pad" scratchpad, "calc" calculator, "pt" periodic table
    files    content files, loaded the first time the subject is opened (in this order)
    blurb    optional short tip under the section picker (leave it out if it isn't needed)
+   singlePassage true when each passage has just one question (SAT), so the checker doesn't expect sets of three
    practiceDesc  optional line under the Practice button, for subjects whose questions aren't from class notes
 
    terms-only:     setLabel ("Chapter"), groupLabel/groupsLabel ("Root"/"Roots"), itemLabel ("word"), defaultSet
@@ -68,6 +69,14 @@ window.SUBJECTS = [
     blurb: "The real section is 44 questions in 70 minutes, calculator allowed",
     practiceDesc: "Test-style questions, shuffled",
     defaultSection: "alg:a1"
+  },
+  {
+    id: "satrw", name: "SAT Reading & Writing", short: "SAT R&W", group: "prep", icon: "target", type: "problems",
+    files: ["subjects/testprep/sat-rw.js"],
+    blurb: "The real section is 54 questions in 64 minutes, one question per passage",
+    practiceDesc: "Test-style questions, shuffled",
+    singlePassage: true,
+    defaultSection: "cs:w"
   },
   {
     id: "actm", name: "ACT Math", short: "ACT Math", group: "prep", icon: "target", type: "problems", tools: ["pad", "calc"],

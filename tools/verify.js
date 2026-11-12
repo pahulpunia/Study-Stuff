@@ -236,7 +236,7 @@ for (const s of subjects){
       L.n++; if (mine > top) L.longest++; if (mine > top * 1.12 && mine - top >= 8) L.much++; });
     // AP-style source sets come in threes
     const bySrc = {}; unit.items.filter(q => q.stim || q.img || q.svg).forEach(q => { const k = q.stim || (q.img && q.img.file) || q.svg; bySrc[k] = (bySrc[k] || 0) + 1; });
-    Object.entries(bySrc).forEach(([k, n]) => { if (n !== 3) warn({src:unit.id}, `source has ${n} questions (AP sets use 3): "${String(k).slice(0, 40)}"`); });
+    if (!s.singlePassage) Object.entries(bySrc).forEach(([k, n]) => { if (n !== 3) warn({src:unit.id}, `source has ${n} questions (AP sets use 3): "${String(k).slice(0, 40)}"`); });
   }
 }
 for (const [id, L] of Object.entries(lintSubj)) if (L.n){
