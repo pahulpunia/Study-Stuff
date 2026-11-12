@@ -12,6 +12,7 @@
    tools    round tools: "pad" scratchpad, "calc" calculator, "pt" periodic table
    files    content files, loaded the first time the subject is opened (in this order)
    blurb    optional short tip under the section picker (leave it out if it isn't needed)
+   practiceDesc  optional line under the Practice button, for subjects whose questions aren't from class notes
 
    terms-only:     setLabel ("Chapter"), groupLabel/groupsLabel ("Root"/"Roots"), itemLabel ("word"), defaultSet
    problems-only:  defaultSection (e.g. "u4:4.3")
@@ -20,7 +21,8 @@ window.GROUPS = [
   {id: "english", name: "Honors English 10", short: "English", icon: "book"},
   {id: "math", name: "Math", icon: "graph"},
   {id: "science", name: "Science", icon: "flask"},
-  {id: "history", name: "History", icon: "globe"}
+  {id: "history", name: "History", icon: "globe"},
+  {id: "prep", name: "SAT & ACT", short: "SAT/ACT", icon: "target"}
 ];
 window.SUBJECTS = [
   {
@@ -59,5 +61,19 @@ window.SUBJECTS = [
     id: "apwh", name: "AP World History", short: "AP World", group: "history", icon: "globe", type: "problems",
     files: ["subjects/apworld/unit3.js", "subjects/apworld/unit4.js", "subjects/apworld/extra.js"],
     defaultSection: "u3:13"
+  },
+  {
+    id: "satm", name: "SAT Math", short: "SAT Math", group: "prep", icon: "target", type: "problems", tools: ["pad", "calc"],
+    files: ["subjects/testprep/sat-math.js"],
+    blurb: "The real section is 44 questions in 70 minutes, calculator allowed",
+    practiceDesc: "Test-style questions, shuffled",
+    defaultSection: "alg:a1"
+  },
+  {
+    id: "actm", name: "ACT Math", short: "ACT Math", group: "prep", icon: "target", type: "problems", tools: ["pad", "calc"],
+    files: ["subjects/testprep/act-math.js"],
+    blurb: "The real section is 45 questions in 50 minutes, with no formula sheet",
+    practiceDesc: "Test-style questions, shuffled",
+    defaultSection: "nq:n1"
   }
 ];

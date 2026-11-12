@@ -181,7 +181,7 @@ function renderMathHome(subj){
     if (m.write && !Write.has(m.write, mSec())) return;
     if (m.club && toughList(mSec()).length < 4) return;
     const b = el("button", "mode");
-    modeTile(b, m.icon, m.name, m.desc, m.write ? null : ST.mbest[mBestKey(k)]);
+    modeTile(b, m.icon, m.name, k === "practice" && Study.subject().practiceDesc || m.desc, m.write ? null : ST.mbest[mBestKey(k)]);
     b.onclick = () => m.write ? Write.start(m.write) : mStart(k);
     box.appendChild(b);
   });
