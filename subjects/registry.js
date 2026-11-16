@@ -12,6 +12,7 @@
    tools    round tools: "pad" scratchpad, "calc" calculator, "pt" periodic table
    files    content files, loaded the first time the subject is opened (in this order)
    blurb    optional short tip under the section picker (leave it out if it isn't needed)
+   passageSets  true when passages carry sets of any size (ACT Reading and Science)
    singlePassage true when each passage has just one question (SAT), so the checker doesn't expect sets of three
    practiceDesc  optional line under the Practice button, for subjects whose questions aren't from class notes
 
@@ -84,5 +85,29 @@ window.SUBJECTS = [
     blurb: "The real section is 45 questions in 50 minutes, with no formula sheet",
     practiceDesc: "Test-style questions, shuffled",
     defaultSection: "nq:n1"
+  },
+  {
+    id: "acte", name: "ACT English", short: "ACT English", group: "prep", icon: "target", type: "problems",
+    files: ["subjects/testprep/act-english.js"],
+    blurb: "The real section is 50 questions in 35 minutes, about 42 seconds each",
+    practiceDesc: "Test-style questions, shuffled",
+    singlePassage: true,
+    defaultSection: "cse:p"
+  },
+  {
+    id: "actr", name: "ACT Reading", short: "ACT Reading", group: "prep", icon: "target", type: "problems",
+    files: ["subjects/testprep/act-reading.js"],
+    blurb: "The real section is 36 questions in 40 minutes: four passages, nine questions each",
+    practiceDesc: "Test-style questions, shuffled",
+    passageSets: true,
+    defaultSection: "rd:lit"
+  },
+  {
+    id: "acts", name: "ACT Science", short: "ACT Science", group: "prep", icon: "target", type: "problems",
+    files: ["subjects/testprep/act-science.js"],
+    blurb: "The real section is 40 questions in 40 minutes and is optional",
+    practiceDesc: "Test-style questions, shuffled",
+    passageSets: true,
+    defaultSection: "sci:dr"
   }
 ];
