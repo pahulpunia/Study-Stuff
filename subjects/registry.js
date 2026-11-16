@@ -4,7 +4,7 @@
    id       short, unique, never rename it (your stats are saved under it)
    name     shown on the subject switcher
    short    shorter name for the phone switcher when there are 3+ subjects ("Chem")
-   icon     an icon name from js/icons.js: book, graph, globe, flask, atom, quill (or an emoji)
+   icon     an icon name from js/icons.js. Every subject and group needs its own (tools/verify.js checks)
    type     "terms"    → type the word from its definition/sentence/audio (vocab, AP World terms…)
             "problems" → typed-answer problems with hints + solutions (math, chem calculations…)
    group    which class group it sits under (see GROUPS below): english, math, science, history
@@ -20,11 +20,11 @@
    problems-only:  defaultSection (e.g. "u4:4.3")
    ===================================================================== */
 window.GROUPS = [
-  {id: "english", name: "Honors English 10", short: "English", icon: "book"},
-  {id: "math", name: "Math", icon: "graph"},
-  {id: "science", name: "Science", icon: "flask"},
-  {id: "history", name: "History", icon: "globe"},
-  {id: "prep", name: "SAT & ACT", short: "SAT/ACT", icon: "target"}
+  {id: "english", name: "Honors English 10", short: "English", icon: "letters"},
+  {id: "math", name: "Math", icon: "sigma"},
+  {id: "science", name: "Science", icon: "atom"},
+  {id: "history", name: "History", icon: "column"},
+  {id: "prep", name: "SAT & ACT", short: "SAT/ACT", icon: "bubbles"}
 ];
 window.SUBJECTS = [
   {
@@ -38,13 +38,13 @@ window.SUBJECTS = [
     defaultSection: "ph:ger"
   },
   {
-    id: "math3", name: "Honors Math 3", short: "Math 3", group: "math", icon: "graph", type: "problems", tools: ["pad", "calc"],
+    id: "math3", name: "Honors Math 3", short: "Math 3", group: "math", icon: "parabola", type: "problems", tools: ["pad", "calc"],
     files: ["subjects/math3/unit4.js", "subjects/math3/unit5.js"],          // add "subjects/math3/unit6.js" etc. here
     blurb: "Any equivalent form works, like (2x+1)/(x-2) or DNE",
     defaultSection: "u4:4.3"
   },
   {
-    id: "calc", name: "Calculus BC", short: "Calc BC", group: "math", icon: "graph", type: "problems", tools: ["pad", "calc"],
+    id: "calc", name: "Calculus BC", short: "Calc BC", group: "math", icon: "integral", type: "problems", tools: ["pad", "calc"],
     files: ["subjects/calc/kit.js", "subjects/calc/ch2.js", "subjects/calc/ch3.js", "subjects/calc/ch4.js", "subjects/calc/ch5.js", "subjects/calc/ch6.js", "subjects/calc/ch7.js", "subjects/calc/ch8.js", "subjects/calc/ch9.js", "subjects/calc/ch10.js", "subjects/calc/notes-plus.js"],
     blurb: "Exact answers work, like ln(3), π/4, or e^2. Integrals need their + C",
     defaultSection: "c2:1"
@@ -55,9 +55,15 @@ window.SUBJECTS = [
     defaultSection: "u4:4.1"
   },
   {
-    id: "apbio", name: "AP Biology", short: "AP Bio", group: "science", icon: "leaf", type: "problems", tools: ["pad", "calc"],
+    id: "apbio", name: "AP Biology", short: "AP Bio", group: "science", icon: "dna", type: "problems", tools: ["pad", "calc"],
     files: ["subjects/apbio/unit0.js", "subjects/apbio/unit1.js", "subjects/apbio/unit2.js", "subjects/apbio/unit3.js", "subjects/apbio/unit4.js", "subjects/apbio/unit5.js", "subjects/apbio/unit6.js", "subjects/apbio/unit7.js", "subjects/apbio/unit8.js", "subjects/apbio/notes-plus.js"],
     defaultSection: "u3:3.1a"
+  },
+  {
+    id: "apcsp", name: "AP Computer Science Principles", short: "AP CSP", group: "science", icon: "code", type: "problems", tools: ["pad", "calc"],
+    files: ["subjects/apcsp/unit2.js", "subjects/apcsp/errors.js"],
+    passageSets: true,
+    defaultSection: "u2:2.1"
   },
   {
     id: "apwh", name: "AP World History", short: "AP World", group: "history", icon: "globe", type: "problems",
@@ -65,14 +71,14 @@ window.SUBJECTS = [
     defaultSection: "u3:13"
   },
   {
-    id: "satm", name: "SAT Math", short: "SAT Math", group: "prep", icon: "target", type: "problems", tools: ["pad", "calc"],
+    id: "satm", name: "SAT Math", short: "SAT Math", group: "prep", icon: "pi", type: "problems", tools: ["pad", "calc"],
     files: ["subjects/testprep/sat-math.js"],
     blurb: "The real section is 44 questions in 70 minutes, calculator allowed",
     practiceDesc: "Test-style questions, shuffled",
     defaultSection: "alg:a1"
   },
   {
-    id: "satrw", name: "SAT Reading & Writing", short: "SAT R&W", group: "prep", icon: "target", type: "problems",
+    id: "satrw", name: "SAT Reading & Writing", short: "SAT R&W", group: "prep", icon: "write", type: "problems",
     files: ["subjects/testprep/sat-rw.js"],
     blurb: "The real section is 54 questions in 64 minutes, one question per passage",
     practiceDesc: "Test-style questions, shuffled",
@@ -80,14 +86,14 @@ window.SUBJECTS = [
     defaultSection: "cs:w"
   },
   {
-    id: "actm", name: "ACT Math", short: "ACT Math", group: "prep", icon: "target", type: "problems", tools: ["pad", "calc"],
+    id: "actm", name: "ACT Math", short: "ACT Math", group: "prep", icon: "setsq", type: "problems", tools: ["pad", "calc"],
     files: ["subjects/testprep/act-math.js"],
     blurb: "The real section is 45 questions in 50 minutes, with no formula sheet",
     practiceDesc: "Test-style questions, shuffled",
     defaultSection: "nq:n1"
   },
   {
-    id: "acte", name: "ACT English", short: "ACT English", group: "prep", icon: "target", type: "problems",
+    id: "acte", name: "ACT English", short: "ACT English", group: "prep", icon: "pilcrow", type: "problems",
     files: ["subjects/testprep/act-english.js"],
     blurb: "The real section is 50 questions in 35 minutes, about 42 seconds each",
     practiceDesc: "Test-style questions, shuffled",
@@ -95,7 +101,7 @@ window.SUBJECTS = [
     defaultSection: "cse:p"
   },
   {
-    id: "actr", name: "ACT Reading", short: "ACT Reading", group: "prep", icon: "target", type: "problems",
+    id: "actr", name: "ACT Reading", short: "ACT Reading", group: "prep", icon: "glasses", type: "problems",
     files: ["subjects/testprep/act-reading.js"],
     blurb: "The real section is 36 questions in 40 minutes: four passages, nine questions each",
     practiceDesc: "Test-style questions, shuffled",
@@ -103,7 +109,7 @@ window.SUBJECTS = [
     defaultSection: "rd:lit"
   },
   {
-    id: "acts", name: "ACT Science", short: "ACT Science", group: "prep", icon: "target", type: "problems",
+    id: "acts", name: "ACT Science", short: "ACT Science", group: "prep", icon: "scope", type: "problems",
     files: ["subjects/testprep/act-science.js"],
     blurb: "The real section is 40 questions in 40 minutes and is optional",
     practiceDesc: "Test-style questions, shuffled",

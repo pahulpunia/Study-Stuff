@@ -141,7 +141,7 @@ function makeKit(subjId, unit){
     },
     /* tap one option */
     choice(secs, src, text, opts, ans, steps, o = {}){
-      return add({secs, src, text, fields:[F.choice(o.label || "Answer", opts, ans, o.shuffle)], steps, kind:"choice", math:o.math, tip:o.tip, stim:o.stim, cite:o.cite, img:o.img, svg:o.svg});
+      return add({secs, src, text, fields:[F.choice(o.label || "Answer", opts, ans, o.shuffle)], steps, kind:"choice", math:o.math, tip:o.tip, stim:o.stim, cite:o.cite, img:o.img, svg:o.svg, code:o.code});
     },
     /* tap the words to underline them (a clause or phrase) */
     under(secs, src, text, marked, steps, o = {}){

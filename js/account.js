@@ -153,7 +153,10 @@ const LB = (() => {
           tx.set(ref, {name: memberName, total: (o.total || 0) + sum,
                        vocab: (o.vocab || 0) + sumWhere(s => s === "vocab"),
                        math: (o.math || 0) + sumWhere(s => s.startsWith("math")),
-                       by, rounds: (o.rounds || 0) + Math.max(1, pend.length), best: Math.max(o.best || 0, 0, ...pend.map(x => x.b || x.p)), updated: F.serverTimestamp()});
+                       by, rounds: (o.rounds || 0) + Math.max(1, pend.length), best: Math.max(o.best || 0, 0, ...pend.map(x => x.b || x.p)), updated: F.serverTimestamp(),
+                       // shown on your profile: day streak (as of today) and when you joined the board
+                       streak: typeof Daily !== "undefined" ? Daily.streak() : (o.streak || 0), streakDay: typeof Daily !== "undefined" ? Daily.key() : (o.streakDay || ""),
+                       joined: snap.exists() ? (o.joined || null) : F.serverTimestamp()});
         });
         ST.lbRow = user.uid;
         ST.lbPending = (ST.lbPending || []).slice(pend.length); save();
@@ -362,12 +365,13 @@ function renderAccount(){
   }
   if (LB.user && LB.name){
     const pend = (ST.lbPending || []).reduce((a, x) => a + x.p, 0);
-    box.innerHTML = `<div class="acrow"><span>Signed in as <b>${LB.name}</b></span><button class="link" id="acOut">Sign out</button></div>
+    box.innerHTML = `<div class="acrow"><span>Signed in as <button class="link acme" id="acMe">${escHTML(LB.name)}</button></span><button class="link" id="acOut">Sign out</button></div>
       ${pend ? `<div class="small">${pend} pts to send</div>` : ""}
       <label class="toggle acsync"><input type="checkbox" id="acSync" ${ST.settings.sync === false ? "" : "checked"}><span>Sync progress across your devices</span></label>
       <div id="lbList"></div><button class="grow lbtoggle" id="lbShow">${ic("refresh")}<span>Refresh</span></button>`;
     $("acOut").onclick = async () => { await LB.signOut(); acctTab = "in"; renderAccount(); paintJoin(); Shell.update(); };
     $("lbShow").onclick = showBoard;
+    $("acMe").onclick = () => Profile.open(lbRows.find(x => x.uid === LB.user.uid) || {uid: LB.user.uid, name: LB.name, total: 0, rounds: 0, best: 0});
     $("acSync").onchange = e => { ST.settings.sync = e.target.checked; save(); if (e.target.checked) LB.sync(); };
     showBoard();
     return;
@@ -400,23 +404,87 @@ function renderAccount(){
     }
   };
 }
-function lbSplit(r){
-  // points per subject (uses icons from the registry)
-  const parts = Study.subjects().map(s => {
-    const p = (r.by && r.by[s.id] != null) ? r.by[s.id] : s.id === "vocab" ? (r.vocab || 0) : s.id === "math3" ? (r.math || 0) : 0;
-    return p ? `${ic(s.icon, "ic-s")} ${p}` : "";
-  }).filter(Boolean);
-  return parts.length ? parts.join(" · ") + " · " : "";
+// points per subject for one leaderboard row, biggest first (older rows kept vocab/math totals separately)
+function lbSubjects(r){
+  return Study.subjects().map(s => ({s, p: (r.by && r.by[s.id] != null) ? r.by[s.id] : s.id === "vocab" ? (r.vocab || 0) : s.id === "math3" ? (r.math || 0) : 0}))
+    .filter(x => x.p > 0).sort((a, b) => b.p - a.p);
 }
+function lbSplit(r){
+  const list = lbSubjects(r), shown = list.slice(0, 4);
+  const parts = shown.map(x => `<span class="lbs" title="${escHTML(x.s.name)}">${ic(x.s.icon, "ic-s")} ${x.p}</span>`);
+  if (list.length > shown.length) parts.push(`+${list.length - shown.length}`);
+  return parts.join(" · ");
+}
+let lbRows = [];
 async function showBoard(){
   const box = $("lbList"); box.innerHTML = `<div class="small">Loading…</div>`;
   try {
-    const rows = await LB.top();
+    const rows = lbRows = await LB.top();
     if (!rows.length){ box.innerHTML = `<div class="small">No scores yet</div>`; return; }
-    box.innerHTML = `<ol class="lb">${rows.map((r, i) => `<li class="${LB.user && r.uid === LB.user.uid ? "me" : ""}">
-      <span class="lbr">${i + 1}</span><span class="lbn">${escHTML(r.name)}<span class="small">${lbSplit(r)}best ${r.best || 0}</span></span><b>${r.total || 0}</b></li>`).join("")}</ol>`;
+    box.innerHTML = `<ol class="lb">${rows.map((r, i) => `<li class="${LB.user && r.uid === LB.user.uid ? "me" : ""}"><button class="lbrow" data-i="${i}" aria-label="Open ${escHTML(r.name)}'s profile">
+      <span class="lbr">${i + 1}</span><span class="lbn">${escHTML(r.name)}<span class="small">${lbSplit(r) || "No points yet"}</span></span><b>${r.total || 0}</b>${ic("back", "ic-s lbgo")}</button></li>`).join("")}</ol>`;
+    box.querySelectorAll(".lbrow").forEach(b => b.onclick = () => Profile.open(rows[+b.dataset.i]));
   } catch(e){ box.innerHTML = `<div class="small">${LB.niceError(e)}</div>`; }
 }
+
+/* ---- profiles: tap someone on the leaderboard (or your own name) ----
+   Built from their leaderboard row, which every member can read. Round history is private,
+   so recent rounds only show on your own profile. */
+const Profile = (() => {
+  const COLORS = ["#4F7CFF", "#16A08A", "#E0912F", "#E2605B", "#3B9BD8", "#7A8699"];
+  const hue = name => COLORS[[...String(name)].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7) % COLORS.length];
+  const ms = t => !t ? 0 : typeof t.toMillis === "function" ? t.toMillis() : t.seconds ? t.seconds * 1000 : +t || 0;
+  const fmt = n => (+n || 0).toLocaleString("en-US");
+  function ago(t){
+    const m = ms(t); if (!m) return "";
+    const days = Math.floor((new Date().setHours(0, 0, 0, 0) - new Date(m).setHours(0, 0, 0, 0)) / 864e5);
+    return days <= 0 ? "Today" : days === 1 ? "Yesterday" : days < 7 ? `${days} days ago` : new Date(m).toLocaleDateString("en-US", {month: "short", day: "numeric"});
+  }
+  function liveStreak(r){
+    if (!r.streak || !r.streakDay) return null;
+    const y = new Date(); y.setDate(y.getDate() - 1);
+    return r.streakDay === Daily.key() || r.streakDay === Daily.key(y) ? r.streak : 0;
+  }
+  const subjName = id => { const s = Study.subjects().find(x => x.id === id); return s ? s : {name: id, short: id, icon: "sheet"}; };
+
+  async function open(r){
+    if (!r) return;
+    const rows = lbRows, rank = rows.findIndex(x => x.uid === r.uid) + 1, mine = LB.user && r.uid === LB.user.uid;
+    const me = LB.user && rows.find(x => x.uid === LB.user.uid);
+    const subs = lbSubjects(r), top = subs.length ? subs[0].p : 1;
+    // who leads each subject among the people on the board
+    const leads = {}; rows.forEach(x => lbSubjects(x).forEach(({s, p}) => { const L = leads[s.id] = leads[s.id] || {uid: null, p: 0, n: 0}; L.n++; if (p > L.p){ L.uid = x.uid; L.p = p; } }));
+    const streak = liveStreak(r), avg = r.rounds ? Math.round((r.total || 0) / r.rounds) : 0;
+    const tiles = [["Points", fmt(r.total)], ["Rounds", fmt(r.rounds)], ["Best round", fmt(r.best)], ["Per round", fmt(avg)]];
+    if (streak != null) tiles.push(["Day streak", streak]);
+    const last = ago(r.updated); if (last) tiles.push(["Last active", last]);
+    let vs = "";
+    if (!mine && me){ const d = (r.total || 0) - (me.total || 0); vs = `<div class="profvs">${d > 0 ? `<b>${fmt(d)}</b> points ahead of you` : d < 0 ? `<b>${fmt(-d)}</b> points behind you` : "Tied with you"}</div>`; }
+    $("profTitle").textContent = mine ? "Your profile" : "Profile";
+    $("profBody").innerHTML = `
+      <div class="profhead"><span class="profav" style="background:${hue(r.name)}" aria-hidden="true">${escHTML(String(r.name || "?").charAt(0).toUpperCase())}</span>
+        <div><div class="profname">${escHTML(r.name)}${mine ? ` <span class="profme">You</span>` : ""}</div>
+        <div class="small">${rank ? `#${rank} on the leaderboard` : "Not in the top 25"}${ms(r.joined) ? ` · joined ${new Date(ms(r.joined)).toLocaleDateString("en-US", {month: "short", year: "numeric"})}` : ""}</div></div></div>
+      ${vs}
+      <div class="adtiles proftiles">${tiles.map(([k, v]) => `<div class="adtile"><b>${v}</b><span>${k}</span></div>`).join("")}</div>
+      <div class="clabel">Points by subject</div>
+      ${subs.length ? `<ul class="profsubs">${subs.map(({s, p}) => `<li><span class="psn">${ic(s.icon, "ic-s")}<span>${escHTML(s.short || s.name)}</span>${leads[s.id] && leads[s.id].uid === r.uid && leads[s.id].n > 1 ? `<span class="plead" title="Most points in ${escHTML(s.name)} on the board">Top</span>` : ""}</span>
+          <span class="psbar"><i style="width:${Math.max(4, Math.round(100 * p / top))}%"></i></span><b>${fmt(p)}</b></li>`).join("")}</ul>` : `<div class="small">No points yet</div>`}
+      ${mine ? `<div class="clabel">Recent rounds</div><div id="profRounds" class="small">Loading…</div>` : ""}`;
+    $("prof").classList.remove("hidden"); document.body.classList.add("noscroll");
+    $("profClose").focus({preventScroll: true});
+    if (mine) try {
+      const list = (await LB.myRounds()).slice(0, 6), box = $("profRounds"); if (!box) return;
+      box.className = ""; box.innerHTML = list.length ? `<ul class="profrounds">${list.map(x => { const s = subjName(x.subj);
+        return `<li><span class="psn">${ic(s.icon, "ic-s")}<span>${escHTML(s.short || s.name)}</span></span><span class="small">${x.right}/${x.total} right · ${ago(x.when)}</span><b>${fmt(x.score)}</b></li>`; }).join("")}</ul>` : `<div class="small">No rounds yet</div>`;
+    } catch(e){ const box = $("profRounds"); if (box) box.textContent = "Couldn't load rounds"; }
+  }
+  function close(){ $("prof").classList.add("hidden"); document.body.classList.remove("noscroll"); }
+  $("profClose").onclick = close;
+  $("prof").addEventListener("click", e => { if (e.target === $("prof")) close(); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("prof").classList.contains("hidden")) close(); });
+  return {open, close};
+})();
 
 /* when another device's progress arrives, refresh what's on screen */
 document.addEventListener("progress-synced", () => {

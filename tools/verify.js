@@ -130,7 +130,7 @@ function verifyNotes(unit){
     if (b.exam) texts.push([sid, b.exam]);
     (b.timeline || []).forEach(r => { if (r.length !== 2) fail({src:`${unit.id} notes ${sid}`}, 'timeline rows are [when, what]'); r.forEach(t => texts.push([sid, t])); });
     (b.check || []).forEach(c => { if (!c.q || !c.a) fail({src:`${unit.id} notes ${sid}`}, 'check items need q and a'); texts.push([sid, c.q], [sid, c.a]); });
-    const known = ['h','p','tip','warn','steps','ex','table','sum','exam','timeline','check'];
+    const known = ['h','p','tip','warn','steps','ex','table','sum','exam','timeline','check','code'];
     Object.keys(b).forEach(k => { if (!known.includes(k)) fail({src:`${unit.id} notes ${sid}`}, 'unknown notes block key: ' + k); });
   }));
   texts.forEach(([sid, t]) => (String(t).match(/\{\{(.+?)\}\}/g) || []).forEach(m => {
@@ -201,7 +201,7 @@ function lintExpr(q, src, label, subj){
 }
 const TEXT_ODD = [[/ {2,}/, 'double space'], [/ [,.;:?!](?!\d)/, 'space before punctuation'], [/\b(\w+) \1\b/i, 'repeated word'], [/\[\[(?![^\]]*\]\])|\{\{(?![^}]*\}\})/, 'unclosed [[ or {{']];
 function lintText(q, t, label){
-  if (t == null) return; t = String(t);
+  if (t == null) return; t = String(t).replace(/`[^`\n]+`/g, 'X');   // inline code is shown as typed
   TEXT_ODD.forEach(([re, m]) => { const hit = t.replace(/\.( \.)+/g, '…').replace(/\{\{.*?\}\}/g, 'X').replace(/\[\[.*?\]\]/g, 'X').match(re); if (hit && !/^(ha ha|that that)$/i.test(hit[0])) warn(q, `${label}: ${m} in "${t.slice(0, 60)}"`); });
   const tb = t.replace(/\[[^\[\]()]*\)|\([^\[\]()]*\]/g, 'I');   // half-open intervals like [0, ∞)
   const bal = (o, c) => (tb.split(o).length - 1) === (tb.split(c).length - 1);
@@ -293,5 +293,15 @@ function calcCheck(q){
   good.forEach(x => { if (!MC.check(f, x).ok) { bad++; console.log('✗ checker rejects', JSON.stringify(x), 'for', JSON.stringify(f)); } });
   badA.forEach(x => { if (MC.check(f, x).ok) { bad++; console.log('✗ checker accepts', JSON.stringify(x), 'for', JSON.stringify(f)); } });
 });
+// every subject and group needs its own icon that exists in js/icons.js
+{
+  const names = new Set([...fs.readFileSync(path.join(root, "js/icons.js"), "utf8").matchAll(/^\s{2}([a-z]+):\s*'/gm)].map(m => m[1]));
+  const seen = {};
+  ctx.window.GROUPS.concat(ctx.window.SUBJECTS).forEach(s => {
+    if (!names.has(s.icon)) { bad++; console.log('✗ icon', JSON.stringify(s.icon), 'for', s.id, 'is not in js/icons.js'); }
+    else if (seen[s.icon]) { bad++; console.log('✗ icon', s.icon, 'is used by both', seen[s.icon], 'and', s.id); }
+    seen[s.icon] = seen[s.icon] || s.id;
+  });
+}
 console.log(bad ? `✗ ${bad} problem(s) failed` : `✓ all ${total} problems check out`);
 process.exit(bad ? 1 : 0);

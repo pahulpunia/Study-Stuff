@@ -222,6 +222,7 @@ function notesHTML(u, sid){
     if (n.steps) out += `<ol class="nsteps">${n.steps.map(x => `<li>${T(x)}</li>`).join("")}</ol>`;
     if (n.tip) out += `<div class="ncall ntip">${ic("bulb", "ic-s")}<span>${T(n.tip)}</span></div>`;
     if (n.warn) out += `<div class="ncall nwarn">${ic("alert", "ic-s")}<span><b>Watch out:</b> ${T(n.warn)}</span></div>`;
+    if (n.code) out += `<pre class="ncode">${codeHTML(n.code)}</pre>`;
     if (n.ex) out += `<div class="nex"><div class="nexq"><b>Example:</b> ${T(n.ex.q)}</div>${(n.ex.a || []).map(x => `<div class="nexa">${T(x)}</div>`).join("")}</div>`;
     if (n.sum) out += `<div class="nsum"><div class="nsumh">${ic("bulb", "ic-s")}In short</div><ul>${n.sum.map(x => `<li>${T(x)}</li>`).join("")}</ul></div>`;
     if (n.exam) out += `<div class="ncall nexam">${ic("target", "ic-s")}<span><b>On the test:</b> ${T(n.exam)}</span></div>`;
@@ -415,8 +416,22 @@ document.addEventListener("keydown", e => {
 
 /* the source above a question: a passage, a picture (public-domain, from Wikimedia), or a drawn chart */
 const commonsURL = (file, w) => `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(file)}?width=${w}`;
+/* a block of Python, lightly coloured: comments, strings, numbers, keywords, function names */
+const PY_KW = new Set("def return if elif else for while in import from and or not True False None break continue pass class lambda try except with as global".split(" "));
+function codeHTML(src){
+  const re = /(#.*$)|('(?:[^'\\\n]|\\.)*'|"(?:[^"\\\n]|\\.)*")|(\b\d+(?:\.\d+)?\b)|([A-Za-z_]\w*)(?=\s*\()|([A-Za-z_]\w*)/gm;
+  let out = "", last = 0, m;
+  while ((m = re.exec(src))){
+    out += escHTML(src.slice(last, m.index)); last = re.lastIndex;
+    const t = escHTML(m[0]);
+    out += m[1] ? `<span class="cc">${t}</span>` : m[2] ? `<span class="cs">${t}</span>` : m[3] ? `<span class="cn">${t}</span>`
+      : m[4] ? (PY_KW.has(m[4]) ? `<span class="ck">${t}</span>` : `<span class="cf">${t}</span>`) : PY_KW.has(m[5]) ? `<span class="ck">${t}</span>` : t;
+  }
+  return out + escHTML(src.slice(last));
+}
 function stimHTML(q){
   const cap = q.cite ? `<figcaption>${MC.renderText(q.cite)}</figcaption>` : "";
+  if (q.code) return `<figure class="stim scode"><pre>${codeHTML(q.code)}</pre>${cap}</figure>` + (q.svg ? `<figure class="stim schart">${q.svg}</figure>` : "");
   if (q.img) return `<figure class="stim simg"><a href="https://commons.wikimedia.org/wiki/File:${encodeURIComponent(q.img.file)}" target="_blank" rel="noopener">
       <img src="${commonsURL(q.img.file, 900)}" alt="${escHTML(q.img.alt)}" loading="eager" onerror="this.closest('figure').classList.add('noimg')"></a>
       <div class="imgalt"><b>Image description:</b> ${escHTML(q.img.alt)}</div>${cap}</figure>`;
@@ -472,7 +487,7 @@ function mShow(){
       if (f.opts.some(o => String(o).replace(/\[\[|\]\]|\{\{|\}\}/g, "").length > 24)) ch.classList.add("stack");
       const shown = !f.shuffle ? f.opts : M.party ? seededShuffle(f.opts, M.party.seed + M.idx * 7919 + i) : shuffle(f.opts);
       shown.forEach((o, j) => {
-        const b = el("button", "chip"); b.innerHTML = MC.renderText(o) + (f.opts.length <= 9 ? `<kbd>${j + 1}</kbd>` : ""); b.dataset.v = o; b.type = "button"; b.setAttribute("role", "radio");
+        const b = el("button", "chip"); b.innerHTML = `<span class="ctext">${MC.renderText(o)}</span>` + (f.opts.length <= 9 ? `<kbd>${j + 1}</kbd>` : ""); b.dataset.v = o; b.type = "button"; b.setAttribute("role", "radio");
         b.onclick = () => {
           if (M.answered || inp.dataset.ok === "1" || b.disabled) return;
           // cross-out mode: tapping strikes an option out (or brings it back) instead of choosing it
