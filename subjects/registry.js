@@ -82,7 +82,7 @@ window.SUBJECTS = [
   },
   {
     id: "satrw", name: "SAT Reading & Writing", short: "SAT R&W", group: "prep", icon: "write", type: "problems",
-    files: ["subjects/testprep/sat-rw.js", "subjects/testprep/sat-rw2.js"],
+    files: ["subjects/testprep/sat-rw.js", "subjects/testprep/sat-rw2.js", "subjects/testprep/sat-rw3.js"],
     blurb: "The real section is 54 questions in 64 minutes, one question per passage",
     practiceDesc: "Test-style questions, shuffled",
     singlePassage: true,
