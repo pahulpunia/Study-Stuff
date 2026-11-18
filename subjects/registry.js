@@ -99,7 +99,7 @@ window.SUBJECTS = [
   },
   {
     id: "acte", name: "ACT English", short: "ACT English", group: "prep", icon: "pilcrow", type: "problems",
-    files: ["subjects/testprep/act-english.js", "subjects/testprep/act-english2.js"],
+    files: ["subjects/testprep/act-english.js", "subjects/testprep/act-english2.js", "subjects/testprep/act-english3.js"],
     blurb: "The real section is 50 questions in 35 minutes, about 42 seconds each",
     practiceDesc: "Test-style questions, shuffled",
     singlePassage: true,
