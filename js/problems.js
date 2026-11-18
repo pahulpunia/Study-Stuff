@@ -493,7 +493,7 @@ function stimHTML(q){
   if (q.img) return `<figure class="stim simg"><a href="https://commons.wikimedia.org/wiki/File:${encodeURIComponent(q.img.file)}" target="_blank" rel="noopener">
       <img src="${commonsURL(q.img.file, 900)}" alt="${escHTML(q.img.alt)}" loading="eager" onerror="this.closest('figure').classList.add('noimg')"></a>
       <div class="imgalt"><b>Image description:</b> ${escHTML(q.img.alt)}</div>${cap}</figure>`;
-  if (q.svg) return `<figure class="stim schart">${q.svg}${cap}</figure>`;
+  if (q.svg) return `<figure class="stim schart">${q.stim ? `<blockquote>${MC.renderText(q.stim)}</blockquote>` : ""}${q.svg}${cap}</figure>`;
   if (q.stim) return `<figure class="stim"><blockquote>${MC.renderText(q.stim)}</blockquote>${cap}</figure>`;
   return "";
 }

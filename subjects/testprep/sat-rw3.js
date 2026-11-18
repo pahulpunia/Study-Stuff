@@ -99,4 +99,20 @@ Study.extendUnit("satrw", "ii", {problems(k){
   q("i", "In many folktales, a character who is kind to a stranger is later rewarded, often when the stranger turns out to be powerful in disguise. Scholars note that such tales were often told in communities where travelers depended on hospitality to survive. The tales may therefore have served to ______", LOGIC,
     ["encourage generosity toward strangers", "warn listeners never to trust travelers", "explain why powerful people wore disguises", "teach listeners how to survive traveling alone"], ["Kindness to strangers gets rewarded in the stories.", "Where travelers needed hospitality, the tales would encourage it."]);
 }});
+Study.extendUnit("satrw", "cs", {problems(k){
+  const q = make(k);
+  const W = [
+    ["The museum's new wing is strikingly ______: its glass walls let visitors see the gardens from every gallery.", ["transparent", "ornate", "cramped", "ancient"], "Glass walls you can see through: transparent."],
+    ["Because the evidence was ______, the jury could not reach a confident verdict.", ["inconclusive", "overwhelming", "decisive", "convincing"], "No confident verdict means the evidence didn't settle the question."],
+    ["The economist cautioned that one good month of sales did not ______ a lasting recovery; the trend would need to continue for a year.", ["signal", "prevent", "conceal", "reverse"], "One month isn't enough to show a recovery is coming: it doesn't signal one."],
+    ["Known for her ______ style, the novelist often spends pages describing a single room in vivid detail.", ["elaborate", "terse", "hurried", "plain"], "Pages on one room is detailed and ornate: elaborate."],
+    ["The engineer's design was ______ in its simplicity: with only three moving parts, it rarely broke down.", ["elegant", "clumsy", "fragile", "obscure"], "Simple and reliable is a compliment: elegant."],
+    ["Rather than ______ the criticism, the director used the reviews to revise the play before its next performance.", ["dismiss", "consider", "welcome", "address"], "\"Rather than\" points to the opposite of using the reviews: dismiss."],
+    ["Early maps of the region were ______, showing rivers that did not exist and leaving out entire mountain ranges.", ["unreliable", "detailed", "precise", "colorful"], "Rivers that weren't there and missing mountains: unreliable."],
+    ["The two species look nearly identical, but their songs are ______: one sings a high trill, the other a low, slow whistle.", ["distinct", "similar", "faint", "familiar"], "\"But\" contrasts with looking identical, and the colon describes two very different songs."],
+    ["The policy was meant to be ______; officials planned to review it after six months and decide whether to keep it.", ["provisional", "permanent", "mandatory", "secret"], "A policy to be reviewed and possibly dropped is temporary: provisional."],
+    ["The scientist was ______ about the early results, warning that the sample was too small to support firm conclusions.", ["cautious", "enthusiastic", "careless", "certain"], "Warning against firm conclusions shows caution."]
+  ];
+  W.forEach(([stim, o, why]) => q("w", stim, WORD, o, [why]));
+}});
 })();

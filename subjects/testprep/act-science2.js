@@ -49,4 +49,24 @@ Study.extendUnit("acts", "sci", {problems(k){
     ["Which evidence does Hypothesis 2 use for support?", ["The Moon's density is lower than Earth's", "The Moon's rocks are very dry", "The Moon's oxygen isotopes match Earth's", "The Moon formed 4.5 billion years ago"], ["Hypothesis 2 cites densities of 3.3 versus 5.5 g/cm³."]]
   ]);
 }});
+/* Passage X: a bar graph instead of a table */
+const hbar = (title, rows, fmt) => {
+  const W = 600, rowH = 34, top = 40, left = 120, max = Math.max(...rows.map(r => r[1])), H = top + rows.length * rowH + 16;
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${title}"><text x="0" y="20" font-size="16" font-weight="700">${title}</text>` +
+    rows.map(([label, v], i) => { const y = top + i * rowH, w = Math.max(2, (W - left - 70) * v / max);
+      return `<text x="${left - 10}" y="${y + 20}" font-size="14" text-anchor="end">${label}</text><rect class="bar" x="${left}" y="${y + 5}" width="${w.toFixed(1)}" height="22" rx="4"/><text x="${left + w + 8}" y="${y + 21}" font-size="14" font-weight="700">${fmt(v)}</text>`; }).join("") +
+    `<line class="axis" x1="${left}" y1="${top}" x2="${left}" y2="${H - 12}" stroke-width="1.5"/></svg>`;
+};
+const SEED = "A student planted 100 radish seeds in each of seven trays of soil kept at different temperatures. After 7 days, the student counted how many seeds had germinated (sprouted). The graph shows the percent that germinated in each tray.";
+const SEEDSVG = hbar("Seeds germinated after 7 days (%)", [["5°C", 10], ["10°C", 45], ["15°C", 80], ["20°C", 95], ["25°C", 90], ["30°C", 60], ["35°C", 15]], v => v + "%");
+
+Study.extendUnit("acts", "sci", {problems(k){
+  const g = (t, o, w) => k.choice(["dr"], SRC, t, o, o[0], [].concat(w), {shuffle:true, stim:SEED, svg:SEEDSVG, cite:"Passage X"});
+  g("At which temperature did the greatest percent of seeds germinate?", ["20°C", "15°C", "25°C", "30°C"], ["The longest bar is 20°C, at 95%."]);
+  g("As the temperature increased from 20°C to 35°C, the percent of seeds that germinated", ["decreased", "increased", "stayed the same", "increased, then decreased"], ["95 → 90 → 60 → 15%."]);
+  g("How many seeds germinated in the 10°C tray?", ["45", "10", "55", "90"], ["Each tray had 100 seeds, and 45% germinated.", "45% of 100 = 45"]);
+  g("Which two temperatures had about the same percent of seeds germinate?", ["20°C and 25°C", "10°C and 30°C", "15°C and 35°C", "5°C and 15°C"], ["20°C: 95% and 25°C: 90%, only 5 points apart.", "The other pairs differ by 15 points or more."]);
+  g("If a tray had been kept at 12°C, the percent of seeds germinating would most likely have been", ["between 45% and 80%", "less than 10%", "between 10% and 45%", "greater than 95%"], ["12°C is between 10°C (45%) and 15°C (80%)."]);
+  g("Based on the results, a gardener who wants the most radish seeds to sprout within a week should keep the soil", ["between 15°C and 25°C", "below 10°C", "near 30°C", "above 35°C"], ["Germination is 80% or more from 15°C to 25°C."]);
+}});
 })();
