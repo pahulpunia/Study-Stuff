@@ -74,7 +74,7 @@ window.SUBJECTS = [
   },
   {
     id: "satm", name: "SAT Math", short: "SAT Math", group: "prep", icon: "pi", type: "problems", tools: ["pad", "calc"],
-    files: ["subjects/testprep/sat-math.js"],
+    files: ["subjects/testprep/sat-math.js", "subjects/testprep/sat-math2.js"],
     blurb: "The real section is 44 questions in 70 minutes, calculator allowed",
     practiceDesc: "Test-style questions, shuffled",
     timed: {q:44, min:70},
