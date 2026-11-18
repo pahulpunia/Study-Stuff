@@ -69,7 +69,7 @@ window.SUBJECTS = [
   },
   {
     id: "apwh", name: "AP World History", short: "AP World", group: "history", icon: "globe", type: "problems",
-    files: ["subjects/apworld/unit3.js", "subjects/apworld/unit4.js", "subjects/apworld/extra.js"],
+    files: ["subjects/apworld/unit3.js", "subjects/apworld/unit4.js", "subjects/apworld/extra.js", "subjects/apworld/extra2.js"],
     defaultSection: "u3:13"
   },
   {
