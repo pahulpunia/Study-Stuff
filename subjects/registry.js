@@ -108,7 +108,7 @@ window.SUBJECTS = [
   },
   {
     id: "actr", name: "ACT Reading", short: "ACT Reading", group: "prep", icon: "glasses", type: "problems",
-    files: ["subjects/testprep/act-reading.js"],
+    files: ["subjects/testprep/act-reading.js", "subjects/testprep/act-reading2.js"],
     blurb: "The real section is 36 questions in 40 minutes: four passages, nine questions each",
     practiceDesc: "Test-style questions, shuffled",
     passageSets: true,
