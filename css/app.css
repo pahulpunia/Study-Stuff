@@ -1056,3 +1056,7 @@ html.nomotion *, html.nomotion *::before, html.nomotion *::after, html.nomotion 
 /* timed tests */
 #mCount.low{color:var(--warn);border-color:var(--warn)}
 .res .mtans{margin-top:4px}
+.res .mtsum .mtsecs{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.res .mtsum .mtsecs span{border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:.85rem}
+.res .mtsum .mtsecs span.ok{border-color:var(--good);font-weight:400}
+.res .mtsum .mtsecs span.no{border-color:var(--bad);font-weight:400}

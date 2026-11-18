@@ -329,9 +329,15 @@ function mTimer(){
     if (M !== r || r.over){ clearInterval(r.tick); return; }
     const left = r.endAt - Date.now();
     if (left <= 0){ clearInterval(r.tick); return mTimeUp(); }
-    $("mCount").textContent = `${r.idx + 1} of ${r.queue.length} · ${mLeft()}`;
-    $("mCount").classList.toggle("low", left < 5 * 60e3);
+    mTimedCount();
   }, 1000);
+}
+// "behind pace" once you're two or more questions behind an even split of the time
+function mTimedCount(){
+  const left = M.endAt - Date.now(), per = M.limit / M.queue.length;
+  const due = Math.floor((M.limit - left / 1000) / per), behind = due - M.idx >= 2;
+  $("mCount").textContent = `${M.idx + 1} of ${M.queue.length} · ${mLeft()}${behind ? " · behind pace" : ""}`;
+  $("mCount").classList.toggle("low", left < 5 * 60e3 || behind);
 }
 function mTimeUp(){
   // anything not reached counts as unanswered
@@ -640,7 +646,7 @@ function mHud(){
   $("mScore").textContent = M.score + " pts";
   $("mStreak").innerHTML = M.streak >= 2 ? ic("flame", "ic-s") + M.streak : "";
   if (M.mode === "mastery"){ $("mCount").textContent = `Mastered ${M.mastered.size} of ${M.total}`; $("mProg").style.width = (M.mastered.size / M.total * 100) + "%"; }
-  else if (M.mode === "timed"){ $("mCount").textContent = `${M.idx + 1} of ${M.queue.length} · ${mLeft()}`; $("mProg").style.width = (M.idx / M.queue.length * 100) + "%"; }
+  else if (M.mode === "timed"){ mTimedCount(); $("mProg").style.width = (M.idx / M.queue.length * 100) + "%"; }
   else if (M.mode === "drill"){ const c = M.results.filter(r => r.ok).length; $("mCount").textContent = `Drill #${M.idx + 1} · ${c} correct`; $("mProg").style.width = "100%"; }
   else { $("mCount").textContent = `Problem ${M.idx + 1} of ${M.queue.length}`; $("mProg").style.width = (M.idx / M.queue.length * 100) + "%"; }
   $("mPrev").classList.toggle("hidden", !(M.hist && M.hist[M.idx - 1]));
@@ -894,6 +900,17 @@ function mFinish(){
   const mode = M.mode; $("meAgain").onclick = () => mStart(mode);
   const ul = $("meList"); ul.innerHTML = "";
   if (!n) ul.appendChild(el("li", "small", "No answers this round."));
+  if (M.mode === "timed" && n){
+    // score by test domain (unit); a one-unit subject like ACT Science goes by section instead
+    const units = PB().units, byUnit = units.length > 1, by = {};
+    const groupOf = q => byUnit ? (units.find(u => u.id === q.unit) || {}).name || q.unit : (mSecInfo(q.secs[0]) || {}).name || q.secs[0];
+    M.results.forEach(r => { const g = groupOf(r.q), b = by[g] || (by[g] = {c:0, t:0}); b.t++; if (r.ok) b.c++; });
+    const done = M.results.filter(r => !r.skipped).length, used = Math.min(Date.now(), M.endAt) - M.start;
+    const li = el("li", "mtsum");
+    li.innerHTML = `<div class="small">${done ? `About ${Math.round(used / 1000 / done)} s per question answered` : "No questions answered"} · test pace is ${Math.round(M.limit / M.queue.length)} s</div>` +
+      `<div class="mtsecs">${Object.entries(by).map(([g, b]) => `<span class="${b.c / b.t >= 0.8 ? "ok" : b.c / b.t < 0.5 ? "no" : ""}">${escHTML(g.replace(/\s*\(.*\)$/, ""))} <b>${b.c}/${b.t}</b></span>`).join("")}</div>`;
+    ul.appendChild(li);
+  }
   M.results.forEach(r => {
     const li = el("li");
     li.innerHTML = `<span class="${r.ok ? "ok" : "no"}">${ic(r.ok ? "check" : "close", "ic-s")}</span> <b>${r.src}</b> <span class="small">${r.ok ? "+" + r.pts : r.skipped ? "skipped" : r.part + " parts"}${r.hints ? " · " + r.hints + " hint" + (r.hints > 1 ? "s" : "") : ""}</span><div class="mmini">${mPrompt(r.q) || MC.renderText(r.q.text)}</div>`;
