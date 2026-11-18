@@ -91,7 +91,7 @@ window.SUBJECTS = [
   },
   {
     id: "actm", name: "ACT Math", short: "ACT Math", group: "prep", icon: "setsq", type: "problems", tools: ["pad", "calc"],
-    files: ["subjects/testprep/act-math.js"],
+    files: ["subjects/testprep/act-math.js", "subjects/testprep/act-math2.js"],
     blurb: "The real section is 45 questions in 50 minutes, with no formula sheet",
     practiceDesc: "Test-style questions, shuffled",
     timed: {q:45, min:50},
