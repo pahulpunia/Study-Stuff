@@ -313,7 +313,10 @@ function mTimedPlan(peek){
   const groups = []; const at = {};
   items.forEach(q => { const k = key(q); if (at[k] == null){ at[k] = groups.length; groups.push([]); } groups[at[k]].push(q); });
   const order = peek ? groups : shuffle(groups), queue = [];
-  for (const g of order){ if (queue.length >= cfg.q) break; queue.push(...g); }
+  // whole passages first, without going over the real test's length; then top up with part of one
+  const left = [];
+  for (const g of order){ if (queue.length + g.length <= cfg.q) queue.push(...g); else left.push(g); }
+  if (queue.length < cfg.q && left.length) queue.push(...left[0].slice(0, cfg.q - queue.length));
   const n = queue.length;
   return {queue, secs: Math.round(cfg.min * 60 * Math.min(n, cfg.q) / cfg.q)};
 }

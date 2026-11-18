@@ -82,7 +82,7 @@ window.SUBJECTS = [
   },
   {
     id: "satrw", name: "SAT Reading & Writing", short: "SAT R&W", group: "prep", icon: "write", type: "problems",
-    files: ["subjects/testprep/sat-rw.js"],
+    files: ["subjects/testprep/sat-rw.js", "subjects/testprep/sat-rw2.js"],
     blurb: "The real section is 54 questions in 64 minutes, one question per passage",
     practiceDesc: "Test-style questions, shuffled",
     singlePassage: true,
@@ -99,7 +99,7 @@ window.SUBJECTS = [
   },
   {
     id: "acte", name: "ACT English", short: "ACT English", group: "prep", icon: "pilcrow", type: "problems",
-    files: ["subjects/testprep/act-english.js"],
+    files: ["subjects/testprep/act-english.js", "subjects/testprep/act-english2.js"],
     blurb: "The real section is 50 questions in 35 minutes, about 42 seconds each",
     practiceDesc: "Test-style questions, shuffled",
     singlePassage: true,
@@ -117,7 +117,7 @@ window.SUBJECTS = [
   },
   {
     id: "acts", name: "ACT Science", short: "ACT Science", group: "prep", icon: "scope", type: "problems",
-    files: ["subjects/testprep/act-science.js"],
+    files: ["subjects/testprep/act-science.js", "subjects/testprep/act-science2.js"],
     blurb: "The real section is 40 questions in 40 minutes and is optional",
     practiceDesc: "Test-style questions, shuffled",
     passageSets: true,
