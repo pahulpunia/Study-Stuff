@@ -18,9 +18,9 @@ const Shell = (() => {
       <div class="rlabel">Subjects</div>
       <nav class="rnav" id="railSubj">${Study.groups().map(g => {
         const open = (ST.railOpen || {})[g.id] !== false, here = g.subjects.some(s => s.id === ST.subject);
-        return `<button class="rgrp${here && !open ? " on" : ""}" data-g="${g.id}" aria-expanded="${open}">${ic(g.icon)}<span>${escHTML(g.name)}</span><svg class="caret" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10l5 5 5-5"/></svg></button>
-          <div class="rsub${open ? "" : " hidden"}">${g.subjects.map(s =>
-          `<button data-s="${s.id}" class="${s.id === ST.subject ? "on" : ""}"><span>${escHTML(g.subjects.length > 1 || g.id === "english" ? (s.inGroup || s.name) : s.name)}</span></button>`).join("")}</div>`; }).join("")}</nav>
+        return `<button class="rgrp${here && !open ? " on" : ""}" data-g="${g.id}" aria-expanded="${open}" aria-controls="rs-${g.id}">${ic(g.icon)}<span>${escHTML(g.name)}</span><svg class="caret" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10l5 5 5-5"/></svg></button>
+          <div class="rsub" id="rs-${g.id}" data-open="${open}"${open ? "" : " inert"}><div class="rsubin">${g.subjects.map(s =>
+          `<button data-s="${s.id}" class="${s.id === ST.subject ? "on" : ""}"><span>${escHTML(g.subjects.length > 1 || g.id === "english" ? (s.inGroup || s.name) : s.name)}</span></button>`).join("")}</div></div>`; }).join("")}</nav>
       <div class="rlabel">This subject</div>
       <nav class="rnav" id="railUtil">
         <button data-p="home" class="${screen === "home" ? "on" : ""}">${ic("home")}<span>Modes</span></button>
@@ -32,7 +32,14 @@ const Shell = (() => {
         ${LB.cfg() ? `<button data-p="board" class="${screen === "board" ? "on" : ""}">${ic("trophy")}<span>Leaderboard</span></button>` : ""}
         <button data-p="settings" class="${screen === "settings" ? "on" : ""}">${ic("gear")}<span>Settings</span></button>
       </nav>`;
-    r.querySelectorAll("[data-g]").forEach(b => b.onclick = () => { ST.railOpen = ST.railOpen || {}; ST.railOpen[b.dataset.g] = b.getAttribute("aria-expanded") !== "true"; save(); rail(); });
+    // open/close a group in place so it can slide instead of redrawing the sidebar
+    r.querySelectorAll("[data-g]").forEach(b => b.onclick = () => {
+      const open = b.getAttribute("aria-expanded") !== "true", sub = $("rs-" + b.dataset.g);
+      ST.railOpen = ST.railOpen || {}; ST.railOpen[b.dataset.g] = open; save();
+      b.setAttribute("aria-expanded", open); sub.dataset.open = open; sub.inert = !open;
+      const g = Study.groups().find(x => x.id === b.dataset.g);
+      b.classList.toggle("on", !open && g.subjects.some(s => s.id === ST.subject));
+    });
     r.querySelectorAll("[data-s]").forEach(b => b.onclick = () => { if (inRound() && !confirmLeave()) return; ST.subject = b.dataset.s; save(); renderHome(); });
     r.querySelectorAll("[data-p]").forEach(b => b.onclick = () => {
       if (inRound() && !confirmLeave()) return;

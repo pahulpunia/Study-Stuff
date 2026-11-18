@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Study Stuff icons</title>
+<link rel="stylesheet" href="../css/app.css">
+<style>
+  body{padding:20px;max-width:1100px;margin:0 auto}
+  h1{font-size:1.3rem;margin:0 0 4px}
+  .sub{color:var(--muted);margin:0 0 16px;font-size:.9rem}
+  #q{width:100%;max-width:320px;margin-bottom:16px}
+  .igrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:10px}
+  .icell{display:flex;flex-direction:column;align-items:center;gap:8px;padding:14px 6px 10px;border:1px solid var(--line);border-radius:10px;background:var(--card);cursor:copy;color:var(--ink);font:inherit}
+  .icell:hover{border-color:var(--accent)}
+  .icell .big{font-size:30px;line-height:1}
+  .icell .small{font-size:15px;line-height:1;color:var(--muted)}
+  .icell code{font-size:.75rem;color:var(--muted)}
+  .icell.copied code{color:var(--good)}
+</style>
+</head>
+<body>
+<!-- Every icon in js/icons.js, with its name. Click one to copy ic("name"). -->
+<h1>Icons</h1>
+<p class="sub" id="count"></p>
+<input id="q" placeholder="Search icons" autocomplete="off">
+<div class="igrid" id="grid"></div>
+<script>
+  // the one helper icons.js needs from the app
+  window.escHTML = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+</script>
+<script src="../js/icons.js"></script>
+<script>
+  const grid = document.getElementById("grid"), names = Object.keys(ICONS);
+  document.getElementById("count").textContent = names.length + " icons · 24×24, 1.8px strokes · click to copy";
+  function draw(filter){
+    grid.innerHTML = names.filter(n => n.toLowerCase().includes(filter)).map(n =>
+      `<button class="icell" data-n="${n}"><span class="big">${ic(n)}</span><span class="small">${ic(n, "ic-s")}</span><code>${n}</code></button>`).join("");
+  }
+  draw("");
+  document.getElementById("q").oninput = e => draw(e.target.value.trim().toLowerCase());
+  grid.onclick = e => { const b = e.target.closest(".icell"); if (!b) return;
+    navigator.clipboard && navigator.clipboard.writeText(`ic("${b.dataset.n}")`); b.classList.add("copied"); setTimeout(() => b.classList.remove("copied"), 900); };
+</script>
+</body>
+</html>

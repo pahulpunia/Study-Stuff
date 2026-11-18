@@ -35,7 +35,7 @@ const Tools = (() => {
             <span class="pgroup" role="radiogroup" aria-label="Draw with">${[["pen", "Pen"], ["line", "Line"], ["rect", "Box"], ["oval", "Circle"], ["text", "Text"], ["erase", "Eraser"]]
               .map(([m, l]) => `<button data-m="${m}" class="${m === "pen" ? "on" : ""}" role="radio">${l}</button>`).join("")}</span>
             <span class="pgroup"><button data-a="grid" aria-pressed="false">Graph</button><button data-a="undo">Undo</button><button data-a="clear">Clear</button></span>
-            <label class="onq"><input type="checkbox" id="padOnQ"> Draw on the page</label>
+            <label class="onq sw small-sw"><span>Draw on the page</span><input type="checkbox" id="padOnQ" role="switch"><span class="swt" aria-hidden="true"></span></label>
           </div>
           <div class="padarea"><canvas id="padCanvas"></canvas><div class="padnote hidden" id="padNote">Draw anywhere on the page, except the answers</div></div>
         </div>

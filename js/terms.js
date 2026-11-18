@@ -37,7 +37,7 @@ function setChapter(n){ CH = CHAPTERS.find(c => String(c.n) === String(n)) || CH
 function termsHome(subj){
   useTerms(subj);
   const sel = $("chapSel"); sel.innerHTML = "";
-  $("chapLabel").textContent = L().setLabel;
+  setLabel($("chapLabel"), "bookmark", L().setLabel);
   CHAPTERS.forEach(c => { const o = el("option", null, `${L().setLabel} ${c.n}: ${c.title} (${c.words.length} ${L().itemLabel}s)`); o.value = c.n; sel.appendChild(o); });
   if (!CH){ $("modes").innerHTML = `<div class="small">No ${L().setLabel.toLowerCase()}s yet.</div>`; return; }
   sel.value = String(CH.n);
@@ -91,6 +91,7 @@ function tick(){
 }
 
 function showQ(){
+  replayAnim(document.querySelector("#quiz .qcard"), "qin");
   const q = S.queue[S.idx];
   S.hint = 0; S.attempt = 1; S.answered = false; S.qStart = Date.now();
   const wrap = $("promptWrap"); wrap.innerHTML = "";
@@ -115,7 +116,7 @@ function showQ(){
   $("hint").classList.add("hidden"); $("hint").innerHTML = "";
   const a = $("answer"); a.value = ""; a.className = ""; a.readOnly = false; a.placeholder = `Type the ${L().itemLabel}…`;
   $("fb").innerHTML = ""; $("fb").className = "fb";
-  $("check").textContent = "Check";
+  setLabel($("check"), "check", "Check");
   $("skip").disabled = false;
   $("sayRow").classList.add("hidden");
   updateHintBtn();
@@ -252,7 +253,7 @@ function reveal(ok, typed){
   updateHud();
   if (CAN_SPEAK) $("sayRow").classList.remove("hidden");
   const last = S.mode !== "blitz" && S.idx >= S.queue.length - 1;
-  $("check").textContent = last ? "See results" : "Next →";
+  if (last) setLabel($("check"), "chart", "See results"); else setLabel($("check"), "arrow", "Next", true);
   a.placeholder = "Tap Go or Next →";
   if (S.mode === "blitz"){ S.adv = setTimeout(next, ok ? 550 : 1600); }
 }
@@ -371,7 +372,7 @@ function termsStats(subj){
     f.style.background = acc == null ? "transparent" : acc >= .8 ? "var(--good)" : acc >= .5 ? "var(--warn)" : "var(--bad)";
     bar.appendChild(f); d.appendChild(bar); al.appendChild(d);
   });
-  $("resetStats").textContent = `Reset ${subj.name} stats`;
+  setLabel($("resetStats"), "eraser", `Reset ${subj.name} stats`);
   $("resetStats").dataset.armed = "";
   show("stats");
 }

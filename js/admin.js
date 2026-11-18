@@ -29,7 +29,7 @@ const Admin = (() => {
   function open(){ placeKey(); stop(); show("admin"); unlocked() ? load() : lock(); }
 
   function lock(){
-    $("adBody").innerHTML = `<div class="card adlock"><h2>Admin</h2>
+    $("adBody").innerHTML = `<div class="card adlock"><h2>${ic("shieldCheck")}<span>Admin</span></h2>
       <form id="adForm" autocomplete="off"><input type="password" id="adPass" placeholder="Password" aria-label="Admin password" autocomplete="current-password">
       <button class="primary" type="submit">Open</button></form><div class="small adErr" id="adErr"></div></div>`;
     $("adForm").onsubmit = async e => {
@@ -44,11 +44,11 @@ const Admin = (() => {
     const body = $("adBody");
     body.innerHTML = `<div class="card"><div class="small">Loading…</div></div>`;
     const subs = Study.subjects().filter(s => s.type === "problems");
-    if (!LB.cfg()){ body.innerHTML = `<div class="card"><h2>Admin</h2><p class="small">Firebase isn't set up, so there's no club data.</p>${links()}</div>`; return; }
+    if (!LB.cfg()){ body.innerHTML = `<div class="card"><h2>${ic("shieldCheck")}<span>Admin</span></h2><p class="small">Firebase isn't set up, so there's no club data.</p>${links()}</div>`; return; }
     let d;
     try { d = await LB.adminData(subs.map(s => s.id)); } catch(e){ d = {signedIn:false, err:e.message}; }
     if (!d.signedIn){
-      body.innerHTML = `<div class="card"><h2>Admin</h2><p>Sign in to your account to load the club's data.</p><button class="primary" id="adSign">Sign in</button>${links()}</div>`;
+      body.innerHTML = `<div class="card"><h2>${ic("shieldCheck")}<span>Admin</span></h2><p>Sign in to your account to load the club's data.</p><button class="primary" id="adSign">Sign in</button>${links()}</div>`;
       $("adSign").onclick = renderBoard; return;
     }
     // ---- numbers ----
@@ -92,10 +92,10 @@ const Admin = (() => {
     const perPerson = {}; rounds.forEach(r => { const P = perPerson[r.uid] || (perPerson[r.uid] = {rounds: [], secs: 0, right: 0, total: 0, subj: {}}); P.rounds.push(r); P.secs += r.secs || 0; P.right += r.right || 0; P.total += r.total || 0; const S = P.subj[r.subj] || (P.subj[r.subj] = {n: 0, right: 0, total: 0, pts: 0}); S.n++; S.right += r.right || 0; S.total += r.total || 0; S.pts += r.score || 0; });
 
     body.innerHTML = `
-      <div class="card"><div class="adhead"><h2>Admin</h2><span class="row"><button class="link" id="adRefresh">Refresh</button><button class="link" id="adLock">Lock</button></span></div>
+      <div class="card"><div class="adhead"><h2>${ic("shieldCheck")}<span>Admin</span></h2><span class="row"><button class="link" id="adRefresh">Refresh</button><button class="link" id="adLock">Lock</button></span></div>
         <div class="small">Signed in as <b>${esc(d.name)}</b> · ${d.isAdmin ? "full access" : "member access (see below for full access)"}</div>
         <div class="adtiles">${tiles.map(([k, v]) => `<div class="adtile"><b>${v}</b><span>${k}</span></div>`).join("")}<div class="adtile"><b id="adOnN">…</b><span>Online now</span></div><div class="adtile"><b id="adIssN">…</b><span>Open issues</span></div></div></div>
-      <div class="card"><h2>Online now</h2><div id="adOnline" class="small">Loading…</div></div>
+      <div class="card"><h2>${ic("users")}<span>Online now</span></h2><div id="adOnline" class="small">Loading…</div></div>
       <div class="card"><div class="adhead"><h2>Issues</h2><select id="adIsF" aria-label="Show"><option value="open">Open</option><option value="all">All</option><option value="done">Done</option></select></div><div id="adIssues" class="small">Loading…</div></div>
       <div class="card"><h2>Last 14 days</h2>
         <div class="adchart">${days.map(x => `<div class="adday" title="${new Date(x.t).toLocaleDateString()}: ${x.n} rounds, ${hrs(x.secs)}, ${x.who.size} people"><i style="height:${(x.n / maxD * 100).toFixed(1)}%"></i><b>${x.n || ""}</b><span>${new Date(x.t).toLocaleDateString(undefined, {weekday: "narrow"})}</span></div>`).join("")}</div>

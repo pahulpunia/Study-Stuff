@@ -353,7 +353,7 @@ const Party = (() => {
     // the Next button: host moves everyone, others wait
     if (M.answered){
       const last = M.idx >= M.queue.length - 1, b = $("mCheck");
-      if (amHost()){ b.textContent = last ? "End round" : "Next →"; b.classList.remove("dim"); }
+      if (amHost()){ if (last) setLabel(b, "stop", "End round"); else setLabel(b, "arrow", "Next", true); b.classList.remove("dim"); }
       else { b.textContent = `Waiting for ${P.hostName || "the host"}…`; b.classList.add("dim"); }
     }
   }
@@ -362,8 +362,8 @@ const Party = (() => {
   function openFind(){
     view = "find"; show("party"); $("pyCount").textContent = "";
     if (offList){ offList(); offList = null; }
-    $("pyBody").innerHTML = `<div class="card"><h2>Parties</h2><div id="pyList" class="small">Looking…</div></div>
-      <div class="card"><h2>Online now</h2><div id="pyOnline" class="small">Looking…</div></div>`;
+    $("pyBody").innerHTML = `<div class="card"><h2>${ic("popper")}<span>Parties</span></h2><div id="pyList" class="small">Looking…</div></div>
+      <div class="card"><h2>${ic("users")}<span>Online now</span></h2><div id="pyOnline" class="small">Looking…</div></div>`;
     init().then(() => {
       if (view !== "find" || !visible("party")) return;
       const a = D.onValue(R("parties"), s => { list = s.val() || {}; paintList(); }, () => { const b = $("pyList"); if (b) b.textContent = "Couldn't load parties."; });

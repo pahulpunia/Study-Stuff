@@ -227,7 +227,7 @@ function notesHTML(u, sid){
     if (n.sum) out += `<div class="nsum"><div class="nsumh">${ic("bulb", "ic-s")}In short</div><ul>${n.sum.map(x => `<li>${T(x)}</li>`).join("")}</ul></div>`;
     if (n.exam) out += `<div class="ncall nexam">${ic("target", "ic-s")}<span><b>On the test:</b> ${T(n.exam)}</span></div>`;
     if (n.timeline) out += `<ol class="ntime">${n.timeline.map(([when, what]) => `<li><b>${T(when)}</b><span>${T(what)}</span></li>`).join("")}</ol>`;
-    if (n.check) out += `<div class="ncheck"><div class="ncheckh">Check yourself <span>tap a question to see the answer</span></div>${n.check.map(c => `<details><summary>${T(c.q)}</summary><div>${T(c.a)}</div></details>`).join("")}</div>`;
+    if (n.check) out += `<div class="ncheck"><div class="ncheckh">Check yourself <span>tap a question to see the answer</span></div>${n.check.map(c => `<details><summary><span>${T(c.q)}</span></summary><div class="nans">${T(c.a)}</div></details>`).join("")}</div>`;
     if (n.table) out += `<div class="ntable"><table><thead><tr>${n.table.head.map(c => `<th>${T(c)}</th>`).join("")}</tr></thead><tbody>${n.table.rows.map(r => `<tr>${r.map(c => `<td>${T(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
   });
   flush();
@@ -442,6 +442,7 @@ function stimHTML(q){
 
 function mShow(){
   const q = M.queue[M.idx];
+  replayAnim($("mCard"), "qin");
   Object.assign(M, {hint:0, attempt:1, answered:false, qStart:Date.now(), lastFocus:0, edit:{}, by:null, applied:{}});
   $("mSrc").textContent = q.src;
   Tools.forQuestion(q, PSUBJ.id);
@@ -535,7 +536,7 @@ function mShow(){
   $("keypad").querySelectorAll(".krad").forEach(b => b.classList.toggle("hidden", !q.fields.some(f => f.rad)));
   $("mLearn").classList.toggle("hidden", !hasNotes(questionSection(q).u, questionSection(q).sid));
   window.scrollTo(0, 0);
-  $("mCheck").textContent = "Check";
+  setLabel($("mCheck"), "check", "Check");
   $("mSkip").disabled = false;
   mHintBtn(); mReviewClose(); mHud(); mReady();
   $("mf0").focus();
@@ -563,7 +564,7 @@ function mHints(q){
 function mHintBtn(){
   const n = mHints(M.queue[M.idx]).length, b = $("mHintBtn");
   b.disabled = M.answered || M.hint >= n;
-  b.textContent = n === 0 ? "No hints" : M.hint >= n ? "No more hints" : `Hint ${M.hint + 1}/${n}`;
+  setLabel(b, "bulb", n === 0 ? "No hints" : M.hint >= n ? "No more hints" : `Hint ${M.hint + 1}/${n}`);
 }
 function mHintTo(n){
   const q = M.queue[M.idx], hs = mHints(q);
@@ -773,7 +774,7 @@ function mReveal(res, vals, skipped){
   if (M.party) Party.answered(M.idx, all, pts, M.by, !!skipped);
   save(); mHud();
   const last = M.mode !== "drill" && M.idx >= M.queue.length - 1;
-  $("mCheck").textContent = last ? "See results" : "Next →";
+  if (last) setLabel($("mCheck"), "chart", "See results"); else setLabel($("mCheck"), "arrow", "Next", true);
   if (M.party) Party.strip();
   // optional: move on by itself after a right answer (not on the last one, so the results don't surprise you)
   if (all && ST.settings.autoNext && !last && !M.party){ const at = M.idx, r = M; setTimeout(() => { if (M === r && M.idx === at && M.answered && M.view == null && !$("mquiz").classList.contains("hidden")) mNext(); }, 1100); }
@@ -854,7 +855,7 @@ $("meBrag").onclick = () => {
 /* ---- stats ---- */
 function renderMStats(subj){
   useProblems(subj);
-  $("resetStats").dataset.armed = ""; $("resetStats").textContent = `Reset ${subj.name} stats`;
+  $("resetStats").dataset.armed = ""; setLabel($("resetStats"), "eraser", `Reset ${subj.name} stats`);
   const bl = $("bestList"); bl.innerHTML = "";
   $("statsTitle").textContent = mSecInfo().name + ": best scores";
   Object.entries(MMODES).filter(([, m]) => !m.write && !(m.gen && !drillHas(mSec())) && !(m.club && toughList(mSec()).length < 4)).forEach(([k, m]) => {

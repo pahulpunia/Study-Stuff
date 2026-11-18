@@ -38,6 +38,8 @@ const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
 const escHTML = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;");
 
 const SCREENS = ["home","quiz","end","study","stats","mquiz","mend","mnotes","settings", "write", "board", "admin", "party", "issues"];
+// restart a CSS entrance animation on an element (used when the next question appears)
+function replayAnim(el, cls){ if (!el) return; el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); }
 function show(id){
   if (id !== "mquiz" && typeof Tools !== "undefined") Tools.close();
   SCREENS.forEach(s => $(s).classList.toggle("hidden", s !== id));
@@ -189,7 +191,7 @@ function renderSubjBar(){
   // second row: the subjects inside this group (only when there's a choice)
   const sub = $("subSubj"), list = cur ? cur.subjects : [];
   sub.classList.toggle("hidden", list.length < 2);
-  sub.innerHTML = list.length < 2 ? "" : list.map(s => `<button data-s="${s.id}" class="${s.id === ST.subject ? "on" : ""}" role="tab" aria-selected="${s.id === ST.subject}">${escHTML(s.inGroup || s.short || s.name)}</button>`).join("");
+  sub.innerHTML = list.length < 2 ? "" : list.map(s => `<button data-s="${s.id}" class="${s.id === ST.subject ? "on" : ""}" role="tab" aria-selected="${s.id === ST.subject}">${ic(s.icon, "ic-s")}<span>${escHTML(s.inGroup || s.short || s.name)}</span></button>`).join("");
   sub.querySelectorAll("button").forEach(b => b.onclick = () => { ST.subject = b.dataset.s; save(); renderHome(); });
   movePill();
 }
@@ -246,6 +248,7 @@ function paintCount(){
   let i = COUNT_STEPS.indexOf(ST.settings.count); if (i < 0) i = COUNT_STEPS.length - 1;
   $("countRange").value = String(i);
   $("countVal").textContent = COUNT_STEPS[i] ? String(COUNT_STEPS[i]) : "All";
+  const r = $("countRange"); r.style.setProperty("--fill", (100 * r.value / (r.max || 1)) + "%");   // filled part of the slider track
 }
 $("countRange").oninput = e => { ST.settings.count = COUNT_STEPS[+e.target.value]; save(); paintCount(); };
 $("autoNext").onchange = e => { ST.settings.autoNext = e.target.checked; save(); };
@@ -253,6 +256,10 @@ $("showOnline").onchange = e => { ST.settings.online = e.target.checked; save();
 $("celebrate").onchange = e => { ST.settings.confetti = e.target.checked; save(); };
 $("bigText").onchange = e => { ST.settings.big = e.target.checked; save(); document.documentElement.classList.toggle("bigtext", e.target.checked); };
 $("secondChance").onchange = e => { ST.settings.second = e.target.checked; save(); };
+// animations on by default; off works like the system "reduce motion" setting
+const applyMotion = () => document.documentElement.classList.toggle("nomotion", ST.settings.motion === false);
+$("motion").onchange = e => { ST.settings.motion = e.target.checked; save(); applyMotion(); };
+applyMotion();
 $("toStudy").onclick = () => Study.engines[Study.subject().type].study(Study.subject());
 $("toStats").onclick = () => Study.engines[Study.subject().type].stats(Study.subject());
 $("toSettings").onclick = () => renderSettings();
@@ -260,7 +267,7 @@ $("toJoin").onclick = () => openJoin();
 document.querySelectorAll("[data-home]").forEach(b => b.onclick = renderHome);
 $("resetStats").onclick = e => {
   const b = e.currentTarget, subj = Study.subject();
-  if (!b.dataset.armed){ b.dataset.armed = "1"; b.textContent = "Tap again to confirm reset"; return; }
+  if (!b.dataset.armed){ b.dataset.armed = "1"; setLabel(b, "alert", "Tap again to confirm reset"); return; }
   Study.engines[subj.type].reset(subj);
   ST.resets = ST.resets || {}; ST.resets[subj.id] = Date.now(); save();   // so synced devices clear it too
   if (ST.lbUser) LB.sync();

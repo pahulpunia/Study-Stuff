@@ -6,7 +6,7 @@ function resetBackupUI(){
   setLabel($("bkCopy"), "upload", "Copy backup code"); setLabel($("bkRestore"), "download", "Restore");
   $("bkRestore").dataset.mode = ""; $("bkText").classList.add("hidden"); $("bkText").value = "";
   $("resetStats").dataset.armed = "";
-  $("resetStats").textContent = `Reset ${Study.subject().name} stats`;
+  setLabel($("resetStats"), "eraser", `Reset ${Study.subject().name} stats`);
 }
 $("bkCopy").onclick = () => {
   const code = btoa(unescape(encodeURIComponent(JSON.stringify(ST))));
@@ -320,6 +320,7 @@ function renderSettings(){
   $("onlineRow").classList.toggle("hidden", !(LB.cfg() && ST.lbUser));
   $("celebrate").checked = ST.settings.confetti !== false;
   $("bigText").checked = !!ST.settings.big;
+  $("motion").checked = ST.settings.motion !== false;
   paintTheme();
   resetBackupUI();
   $("toBoard").classList.toggle("hidden", !LB.cfg());
@@ -367,7 +368,7 @@ function renderAccount(){
     const pend = (ST.lbPending || []).reduce((a, x) => a + x.p, 0);
     box.innerHTML = `<div class="acrow"><span>Signed in as <button class="link acme" id="acMe">${escHTML(LB.name)}</button></span><button class="link" id="acOut">Sign out</button></div>
       ${pend ? `<div class="small">${pend} pts to send</div>` : ""}
-      <label class="toggle acsync"><input type="checkbox" id="acSync" ${ST.settings.sync === false ? "" : "checked"}><span>Sync progress across your devices</span></label>
+      <label class="sw setrow acsync"><span class="setl">${ic("cloud")}<span>Sync progress across your devices</span></span><input type="checkbox" id="acSync" role="switch" ${ST.settings.sync === false ? "" : "checked"}><span class="swt" aria-hidden="true"></span></label>
       <div id="lbList"></div><button class="grow lbtoggle" id="lbShow">${ic("refresh")}<span>Refresh</span></button>`;
     $("acOut").onclick = async () => { await LB.signOut(); acctTab = "in"; renderAccount(); paintJoin(); Shell.update(); };
     $("lbShow").onclick = showBoard;
@@ -377,12 +378,12 @@ function renderAccount(){
     return;
   }
   const up = acctTab === "up";
-  box.innerHTML = `<div class="seg"><button id="tabIn" class="${up ? "" : "on"}">Sign in</button><button id="tabUp" class="${up ? "on" : ""}">Create account</button></div>
+  box.innerHTML = `<div class="seg"><button id="tabIn" class="${up ? "" : "on"}">${ic("login")}<span>Sign in</span></button><button id="tabUp" class="${up ? "on" : ""}">${ic("userPlus")}<span>Create account</span></button></div>
     <form id="acForm" autocomplete="on">
       <input id="acName" type="text" placeholder="Username" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="username">
       <input id="acPass" type="password" placeholder="Password" autocomplete="${up ? "new-password" : "current-password"}">
       ${up ? `<input id="acInv" type="password" placeholder="Club password" autocomplete="off">` : ""}
-      <button type="submit" class="primary" id="acGo" style="width:100%">${up ? "Create account" : "Sign in"}</button>
+      <button type="submit" class="primary" id="acGo" style="width:100%">${ic(up ? "userPlus" : "login")}<span>${up ? "Create account" : "Sign in"}</span></button>
     </form>
     <div class="acerr" id="acErr"></div>`;
   $("tabIn").onclick = () => { acctTab = "in"; renderAccount(); };

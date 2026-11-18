@@ -325,7 +325,8 @@ input[type=text], input[type=password]{border-width:1.5px;border-radius:10px;bac
 /* math quiz: question left, answers right, once the content area is wide enough */
 @container (min-width: 860px){
   #mquiz .mcard{display:grid;grid-template-columns:minmax(0, 1.05fr) minmax(0, 1fr);column-gap:32px;align-items:start;padding:26px 28px 24px}
-  #mquiz .mq-left{position:sticky;top:76px}
+  /* keeps the question in view while the answers scroll; more specific than the plain rule below, which the drawing canvas needs on phones */
+  #mquiz .mcard .mq-left{position:sticky;top:76px}
   #mquiz .mdisplay{font-size:1.45rem;text-align:left;padding-left:0}
   .mprev{font-size:1.1rem}
 }
@@ -482,9 +483,12 @@ button:has(> .ic){display:inline-flex;align-items:center;justify-content:center}
 @media (hover:hover) and (pointer:fine){ .chip:not(:disabled):hover{border-color:var(--accent);background:var(--accent-soft)} }
 
 /* question top line: source + Learn this */
-.qtop{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
-.qtop .srcchip{margin-bottom:0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.learnbtn{flex:none;font-size:.85rem;padding:4px 2px}
+.qtop{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px 8px;margin-bottom:8px}
+.qtop .srcchip{margin-bottom:0;min-width:0;max-width:100%;flex:0 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.learnbtn{flex:none;padding:4px 2px}
+/* the question's tool buttons: one size, never wrapping mid-label; if the row is too tight they move to their own line */
+.qtop .qacts{flex:0 0 auto;margin-left:auto}
+.qtop .qacts .link{font-size:.88rem;white-space:nowrap}
 .sollearn{margin-top:10px;font-size:.9rem;padding:4px 0}
 
 /* ================= Learn sheet: bottom sheet on phones, dialog on desktop ================= */
@@ -890,6 +894,7 @@ html.bigtext .mtext, html.bigtext .chip, html.bigtext .notes{font-size:1.08em}
 .ncheck summary::before{content:"+";color:var(--accent);font-weight:800;width:12px;flex:none}
 .ncheck details[open] summary::before{content:"−"}
 .ncheck details > div{margin:6px 0 2px 20px;color:var(--ink);opacity:.92}
+.ncheck summary > span{flex:1;min-width:0}
 
 #msecFull{margin-top:6px;line-height:1.35}
 
@@ -933,3 +938,117 @@ html.bigtext .mtext, html.bigtext .chip, html.bigtext .notes{font-size:1.08em}
 .psbar{height:8px;border-radius:99px;background:var(--bg);overflow:hidden;border:1px solid var(--line)} .psbar i{display:block;height:100%;background:var(--accent);border-radius:99px}
 .acme{font-weight:800;padding:0}
 .profbox .clabel{font-size:.78rem;font-weight:700;color:var(--muted);margin:14px 0 4px;text-transform:none}
+
+/* icons in headings, segmented buttons, labels and subject chips */
+h2 > svg.ic:first-child{color:var(--accent);margin-right:8px;vertical-align:-.22em}
+.seg button{display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.seg button .ic{width:1.1em;height:1.1em}
+.chaplabel{display:inline-flex;align-items:center;gap:6px} .chaplabel .ic{width:1.05em;height:1.05em;color:var(--muted)}
+#subSubj button{display:inline-flex;align-items:center;justify-content:center;gap:6px}
+#subSubj button .ic{opacity:.85}
+#mPrev{display:inline-flex;align-items:center;justify-content:center}
+#mPrev.hidden{display:none}
+
+/* ================= motion ================= */
+/* page switches: fade and a small rise; the quiz pages only fade, since their docks and top bars are pinned to the screen */
+@keyframes pagein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+.wrap > section:not(.hidden){animation:pagein .24s cubic-bezier(.2,.7,.2,1) backwards}
+.wrap > #mquiz:not(.hidden), .wrap > #quiz:not(.hidden){animation:fadein .18s ease-out backwards}
+/* next question: the question and answers settle in; the dock and buttons stay put */
+@keyframes qin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+/* backwards, not both: a finished animation must not leave a transform behind, or pinned children (dock, admin key) shift */
+#mCard.qin .mq-left, #mCard.qin #mFields, #quiz .qcard.qin{animation:qin .22s cubic-bezier(.2,.7,.2,1) backwards}
+/* pop-ups: backdrop fades, the box rises (phone) or scales up (desktop) */
+.sheet:not(.hidden){animation:fadein .18s ease-out}
+@keyframes popin{from{opacity:0;transform:translateY(10px) scale(.97)}to{opacity:1;transform:none}}
+@media (min-width: 720px){ .sheet:not(.hidden) .sheetbox{animation:popin .22s cubic-bezier(.2,.8,.2,1)} }
+/* buttons press in a little; chips and toggles ease between states */
+button:not(:disabled):active{transform:scale(.97)}
+button{transition:background-color .15s, border-color .15s, color .15s, transform .12s, opacity .15s}
+.chip{transition:background-color .15s, border-color .15s, color .15s, transform .12s}
+.seg button{transition:background-color .2s, color .2s, box-shadow .2s}
+
+/* sidebar groups slide open and closed */
+@media (min-width: 960px){
+  .rsub{display:grid;grid-template-rows:1fr;transition:grid-template-rows .28s cubic-bezier(.3,.7,.2,1), opacity .22s, margin-bottom .28s}
+  .rsub[data-open="false"]{grid-template-rows:0fr;opacity:0;margin-bottom:0}
+  /* the extra left room keeps the "you are here" marker from being clipped */
+  .rsubin{display:flex;flex-direction:column;gap:2px;min-height:0;overflow:hidden;margin-left:-40px;padding-left:40px}
+  .rnav .rgrp .caret{transition:transform .25s cubic-bezier(.3,.7,.2,1)}
+}
+
+/* "Check yourself" answers and other expandable bits open smoothly where the browser supports it */
+:root{interpolate-size:allow-keywords}
+.ncheck details::details-content, details.wideas::details-content{block-size:0;overflow-y:clip;transition:block-size .26s cubic-bezier(.3,.7,.2,1), content-visibility .26s allow-discrete}
+.ncheck details[open]::details-content, details.wideas[open]::details-content{block-size:auto}
+.ncheck summary::before{transition:transform .2s}
+.ncheck details[open] summary::before{transform:rotate(180deg)}
+
+/* desktop dropdowns: a styled menu that fades and slides in (phones keep their own picker) */
+@supports (appearance: base-select){
+  @media (hover:hover) and (pointer:fine){
+    select.chapsel, select.chapsel::picker(select){appearance:base-select}
+    select.chapsel{display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;transition:border-color .15s, background-color .15s}
+    select.chapsel:hover{border-color:var(--accent)}
+    select.chapsel::picker-icon{content:"";width:14px;height:14px;background:var(--muted);transition:rotate .25s cubic-bezier(.3,.7,.2,1);
+      -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9.5l6 6 6-6'/%3E%3C/svg%3E") center/contain no-repeat;
+              mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9.5l6 6 6-6'/%3E%3C/svg%3E") center/contain no-repeat}
+    select.chapsel:open::picker-icon{rotate:180deg}
+    select.chapsel::picker(select){border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);padding:6px;margin-top:6px;
+      box-shadow:0 18px 40px -16px rgba(0,0,0,.55);max-height:min(60vh, 460px);
+      opacity:0;transform:translateY(-6px) scale(.98);transform-origin:top center;
+      transition:opacity .18s ease-out, transform .2s cubic-bezier(.2,.8,.2,1), overlay .2s allow-discrete, display .2s allow-discrete}
+    select.chapsel:open::picker(select){opacity:1;transform:none}
+    @starting-style{ select.chapsel:open::picker(select){opacity:0;transform:translateY(-6px) scale(.98)} }
+    select.chapsel option{padding:8px 10px;border-radius:8px;font-weight:500;white-space:normal;transition:background-color .12s}
+    select.chapsel option:hover, select.chapsel option:focus-visible{background:var(--accent-soft);outline:none}
+    select.chapsel option:checked{color:var(--accent);font-weight:700}
+    select.chapsel option::checkmark{color:var(--accent)}
+    select.chapsel optgroup{font-weight:700;color:var(--muted);font-size:.8rem}
+  }
+}
+
+/* ================= switches (settings) ================= */
+.sw{position:relative;display:flex;align-items:center;justify-content:space-between;gap:14px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+/* the real checkbox sits invisibly on top of the track, so clicking the track clicks it */
+.sw input{position:absolute;right:0;top:50%;transform:translateY(-50%);width:44px;height:26px;margin:0;opacity:0;cursor:pointer;z-index:1}
+.swt{position:relative;flex:none;width:44px;height:26px;border-radius:99px;background:color-mix(in srgb, var(--muted) 35%, var(--bg));border:1px solid var(--line);transition:background-color .22s, border-color .22s}
+.swt::after{content:"";position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.35);transition:transform .24s cubic-bezier(.3,.7,.2,1.2)}
+.sw input:checked + .swt{background:var(--accent);border-color:var(--accent)}
+.sw input:checked + .swt::after{transform:translateX(18px)}
+.sw input:focus-visible + .swt{outline:2px solid var(--accent);outline-offset:2px}
+.sw:active .swt::after{width:23px}
+.sw input:checked:active + .swt::after{transform:translateX(15px)}
+.small-sw input{width:36px;height:22px}
+.small-sw .swt{width:36px;height:22px} .small-sw .swt::after{width:16px;height:16px} .small-sw input:checked + .swt::after{transform:translateX(14px)}
+/* settings rows: icon + label on the left, control on the right, thin lines between */
+#settings .settings{gap:0;align-items:stretch}
+.setrow{width:100%;padding:12px 0;border-top:1px solid var(--line);font-size:.95rem}
+.settings .setrow:first-child{border-top:0;padding-top:4px}
+.setl{display:flex;align-items:center;gap:10px;min-width:0;line-height:1.35}
+.setl > .ic{color:var(--accent);width:1.2em;height:1.2em}
+.settings label.sw{display:flex}
+.themerow{margin-top:4px}
+.acsync{margin-top:10px}
+/* range slider: thin track, round thumb that grows while dragging */
+.slide input[type=range]{-webkit-appearance:none;appearance:none;height:28px;background:transparent;margin-top:6px;cursor:pointer}
+.slide input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:99px;background:linear-gradient(var(--accent), var(--accent)) 0/var(--fill, 0%) 100% no-repeat, color-mix(in srgb, var(--muted) 30%, var(--bg))}
+.slide input[type=range]::-moz-range-track{height:6px;border-radius:99px;background:color-mix(in srgb, var(--muted) 30%, var(--bg))}
+.slide input[type=range]::-moz-range-progress{height:6px;border-radius:99px;background:var(--accent)}
+.slide input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;margin-top:-7px;border-radius:50%;background:#fff;border:0;box-shadow:0 1px 4px rgba(0,0,0,.4);transition:transform .15s}
+.slide input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:#fff;border:0;box-shadow:0 1px 4px rgba(0,0,0,.4);transition:transform .15s}
+.slide input[type=range]:active::-webkit-slider-thumb{transform:scale(1.18)}
+.slide input[type=range]:active::-moz-range-thumb{transform:scale(1.18)}
+.slide input[type=range]:focus-visible{outline:none}
+.slide input[type=range]:focus-visible::-webkit-slider-thumb{outline:2px solid var(--accent);outline-offset:2px}
+
+/* phones: keep motion short and small */
+@media (max-width: 719px){
+  @keyframes pagein{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+  .wrap > section:not(.hidden){animation-duration:.2s}
+}
+/* "Animations" switched off in Settings: same as the system reduce-motion setting */
+html.nomotion *, html.nomotion *::before, html.nomotion *::after, html.nomotion *::picker(select){transition:none !important;animation:none !important;scroll-behavior:auto !important}
+/* phones: keep the question toolbar on one line; the source label shortens instead */
+@media (max-width: 480px){ .qtop{flex-wrap:nowrap} .qtop .srcchip{flex:0 1 auto} }

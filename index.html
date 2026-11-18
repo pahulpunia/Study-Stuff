@@ -51,8 +51,8 @@
     <div id="probHome" class="hidden">
       <div class="card chapcard">
         <div class="pickrow">
-          <div class="pick hidden" id="munitPick"><label class="chaplabel" for="munitSel">Unit</label><select id="munitSel" class="chapsel"></select></div>
-          <div class="pick grow" id="msecPick"><label class="chaplabel" for="msecSel">Section</label><select id="msecSel" class="chapsel"></select></div>
+          <div class="pick hidden" id="munitPick"><label class="chaplabel" for="munitSel" data-ic="layers">Unit</label><select id="munitSel" class="chapsel"></select></div>
+          <div class="pick grow" id="msecPick"><label class="chaplabel" for="msecSel" data-ic="list">Section</label><select id="msecSel" class="chapsel"></select></div>
         </div>
         <p class="sub cardnote" id="homeBlurbP"></p>
       </div>
@@ -119,7 +119,7 @@
       <textarea id="bragText" rows="2" class="hidden" readonly></textarea>
     </div>
     <div class="card">
-      <h2>Round breakdown</h2>
+      <h2 data-ic="listCheck">Round breakdown</h2>
       <ul class="res" id="resList"></ul>
     </div>
   </section>
@@ -127,38 +127,39 @@
   <!-- STUDY -->
   <section id="study" class="hidden">
     <div class="topbar"><button class="link" data-home data-ic="back">Back</button></div>
-    <div class="card"><h2 id="studyTitle">Study list</h2><div id="studyList"></div></div>
+    <div class="card"><h2 class="ih">ICON:book<span id="studyTitle">Study list</span></h2><div id="studyList"></div></div>
   </section>
 
   <!-- STATS -->
   <section id="stats" class="hidden">
     <div class="topbar"><button class="link" data-home data-ic="back">Back</button></div>
-    <div class="card"><h2 id="statsTitle">Best scores</h2><div id="bestList"></div></div>
-    <div class="card"><h2 id="accTitle">Word accuracy <span class="small">(weakest first)</span></h2><div id="accList"></div></div>
-    <button id="resetStats">Reset stats (all chapters)</button>
+    <div class="card"><h2 class="ih">ICON:medal<span id="statsTitle">Best scores</span></h2><div id="bestList"></div></div>
+    <div class="card"><h2 class="ih">ICON:target<span id="accTitle">Word accuracy <span class="small">(weakest first)</span></span></h2><div id="accList"></div></div>
+    <button id="resetStats" data-ic="eraser">Reset stats (all chapters)</button>
   </section>
 
   <!-- SETTINGS -->
   <section id="settings" class="hidden">
     <button class="adminkey" id="adminKey" tabindex="-1" aria-hidden="true"></button>
     <div class="topbar"><button class="link" data-home data-ic="back">Back</button></div>
-    <div class="card"><h2>Settings</h2>
+    <div class="card"><h2 data-ic="gear">Settings</h2>
       <div class="settings">
-        <div class="slide"><label for="countRange">Questions per round</label><b id="countVal">All</b>
+        <div class="slide setrow"><span class="setl">ICON:hash<label for="countRange">Questions per round</label></span><b id="countVal">All</b>
           <input type="range" id="countRange" min="0" max="8" step="1" aria-describedby="countVal"></div>
-        <label><input type="checkbox" id="secondChance"> Second chance on misses</label>
-        <label><input type="checkbox" id="autoNext"> Go to the next question after a right answer</label>
-        <label><input type="checkbox" id="celebrate"> Confetti for new bests</label>
-        <label><input type="checkbox" id="bigText"> Larger text</label>
-        <label id="onlineRow"><input type="checkbox" id="showOnline"> Show friends when I'm online and what I'm studying</label>
+        <label class="sw setrow"><span class="setl">ICON:undo<span>Second chance on misses</span></span><input type="checkbox" id="secondChance" role="switch"><span class="swt" aria-hidden="true"></span></label>
+        <label class="sw setrow"><span class="setl">ICON:skip<span>Go to the next question after a right answer</span></span><input type="checkbox" id="autoNext" role="switch"><span class="swt" aria-hidden="true"></span></label>
+        <label class="sw setrow"><span class="setl">ICON:popper<span>Confetti for new bests</span></span><input type="checkbox" id="celebrate" role="switch"><span class="swt" aria-hidden="true"></span></label>
+        <label class="sw setrow"><span class="setl">ICON:textSize<span>Larger text</span></span><input type="checkbox" id="bigText" role="switch"><span class="swt" aria-hidden="true"></span></label>
+        <label class="sw setrow"><span class="setl">ICON:sparkle<span>Animations</span></span><input type="checkbox" id="motion" role="switch"><span class="swt" aria-hidden="true"></span></label>
+        <label class="sw setrow" id="onlineRow"><span class="setl">ICON:users<span>Show friends when I'm online and what I'm studying</span></span><input type="checkbox" id="showOnline" role="switch"><span class="swt" aria-hidden="true"></span></label>
       </div>
-      <div class="themerow"><span>Theme</span><div class="seg" id="themeSeg" role="radiogroup" aria-label="Theme"><button data-t="dark" role="radio">Dark</button><button data-t="light" role="radio">Light</button></div></div>
+      <div class="themerow"><span class="setl">ICON:contrast<span>Theme</span></span><div class="seg" id="themeSeg" role="radiogroup" aria-label="Theme"><button data-t="dark" role="radio" data-ic="moon">Dark</button><button data-t="light" role="radio" data-ic="sun">Light</button></div></div>
     </div>
     <button class="card rowbtn" id="toBoard" data-ic="trophy">Account &amp; leaderboard</button>
-    <div class="card hidden" id="partyCard"><h2>Party</h2><div id="partyBox"></div></div>
+    <div class="card hidden" id="partyCard"><h2 data-ic="popper">Party</h2><div id="partyBox"></div></div>
     <button class="card rowbtn" id="toIssues" data-ic="flag">Issues &amp; reports</button>
     <div class="card">
-      <h2>Backup</h2>
+      <h2 data-ic="archive">Backup</h2>
       <div class="row"><button class="grow" id="bkCopy"></button><button class="grow" id="bkRestore"></button></div>
       <textarea id="bkText" rows="3" class="hidden"></textarea>
     </div>
@@ -178,17 +179,17 @@
 
   <section id="board" class="hidden">
     <div class="topbar"><button class="link" data-home data-ic="back">Back</button></div>
-    <div class="card" id="acctCard"><h2>Leaderboard</h2><div id="acct"></div></div>
+    <div class="card" id="acctCard"><h2 data-ic="trophy">Leaderboard</h2><div id="acct"></div></div>
   </section>
 
   <!-- ISSUES (reported problems, public, no names) -->
   <section id="issues" class="hidden">
     <div class="topbar"><button class="link" id="isBack" data-ic="back">Settings</button><span class="chip" id="isCount"></span></div>
     <div class="card">
-      <h2>Issues</h2>
+      <h2 data-ic="flag">Issues</h2>
       <p class="small">Problems people have reported and what's been done about them. Names aren't shown.</p>
       <button class="primary" id="isNew" data-ic="flag">Report a problem</button>
-      <div class="seg isfilter" id="isFilter" role="radiogroup" aria-label="Show"><button role="radio" data-f="open">Open</button><button role="radio" data-f="done">Done</button><button role="radio" data-f="all">All</button></div>
+      <div class="seg isfilter" id="isFilter" role="radiogroup" aria-label="Show"><button role="radio" data-f="open" data-ic="circleDot">Open</button><button role="radio" data-f="done" data-ic="checkCircle">Done</button><button role="radio" data-f="all" data-ic="list">All</button></div>
       <div id="isList"></div>
     </div>
   </section>
@@ -204,7 +205,7 @@
     <div class="qhead">
       <div class="topbar">
         <button class="link" id="mQuit" data-ic="close">Quit</button>
-        <span class="ccount"><button class="prevq hidden" id="mPrev" aria-label="Look back at the previous question">‹</button><span class="chip" id="mCount"></span></span>
+        <span class="ccount"><button class="prevq hidden" id="mPrev" aria-label="Look back at the previous question" title="Previous question">ICON:chevLeft</button><span class="chip" id="mCount"></span></span>
         <div class="hud"><span id="mStreak" class="streak"></span><span id="mScore"></span></div>
       </div>
       <div class="bar"><div id="mProg"></div></div>
@@ -231,9 +232,9 @@
         <button data-k="∞" aria-label="infinity">∞</button><button data-k="DNE" class="kword">DNE</button><button data-k="none" class="kword">none</button>
       </div>
       <div class="row dockrow">
-        <button class="primary grow" id="mCheck">Check</button>
-        <button id="mHintBtn">Hint</button>
-        <button id="mSkip">Skip</button>
+        <button class="primary grow" id="mCheck" data-ic="check">Check</button>
+        <button id="mHintBtn" data-ic="bulb">Hint</button>
+        <button id="mSkip" data-ic="skip">Skip</button>
       </div>
     </div>
         <div class="fb" id="mFb"></div>
@@ -253,22 +254,22 @@
         <div class="stat"><b id="meTime"></b><span>time</span></div>
       </div>
       <div class="row">
-        <button class="primary grow" id="meAgain">Play again</button>
+        <button class="primary grow" id="meAgain" data-ic="refresh">Play again</button>
         <button class="grow" id="meRetry">Retry missed</button>
       </div>
       <div class="row">
         <button class="grow" id="meBrag" data-ic="copy">Copy score to send</button>
-        <button class="grow" id="meHome">Home</button>
+        <button class="grow" id="meHome" data-ic="home">Home</button>
       </div>
       <textarea id="meBragText" rows="2" class="hidden" readonly></textarea>
     </div>
-    <div class="card"><h2>Round breakdown</h2><ul class="res" id="meList"></ul></div>
+    <div class="card"><h2 data-ic="listCheck">Round breakdown</h2><ul class="res" id="meList"></ul></div>
   </section>
 
   <!-- MATH NOTES -->
   <section id="mnotes" class="hidden">
     <div class="topbar"><button class="link" data-home data-ic="back">Back</button></div>
-    <div class="card"><h2>Notes summary</h2><div id="mnotesBody"></div></div>
+    <div class="card"><h2 data-ic="notes">Notes summary</h2><div id="mnotesBody"></div></div>
   </section>
 </div><!-- /wrap -->
 <aside class="ctx" id="ctx" aria-label="Progress"></aside>
