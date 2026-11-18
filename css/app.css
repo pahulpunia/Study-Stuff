@@ -1052,3 +1052,7 @@ button{transition:background-color .15s, border-color .15s, color .15s, transfor
 html.nomotion *, html.nomotion *::before, html.nomotion *::after, html.nomotion *::picker(select){transition:none !important;animation:none !important;scroll-behavior:auto !important}
 /* phones: keep the question toolbar on one line; the source label shortens instead */
 @media (max-width: 480px){ .qtop{flex-wrap:nowrap} .qtop .srcchip{flex:0 1 auto} }
+
+/* timed tests */
+#mCount.low{color:var(--warn);border-color:var(--warn)}
+.res .mtans{margin-top:4px}

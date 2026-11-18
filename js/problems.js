@@ -27,6 +27,7 @@ const MMODES = {
   mastery: {name:"Mastery", desc:"Misses come back until they stick", icon:"loop"},
   drill:   {name:"Endless Drill", desc:"New random problems, forever", icon:"infinity", gen:true},
   weak:    {name:"Weak Spots", desc:"Your 8 most-missed", icon:"target"},
+  timed:   {name:"Timed Test", desc:"", icon:"timer", timed:true},
   tough:   {name:"Tough Ones", desc:"What the club misses most", icon:"bolt", club:true},
   saq:     {name:"Short Answer", desc:"Write it, then compare to a model answer", icon:"quill", write:"saq"},
   leq:     {name:"Essay Thesis", desc:"Build an LEQ thesis step by step", icon:"pencil", write:"leq"}
@@ -180,8 +181,10 @@ function renderMathHome(subj){
     if (m.gen && !drillHas(mSec())) return;
     if (m.write && !Write.has(m.write, mSec())) return;
     if (m.club && toughList(mSec()).length < 4) return;
+    if (m.timed && !PSUBJ.timed) return;
     const b = el("button", "mode");
-    modeTile(b, m.icon, m.name, k === "practice" && Study.subject().practiceDesc || m.desc, m.write ? null : ST.mbest[mBestKey(k)]);
+    const desc = m.timed ? (p => `${p.queue.length} questions · ${Math.round(p.secs / 60)} min, real test pace`)(mTimedPlan(true)) : k === "practice" && Study.subject().practiceDesc || m.desc;
+    modeTile(b, m.icon, m.name, desc, m.write ? null : ST.mbest[mBestKey(k)]);
     b.onclick = () => m.write ? Write.start(m.write) : mStart(k);
     box.appendChild(b);
   });
@@ -292,10 +295,55 @@ function mStart(mode, override){
   if (mode === "weak") list = list.slice().sort((a, b) => ((mAcc(a.id) ?? 0.5) - (mAcc(b.id) ?? 0.5)) || Math.random() - 0.5).slice(0, 8);
   let queue = mode === "drill" ? [drillMake(mSec())] : shuffle(list);
   if (mode === "practice" && !override && ST.settings.count) queue = queue.slice(0, ST.settings.count);
+  const plan = mode === "timed" && !override ? mTimedPlan() : null;
+  if (plan) queue = plan.queue;
   M = {mode, queue, idx:0, score:0, streak:0, bestStreak:0, results:[], mastered:new Set(), total:queue.length, start:Date.now(), override:!!override,
        subj:PSUBJ.id, sec:mSec(), hist:[]};
+  if (plan){ M.endAt = Date.now() + plan.secs * 1000; M.limit = plan.secs; }
   show("mquiz");
   mShow();
+  mTimer();
+}
+/* ---- Timed Test (subjects with a "timed" setting, like SAT and ACT sections) ----
+   A full-length mix from the whole subject at the real test's pace. Passage sets stay together.
+   No hints or right/wrong until the end, like the real thing. */
+function mTimedPlan(peek){
+  const cfg = PSUBJ.timed, items = PB().items.filter(q => !q.gen);
+  const key = q => (PSUBJ.passageSets && (q.stim || q.svg)) || q.id;
+  const groups = []; const at = {};
+  items.forEach(q => { const k = key(q); if (at[k] == null){ at[k] = groups.length; groups.push([]); } groups[at[k]].push(q); });
+  const order = peek ? groups : shuffle(groups), queue = [];
+  for (const g of order){ if (queue.length >= cfg.q) break; queue.push(...g); }
+  const n = queue.length;
+  return {queue, secs: Math.round(cfg.min * 60 * Math.min(n, cfg.q) / cfg.q)};
+}
+const mLeft = () => { const s = Math.max(0, Math.ceil((M.endAt - Date.now()) / 1000)); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")} left`; };
+function mTimer(){
+  if (!M || M.mode !== "timed" || !M.endAt) return;
+  clearInterval(M.tick);
+  const r = M;
+  M.tick = setInterval(() => {
+    if (M !== r || r.over){ clearInterval(r.tick); return; }
+    const left = r.endAt - Date.now();
+    if (left <= 0){ clearInterval(r.tick); return mTimeUp(); }
+    $("mCount").textContent = `${r.idx + 1} of ${r.queue.length} · ${mLeft()}`;
+    $("mCount").classList.toggle("low", left < 5 * 60e3);
+  }, 1000);
+}
+function mTimeUp(){
+  // anything not reached counts as unanswered
+  for (let i = M.idx + (M.answered ? 1 : 0); i < M.queue.length; i++){ const q = M.queue[i];
+    M.results.push({id:q.id, src:q.src, label:qLabel(q), q, ok:false, part:"0/" + q.fields.length, pts:0, hints:0, attempt:1, skipped:true}); }
+  M.timeUp = true; mFinish();
+}
+function mTimedAnswer(res, vals, skipped){
+  const q = M.queue[M.idx], nOk = res.filter(r => r.ok).length, all = nOk === q.fields.length;
+  if (!skipped){ const rec = ST.mq[mqKey(q.id)] || (ST.mq[mqKey(q.id)] = {c:0, t:0}); rec.t++; if (all) rec.c++; }
+  const pts = Math.round(100 * nOk / q.fields.length);
+  if (all){ M.streak++; M.bestStreak = Math.max(M.bestStreak, M.streak); } else M.streak = 0;
+  M.score += pts; M.answered = true;
+  M.results.push({id:q.id, src:q.src, label:qLabel(q), q, ok:all, part:nOk + "/" + q.fields.length, pts, hints:0, attempt:1, skipped:!!skipped});
+  save(); mPersist(); mNext();
 }
 /* a party round: everyone gets the same questions in the same order (see party.js) */
 function mStartParty(queue, idx, party){
@@ -327,7 +375,7 @@ function mPersist(){
     if (!M || M.over || M.mode === "drill" || M.party){ sessionStorage.removeItem(ROUND_KEY); return; }
     const items = PB().items, ref = q => items.indexOf(q);
     sessionStorage.setItem(ROUND_KEY, JSON.stringify({subj:M.subj, sec:M.sec, mode:M.mode, idx:M.idx, score:M.score, streak:M.streak, bestStreak:M.bestStreak,
-      total:M.total, start:M.start, override:M.override, mastered:[...M.mastered], queue:M.queue.map(ref), answered:!!M.answered, hist:M.hist,
+      total:M.total, start:M.start, endAt:M.endAt, limit:M.limit, override:M.override, mastered:[...M.mastered], queue:M.queue.map(ref), answered:!!M.answered, hist:M.hist,
       results:M.results.map(r => Object.assign({}, r, {q:ref(r.q)})), at:Date.now()}));
   } catch(e){ /* storage full or blocked: resuming just won't survive a reload */ }
 }
@@ -351,6 +399,7 @@ function mResume(){
   if (M.restored){
     M.restored = false;
     if (M.answered){ M.idx++; if (M.idx >= M.queue.length) return mFinish(); }
+    mTimer();
     return mShow();
   }
   mReviewClose(); mHud();
@@ -563,6 +612,7 @@ function mHints(q){
 }
 function mHintBtn(){
   const n = mHints(M.queue[M.idx]).length, b = $("mHintBtn");
+  b.classList.toggle("hidden", M.mode === "timed"); $("mLearn").classList.toggle("hidden", M.mode === "timed");
   b.disabled = M.answered || M.hint >= n;
   setLabel(b, "bulb", n === 0 ? "No hints" : M.hint >= n ? "No more hints" : `Hint ${M.hint + 1}/${n}`);
 }
@@ -583,9 +633,11 @@ $("mHintBtn").onclick = () => {
 };
 
 function mHud(){
+  if (M.mode !== "timed") $("mCount").classList.remove("low");
   $("mScore").textContent = M.score + " pts";
   $("mStreak").innerHTML = M.streak >= 2 ? ic("flame", "ic-s") + M.streak : "";
   if (M.mode === "mastery"){ $("mCount").textContent = `Mastered ${M.mastered.size} of ${M.total}`; $("mProg").style.width = (M.mastered.size / M.total * 100) + "%"; }
+  else if (M.mode === "timed"){ $("mCount").textContent = `${M.idx + 1} of ${M.queue.length} · ${mLeft()}`; $("mProg").style.width = (M.idx / M.queue.length * 100) + "%"; }
   else if (M.mode === "drill"){ const c = M.results.filter(r => r.ok).length; $("mCount").textContent = `Drill #${M.idx + 1} · ${c} correct`; $("mProg").style.width = "100%"; }
   else { $("mCount").textContent = `Problem ${M.idx + 1} of ${M.queue.length}`; $("mProg").style.width = (M.idx / M.queue.length * 100) + "%"; }
   $("mPrev").classList.toggle("hidden", !(M.hist && M.hist[M.idx - 1]));
@@ -651,6 +703,7 @@ function mCheck(){
 function mJudge(vals, remote){
   const q = M.queue[M.idx];
   const res = q.fields.map((f, i) => $("mf" + i).dataset.ok === "1" ? {ok:true} : MC.check(f, vals[i]));
+  if (M.mode === "timed") return mTimedAnswer(res, vals);
   const nOk = res.filter(r => r.ok).length;
   if (nOk === q.fields.length) return mReveal(res, vals);
   // no second try on a two-option question (it would just give the answer away)
@@ -724,6 +777,7 @@ function mSetLive(v){
 $("mCheck").onclick = mCheck;
 $("mSkip").onclick = () => {
   if (M.answered) return;
+  if (M.mode === "timed") return mTimedAnswer(M.queue[M.idx].fields.map(() => ({ok:false})), [], true);
   if (M.party) Party.submit(M.idx, M.attempt, null, true);
   mReveal(M.queue[M.idx].fields.map(() => ({ok:false})), M.queue[M.idx].fields.map(() => ""), true);
 };
@@ -803,6 +857,7 @@ $("mReport").onclick = () => {
   Issues.open({kind: "question", subj: PSUBJ.id, where: questionSection(q).name || mSecInfo(M.sec).name, q: mPlainQ(q), qk: LB.qkey(q)});
 };
 $("mQuit").onclick = () => {
+  if (M) clearInterval(M.tick);
   if (M && M.party) return Party.leave();
   if (M && M.results.length && M.mode === "drill") return mFinish();
   // quitting partway: the points you earned still count
@@ -825,7 +880,8 @@ function mFinish(){
   save();
   if (!M.sent){ M.sent = true; LB.submit(PSUBJ.id, M.score); LB.record(PSUBJ.id, M.results); mLog(false); }
   const secName = mSecInfo().name;
-  $("meMode").textContent = `${secName} · ${MMODES[M.mode].name}` + (M.override ? " · retry" : "");
+  clearInterval(M.tick);
+  $("meMode").textContent = (M.mode === "timed" ? PSUBJ.name : secName) + ` · ${MMODES[M.mode].name}` + (M.override ? " · retry" : "") + (M.timeUp ? " · time's up" : "");
   countUp($("meScore"), M.score);
   $("meBest").classList.toggle("hidden", !newBest);
   $("meAcc").textContent = acc + "%"; $("meStreak").innerHTML = ic("flame", "ic-s") + M.bestStreak; $("meTime").textContent = fmtTime(Date.now() - M.start);
@@ -838,6 +894,8 @@ function mFinish(){
   M.results.forEach(r => {
     const li = el("li");
     li.innerHTML = `<span class="${r.ok ? "ok" : "no"}">${ic(r.ok ? "check" : "close", "ic-s")}</span> <b>${r.src}</b> <span class="small">${r.ok ? "+" + r.pts : r.skipped ? "skipped" : r.part + " parts"}${r.hints ? " · " + r.hints + " hint" + (r.hints > 1 ? "s" : "") : ""}</span><div class="mmini">${mPrompt(r.q) || MC.renderText(r.q.text)}</div>`;
+    // timed tests gave no feedback during the test, so show the right answer for each miss here
+    if (M.mode === "timed" && !r.ok) li.insertAdjacentHTML("beforeend", `<div class="small mtans">Answer: ${r.q.fields.map(f => MC.answerHTML(f)).join(" · ")}</div>`);
     ul.appendChild(li);
   });
   M.brag = `${PSUBJ.name} (${secName}, ${MMODES[M.mode].name}): ${M.score} pts, ${c}/${n} right, best streak ${M.bestStreak}. Beat that.`;

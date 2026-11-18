@@ -14,6 +14,7 @@
    blurb    optional short tip under the section picker (leave it out if it isn't needed)
    passageSets  true when passages carry sets of any size (ACT Reading and Science)
    singlePassage true when each passage has just one question (SAT), so the checker doesn't expect sets of three
+   timed    optional {q, min}: the real test's length, for the Timed Test mode
    practiceDesc  optional line under the Practice button, for subjects whose questions aren't from class notes
 
    terms-only:     setLabel ("Chapter"), groupLabel/groupsLabel ("Root"/"Roots"), itemLabel ("word"), defaultSet
@@ -75,6 +76,7 @@ window.SUBJECTS = [
     files: ["subjects/testprep/sat-math.js"],
     blurb: "The real section is 44 questions in 70 minutes, calculator allowed",
     practiceDesc: "Test-style questions, shuffled",
+    timed: {q:44, min:70},
     defaultSection: "alg:a1"
   },
   {
@@ -83,6 +85,7 @@ window.SUBJECTS = [
     blurb: "The real section is 54 questions in 64 minutes, one question per passage",
     practiceDesc: "Test-style questions, shuffled",
     singlePassage: true,
+    timed: {q:54, min:64},
     defaultSection: "cs:w"
   },
   {
@@ -90,6 +93,7 @@ window.SUBJECTS = [
     files: ["subjects/testprep/act-math.js"],
     blurb: "The real section is 45 questions in 50 minutes, with no formula sheet",
     practiceDesc: "Test-style questions, shuffled",
+    timed: {q:45, min:50},
     defaultSection: "nq:n1"
   },
   {
@@ -98,6 +102,7 @@ window.SUBJECTS = [
     blurb: "The real section is 50 questions in 35 minutes, about 42 seconds each",
     practiceDesc: "Test-style questions, shuffled",
     singlePassage: true,
+    timed: {q:50, min:35},
     defaultSection: "cse:p"
   },
   {
@@ -106,6 +111,7 @@ window.SUBJECTS = [
     blurb: "The real section is 36 questions in 40 minutes: four passages, nine questions each",
     practiceDesc: "Test-style questions, shuffled",
     passageSets: true,
+    timed: {q:36, min:40},
     defaultSection: "rd:lit"
   },
   {
@@ -114,6 +120,7 @@ window.SUBJECTS = [
     blurb: "The real section is 40 questions in 40 minutes and is optional",
     practiceDesc: "Test-style questions, shuffled",
     passageSets: true,
+    timed: {q:40, min:40},
     defaultSection: "sci:dr"
   }
 ];
