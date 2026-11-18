@@ -11,7 +11,7 @@ const Write = (() => {
   function pool(kind, sec){
     const units = PB().units, [uid, sid] = String(sec).split(":");
     const all = units.flatMap(u => (u[kind] || []).map((it, i) => Object.assign({u, id:`${u.id}:${kind}${i}`}, it)));
-    const inSec = it => kind === "saq" ? it.sec === sid : (it.secs || []).includes(sid);
+    const inSec = it => (kind === "saq" && it.sec === sid) || (it.secs || []).includes(sid);
     if (sec === "*all") return shuffle(all);
     const unit = all.filter(it => it.u.id === uid);
     if (sid === "all" || sid === "rev") return shuffle(unit);
@@ -55,11 +55,11 @@ const Write = (() => {
   /* ---------- SAQ ---------- */
   function drawSAQ(it){
     $("wCard").innerHTML = `
-      <div class="qtop"><span class="srcchip">${escHTML(secName(it))} · SAQ</span>${learnBtn(it)}</div>
+      <div class="qtop"><span class="srcchip">${escHTML(secName(it))} · ${PSUBJ.saqTag || "SAQ"}</span>${learnBtn(it)}</div>
       ${stimHTML(it)}
       <p class="wlead">Answer each part in one to three complete sentences.</p>
       <ol class="saq">${it.parts.map((p, i) => `
-        <li><div class="wq"><b>(${"abc"[i]})</b> ${T(p.q)}</div>
+        <li><div class="wq"><b>(${"abcd"[i]})</b> ${T(p.q)}</div>
           <textarea id="wa${i}" rows="3" placeholder="Your answer"></textarea>
           <div class="wfb hidden" id="wf${i}"></div></li>`).join("")}</ol>
       <div class="row wbtns"><button class="primary grow" id="wCheck">Check my answers</button><button id="wNext">${ic("refresh")}<span>New prompt</span></button></div>
@@ -72,10 +72,10 @@ const Write = (() => {
     it.parts.forEach((p, i) => {
       const a = $("wa" + i).value, n = words(a), verb = low(p.q).split(" ")[0];
       const hits = p.look.filter(w => low(a).includes(w));
-      const explain = verb === "explain" || verb === "describe";
+      const explain = verb === "explain" || verb === "describe" || verb === "justify", min = verb === "identify" || verb === "calculate" ? 3 : 8;
       const tips = [
-        row(n >= 8, n >= 8 ? "Written as a full answer" : n ? "Too short. Use a complete sentence or two" : "Not answered yet"),
-        row(hits.length > 0, hits.length ? `Specific evidence: ${hits.slice(0, 3).map(h => `<b>${escHTML(h)}</b>`).join(", ")}` : "Name something specific: a person, place, group, or term from this chapter"),
+        row(n >= min, n >= min ? "Written as a full answer" : n ? "Too short. Use a complete sentence or two" : "Not answered yet"),
+        row(hits.length > 0, hits.length ? `Specific evidence: ${hits.slice(0, 3).map(h => `<b>${escHTML(h)}</b>`).join(", ")}` : "Use a specific term, example, or detail from this chapter"),
       ];
       if (explain) tips.push(row(CAUSAL.test(a), CAUSAL.test(a) ? "Explains how or why" : "Add the why: connect your evidence with “because” or “which led to”"));
       const box = $("wf" + i);

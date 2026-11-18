@@ -78,6 +78,7 @@ function extendUnit(S, subjId, unitId, ext){
     added.forEach(o => { unit.extraN = (unit.extraN || 0) + 1; o.id = unit.id + "-x" + unit.extraN; });
     b.items.push(...added);
   }
+  if (ext.saq) unit.saq = (unit.saq || []).concat(ext.saq);
   Object.entries(ext.notes || {}).forEach(([sec, blocks]) => {
     const cur = unit.notes && unit.notes[sec]; if (!cur) return;
     const at = cur.findIndex(x => x.check);

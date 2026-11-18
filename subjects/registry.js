@@ -57,7 +57,8 @@ window.SUBJECTS = [
   },
   {
     id: "apbio", name: "AP Biology", short: "AP Bio", group: "science", icon: "dna", type: "problems", tools: ["pad", "calc"],
-    files: ["subjects/apbio/unit0.js", "subjects/apbio/unit1.js", "subjects/apbio/unit2.js", "subjects/apbio/unit3.js", "subjects/apbio/unit4.js", "subjects/apbio/unit5.js", "subjects/apbio/unit6.js", "subjects/apbio/unit7.js", "subjects/apbio/unit8.js", "subjects/apbio/notes-plus.js"],
+    files: ["subjects/apbio/unit0.js", "subjects/apbio/unit1.js", "subjects/apbio/unit2.js", "subjects/apbio/unit3.js", "subjects/apbio/unit4.js", "subjects/apbio/unit5.js", "subjects/apbio/unit6.js", "subjects/apbio/unit7.js", "subjects/apbio/unit8.js", "subjects/apbio/notes-plus.js", "subjects/apbio/frq.js"],
+    saqTag: "FRQ",
     defaultSection: "u3:3.1a"
   },
   {

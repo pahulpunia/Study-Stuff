@@ -147,8 +147,8 @@ for (const s of subjects){
     unit.items.forEach(verifyItem); total += unit.items.length;
     verifyNotes(unit);
     (unit.saq || []).forEach((q, i) => { const src = {src:`${unit.id} saq ${i}`};
-      if (!unit.sections.some(x => x.id === q.sec)) fail(src, 'unknown section ' + q.sec);
-      if (!q.parts || q.parts.length !== 3) fail(src, 'an SAQ needs parts a, b, c');
+      [q.sec, ...(q.secs || [])].forEach(x => { if (!unit.sections.some(y => y.id === x)) fail(src, 'unknown section ' + x); });
+      if (!q.parts || q.parts.length < 3 || q.parts.length > 4) fail(src, 'a short answer needs 3 or 4 parts');
       (q.parts || []).forEach((p, j) => { if (!p.q || !p.model || !(p.look || []).length) fail(src, `part ${j} needs q, model, look`);
         if ((p.look || []).some(w => w !== w.toLowerCase())) fail(src, 'look words must be lowercase');
         if (!(p.look || []).some(w => p.model.toLowerCase().includes(w))) fail(src, `part ${j}: the model answer should hit at least one look word`); }); });
