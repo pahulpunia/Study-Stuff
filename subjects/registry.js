@@ -51,6 +51,12 @@ window.SUBJECTS = [
     defaultSection: "c2:1"
   },
   {
+    id: "calcab", name: "AP Calculus AB", short: "Calc AB", group: "math", icon: "fx", type: "problems", tools: ["pad", "calc"],
+    files: ["subjects/calc/kit.js", "subjects/calcab/unit1.js", "subjects/calcab/unit2.js", "subjects/calcab/unit3.js", "subjects/calcab/unit4.js"],
+    blurb: "Exact answers work, like 1/4, 5/(2π), or ln(7) + 3/7",
+    defaultSection: "u1:1.1"
+  },
+  {
     id: "hchem", name: "Honors Chemistry", short: "Chem", group: "science", icon: "flask", type: "problems", tools: ["pad", "calc", "pt"],
     files: ["subjects/chem/unit4.js"],
     defaultSection: "u4:4.1"
