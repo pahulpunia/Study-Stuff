@@ -1061,3 +1061,16 @@ html.nomotion *, html.nomotion *::before, html.nomotion *::after, html.nomotion 
 .res .mtsum .mtsecs span{border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:.85rem}
 .res .mtsum .mtsecs span.ok{border-color:var(--good);font-weight:400}
 .res .mtsum .mtsecs span.no{border-color:var(--bad);font-weight:400}
+
+/* subject loading screen */
+#home.loadingsubj #termsHome, #home.loadingsubj #probHome{display:none !important}
+.subjload{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;min-height:260px;color:var(--muted);font-weight:600;text-align:center}
+.subjload .spin{width:34px;height:34px;border-radius:50%;border:3px solid var(--line);border-top-color:var(--accent);animation:spin .8s linear infinite}
+.subjload .spin.hidden{display:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+html.nomotion .subjload .spin{animation-duration:2.4s}
+/* the subject chip row scrolls on its own instead of widening the page */
+html, body{overflow-x:clip}
+.subsubj{overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.subsubj::-webkit-scrollbar{display:none}
+.subsubj button{flex:1 0 auto;white-space:nowrap}

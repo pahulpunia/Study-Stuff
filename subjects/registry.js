@@ -45,16 +45,16 @@ window.SUBJECTS = [
     defaultSection: "u4:4.3"
   },
   {
-    id: "calc", name: "Calculus BC", short: "Calc BC", group: "math", icon: "integral", type: "problems", tools: ["pad", "calc"],
-    files: ["subjects/calc/kit.js", "subjects/calc/ch2.js", "subjects/calc/ch3.js", "subjects/calc/ch4.js", "subjects/calc/ch5.js", "subjects/calc/ch6.js", "subjects/calc/ch7.js", "subjects/calc/ch8.js", "subjects/calc/ch9.js", "subjects/calc/ch10.js", "subjects/calc/notes-plus.js"],
-    blurb: "Exact answers work, like ln(3), π/4, or e^2. Integrals need their + C",
-    defaultSection: "c2:1"
-  },
-  {
     id: "calcab", name: "AP Calculus AB", short: "Calc AB", group: "math", icon: "fx", type: "problems", tools: ["pad", "calc"],
     files: ["subjects/calc/kit.js", "subjects/calcab/unit1.js", "subjects/calcab/unit2.js", "subjects/calcab/unit3.js", "subjects/calcab/unit4.js"],
     blurb: "Exact answers work, like 1/4, 5/(2π), or ln(7) + 3/7",
     defaultSection: "u1:1.1"
+  },
+  {
+    id: "calc", name: "Calculus BC", short: "Calc BC", group: "math", icon: "integral", type: "problems", tools: ["pad", "calc"],
+    files: ["subjects/calc/kit.js", "subjects/calc/ch2.js", "subjects/calc/ch3.js", "subjects/calc/ch4.js", "subjects/calc/ch5.js", "subjects/calc/ch6.js", "subjects/calc/ch7.js", "subjects/calc/ch8.js", "subjects/calc/ch9.js", "subjects/calc/ch10.js", "subjects/calc/notes-plus.js"],
+    blurb: "Exact answers work, like ln(3), π/4, or e^2. Integrals need their + C",
+    defaultSection: "c2:1"
   },
   {
     id: "hchem", name: "Honors Chemistry", short: "Chem", group: "science", icon: "flask", type: "problems", tools: ["pad", "calc", "pt"],
@@ -69,7 +69,7 @@ window.SUBJECTS = [
   },
   {
     id: "apcsp", name: "AP Computer Science Principles", short: "AP CSP", group: "science", icon: "code", type: "problems", tools: ["pad", "calc"],
-    files: ["subjects/apcsp/unit2.js", "subjects/apcsp/errors.js"],
+    files: ["subjects/apcsp/unit2.js", "subjects/apcsp/errors.js", "subjects/apcsp/pseudo.js"],
     passageSets: true,
     defaultSection: "u2:2.1"
   },

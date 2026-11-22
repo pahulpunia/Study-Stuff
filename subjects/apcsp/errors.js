@@ -8,6 +8,7 @@ const {ri, pick} = POLY;
 const SL = "W7D2 slides", AP = "AP CSP practice";
 const TYPES = ["Syntax error", "Logic error", "Runtime error", "Overflow error"];
 const WHICH = "Which kind of error is this?";
+const GOAL = g => `Goal: ${g}. Which kind of error is this?`;
 
 Study.addUnit("apcsp", {
   id: "py", name: "Python: Types of Errors", short: "Errors",
@@ -67,45 +68,46 @@ Study.addUnit("apcsp", {
   },
   problems(k){
     const code = (sec, src, c, text, opts, why) => k.choice([sec], src, text, opts, opts[0], [].concat(why), {shuffle:true, code:c});
-    const kind = (sec, src, c, ans, why) => code(sec, src, c, WHICH, [ans].concat(TYPES.filter(t => t !== ans)), why);
+    // every "which kind" question states the goal, so having a goal never gives the answer away
+    const kind = (sec, src, goal, c, ans, why) => code(sec, src, c, GOAL(goal), [ans].concat(TYPES.filter(t => t !== ans)), why);
     const mc = (sec, src, text, opts, why) => k.choice([sec], src, text, opts, opts[0], [].concat(why), {shuffle:true});
 
     /* ---- e1 syntax ---- */
-    kind("e1", SL, "Rect(0, 0, 400, 400, fill='blue'\nCircle(200, 200, 50, fill='yellow')", "Syntax error", ["The first line never closes its parenthesis.", "Python can't parse the program, so nothing runs."]);
-    kind("e1", SL, "def onMousePress(mouseX, mouseY)\n    Circle(mouseX, mouseY, 20, fill='red')", "Syntax error", ["The def line is missing its colon."]);
+    kind("e1", SL, "a blue background with a yellow circle", "Rect(0, 0, 400, 400, fill='blue'\nCircle(200, 200, 50, fill='yellow')", "Syntax error", ["The first line never closes its parenthesis.", "Python can't parse the program, so nothing runs."]);
+    kind("e1", SL, "draw a red dot wherever the mouse is pressed", "def onMousePress(mouseX, mouseY)\n    Circle(mouseX, mouseY, 20, fill='red')", "Syntax error", ["The def line is missing its colon."]);
     code("e1", SL, "def onMousePress(mouseX, mouseY)\n    Circle(mouseX, mouseY, 20, fill='red')", "What is the fix?", ["Add a colon at the end of the `def` line", "Put quotes around `mouseX` and `mouseY`", "Change the word `def` to `function`", "Remove the indentation before `Circle`"], ["Every def line ends with a colon."]);
     code("e1", SL, "Rect(0, 0, 400, 400, fill='blue'\nCircle(200, 200, 50, fill='yellow')\nLabel('Hello', 200, 300)", "What appears on the canvas when this runs?", ["Nothing: the program doesn't run", "Only the blue rectangle, then it stops", "The rectangle and the circle", "Everything except the label"], ["A syntax error anywhere stops the whole program before it starts."]);
-    kind("e1", AP, "Label('Score, 200, 50, size=20)", "Syntax error", ["The string 'Score is never closed with a quote."]);
-    kind("e1", AP, "if score > 10\n    Label('You win!', 200, 200)", "Syntax error", ["The if line is missing its colon."]);
-    kind("e1", AP, "if lives = 0:\n    Label('Game over', 200, 200)", "Syntax error", ["A single = assigns a value. Comparing needs ==.", "Python doesn't allow an assignment there, so it's a syntax error."]);
+    kind("e1", AP, "show the word Score at the top", "Label('Score, 200, 50, size=20)", "Syntax error", ["The string 'Score is never closed with a quote."]);
+    kind("e1", AP, "show a message once the score passes 10", "if score > 10\n    Label('You win!', 200, 200)", "Syntax error", ["The if line is missing its colon."]);
+    kind("e1", AP, "show Game over when there are no lives left", "if lives = 0:\n    Label('Game over', 200, 200)", "Syntax error", ["A single = assigns a value. Comparing needs ==.", "Python doesn't allow an assignment there, so it's a syntax error."]);
     code("e1", AP, "def drawSun():\nCircle(350, 50, 40, fill='gold')", "What is wrong?", ["The `Circle` line must be indented under `def`", "The function name must start with a capital", "The color name must be written without any quotes", "`def` lines cannot end with a colon"], ["The body of a function is the indented lines below it. Without indentation, Python reports an IndentationError, a kind of syntax error."]);
     mc("e1", SL, "When does Python catch a syntax error?", ["Immediately, before any of the code runs", "Only when the line with the error is reached", "Only after the program has finished running", "Never: syntax errors just make the output wrong"], ["From the slides: the interpreter catches it immediately and the code refuses to run at all."]);
 
     /* ---- e2 logic ---- */
-    kind("e2", SL, "# INTENT: Draw a black eye on top of a white head.\nCircle(200, 200, 10, fill='black')  # Eye\nCircle(200, 200, 80, fill='white')  # Head", "Logic error", ["It runs without crashing, but the head is drawn second and covers the eye."]);
-    code("e2", SL, "# INTENT: Draw a black eye on top of a white head.\nCircle(200, 200, 10, fill='black')  # Eye\nCircle(200, 200, 80, fill='white')  # Head", "How do you fix it?", ["Swap the two lines so the head is drawn first", "Make the eye's radius larger than the head's", "Change the head's color to black", "Delete the comments at the very end of each line"], ["Later shapes go on top. Draw the head first, then the eye."]);
-    code("e2", AP, "# INTENT: a red square in the top-right corner of a 400 by 400 canvas\nRect(0, 0, 100, 100, fill='red')", "The code runs. What is wrong?", ["It draws the square in the top-left corner", "It draws a circle instead of a square", "It crashes because 0 is not a valid position", "It doesn't run because of a missing colon"], ["Rect's first two numbers are the left and top. (0, 0) is the top-left corner. Top-right would be Rect(300, 0, 100, 100)."]);
-    kind("e2", AP, "# INTENT: show 'Pass' for a score of 70 or more\nif score > 70:\n    Label('Pass', 200, 200)", "Logic error", ["A score of exactly 70 should pass but doesn't. It should be >= 70.", "It runs without any error message."]);
+    kind("e2", SL, "a black eye on top of a white head", "Circle(200, 200, 10, fill='black')\nCircle(200, 200, 80, fill='white')", "Logic error", ["It runs without crashing, but the head is drawn second and covers the eye."]);
+    code("e2", SL, "Circle(200, 200, 10, fill='black')\nCircle(200, 200, 80, fill='white')", "The goal is a black eye on top of a white head. How do you fix it?", ["Swap the two lines so the head is drawn first", "Make the eye's radius larger than the head's", "Change the head's color to black", "Add a third circle that is drawn in gray"], ["Later shapes go on top. Draw the head first, then the eye."]);
+    code("e2", AP, "Rect(0, 0, 100, 100, fill='red')", "The goal is a red square in the top-right corner of a 400 by 400 canvas. The code runs. What is wrong?", ["It draws the square in the top-left corner", "It draws a circle instead of a square", "It crashes because 0 is not a valid position", "It doesn't run because of a missing colon"], ["Rect's first two numbers are the left and top. (0, 0) is the top-left corner. Top-right would be Rect(300, 0, 100, 100)."]);
+    kind("e2", AP, "show Pass for a score of 70 or more", "if score > 70:\n    Label('Pass', 200, 200)", "Logic error", ["A score of exactly 70 should pass but doesn't. It should be >= 70.", "It runs without any error message."]);
     code("e2", AP, "a = 80\nb = 90\naverage = a + b / 2\nLabel(average, 200, 200)", "The label shows 125, not 85. Why?", ["Division happens before addition, so only b is divided", "The variables a and b were never given values", "Labels can only show text, never numbers or variables", "Python always rounds division up to the next ten"], ["a + b / 2 = 80 + 45 = 125.", "Use (a + b) / 2."]);
-    kind("e2", AP, "# INTENT: draw grass along the BOTTOM of a 400 by 400 canvas\nRect(0, 0, 400, 50, fill='green')", "Logic error", ["The top of the canvas is y = 0, so this draws the strip along the top. Bottom would be Rect(0, 350, 400, 50)."]);
+    kind("e2", AP, "grass along the bottom of a 400 by 400 canvas", "Rect(0, 0, 400, 50, fill='green')", "Logic error", ["The top of the canvas is y = 0, so this draws the strip along the top. Bottom would be Rect(0, 350, 400, 50)."]);
     mc("e2", SL, "Why are logic errors often the hardest to find?", ["The program runs normally, so there's no error message", "Python refuses to run any code that has them", "They only happen on computers that are very old or slow", "They always crash the program on the very first line"], ["Nothing points to the problem; you have to notice the output is wrong."]);
     mc("e2", AP, "Which is the best way to find a logic error?", ["Test with inputs where you already know the right result", "Wait for Python to show the line number of the error", "Add more colons at the ends of lines until it works", "Delete all the comments, since Python can misread them"], ["Compare what the program does with what it should do."]);
 
     /* ---- e3 runtime ---- */
-    kind("e3", SL, "def drawTarget(x, y, radius):\n    Circle(x, y, radius, fill='red')\n    Circle(x, y, radius - 20, fill='white')\n\ndrawTarget(200, 200, '100')", "Runtime error", ["The syntax is fine, but '100' is a string, and Python can't subtract 20 from a string. It crashes when that line runs."]);
+    kind("e3", SL, "a red target with a white center", "def drawTarget(x, y, radius):\n    Circle(x, y, radius, fill='red')\n    Circle(x, y, radius - 20, fill='white')\n\ndrawTarget(200, 200, '100')", "Runtime error", ["The syntax is fine, but '100' is a string, and Python can't subtract 20 from a string. It crashes when that line runs."]);
     code("e3", SL, "def drawTarget(x, y, radius):\n    Circle(x, y, radius, fill='red')\n    Circle(x, y, radius - 20, fill='white')\n\ndrawTarget(200, 200, '100')", "How do you fix the error?", ["Remove the quotation marks around 100", "Put quotation marks around 200 and 200", "Add a colon after `drawTarget(200, 200, '100')`", "Change `radius - 20` to `radius + 20`"], ["Without the quotes, 100 is a number and the subtraction works."]);
     code("e3", SL, "def drawTarget(x, y, radius):\n    Circle(x, y, radius, fill='red')\n    Circle(x, y, radius - 20, fill='white')\n\ndrawTarget(200, 200, '100')", "What type of error message does Python show?", ["TypeError", "SyntaxError", "OverflowError", "NameError"], ["Mixing a string and a number in math is a TypeError."]);
-    kind("e3", SL, "import math\n\ndef drawEyeball(distanceX):\n    pupilSize = math.sqrt(distanceX) * 5\n    Circle(200, 200, 50, fill='white')\n    Circle(200, 200, pupilSize, fill='blue')\n\ndrawEyeball(-25)", "Runtime error", ["math.sqrt only accepts numbers ≥ 0. With −25, it crashes mid-execution (ValueError: math domain error)."]);
+    kind("e3", SL, "an eyeball whose pupil size depends on a distance", "import math\n\ndef drawEyeball(d):\n    pupil = math.sqrt(d) * 5\n    Circle(200, 200, 50, fill='white')\n    Circle(200, 200, pupil, fill='blue')\n\ndrawEyeball(-25)", "Runtime error", ["math.sqrt only accepts numbers ≥ 0. With −25, it crashes mid-execution (ValueError: math domain error)."]);
     code("e3", SL, "import math\n\ndef drawEyeball(distanceX):\n    pupilSize = math.sqrt(distanceX) * 5\n    Circle(200, 200, 50, fill='white')\n    Circle(200, 200, pupilSize, fill='blue')\n\ndrawEyeball(16)\ndrawEyeball(-25)", "What happens when this runs?", ["One eyeball is drawn, then it crashes", "Nothing is drawn at all, because Python finds the error before starting", "Both eyeballs are drawn, but the second has no pupil", "Both calls crash, because math.sqrt needs an integer"], ["drawEyeball(16) works: the square root of 16 is 4.", "drawEyeball(-25) crashes. Lines before a runtime error have already run."]);
-    kind("e3", AP, "score = 10\nLabel(scroe, 200, 200)", "Runtime error", ["`scroe` is a typo. The line is grammatical, so Python only discovers that the name doesn't exist when it runs the line (NameError)."]);
-    kind("e3", AP, "total = 0\ncount = 0\naverage = total / count", "Runtime error", ["Dividing by zero crashes when the line runs: ZeroDivisionError."]);
+    kind("e3", AP, "show the score on the screen", "score = 10\nLabel(scroe, 200, 200)", "Runtime error", ["`scroe` is a typo. The line is grammatical, so Python only discovers that the name doesn't exist when it runs the line (NameError)."]);
+    kind("e3", AP, "find the average of the scores entered so far", "total = 0\ncount = 0\naverage = total / count", "Runtime error", ["Dividing by zero crashes when the line runs: ZeroDivisionError."]);
     mc("e3", SL, "What is true of every runtime error?", ["The code is valid, but it crashes while running", "Python refuses to run any of the code, even the lines before it", "The program finishes but the output is wrong", "It only happens when a number is too large to store"], ["Runtime errors crash mid-execution, after the program has started."]);
-    code("e3", AP, "Rect(0, 0, 400, 400, fill='skyBlue')\nsize = 'big'\nCircle(200, 200, size, fill='yellow')\nLabel('Sunny day', 200, 380)", "What is on the canvas when it stops?", ["Only the sky-blue rectangle", "Nothing at all", "The rectangle and the circle", "The rectangle and the label"], ["The rectangle is drawn, then the Circle line crashes because the radius is a string.", "The program stops there, so the label never appears."]);
+    code("e3", AP, "Rect(0, 0, 400, 400, fill='skyBlue')\nsize = '40'\nCircle(200, 200, size, fill='yellow')\nLabel('Sunny day', 200, 380)", "What is on the canvas when it stops?", ["Only the sky-blue rectangle", "Nothing at all", "The rectangle and the circle", "The rectangle and the label"], ["The rectangle is drawn, then the Circle line crashes because the radius is a string.", "The program stops there, so the label never appears."]);
 
     /* ---- e4 overflow ---- */
-    kind("e4", SL, "def drawMegaCircle(sizeMultiplier):\n    hugeRadius = 10.0 ** sizeMultiplier\n    Circle(200, 200, hugeRadius, fill='purple')\n\ndrawMegaCircle(1000)", "Overflow error", ["`10.0 ** 1000` is a decimal too large for the computer to store: OverflowError."]);
+    kind("e4", SL, "a purple circle whose size grows with a level number", "def drawLevel(level):\n    r = 10.0 ** level\n    Circle(200, 200, r, fill='purple')\n\ndrawLevel(1000)", "Overflow error", ["`10.0 ** 1000` is a decimal too large for the computer to store: OverflowError."]);
     mc("e4", SL, "What causes an OverflowError in CMU CS Academy?", ["A calculation makes a decimal number too big to store", "A line of code is missing a closing parenthesis", "Shapes are drawn in the wrong order on the canvas", "A function is given a string where it needed a number"], ["The others describe a syntax error, a logic error and a TypeError."]);
-    code("e4", AP, "def drawMegaCircle(sizeMultiplier):\n    hugeRadius = 10.0 ** sizeMultiplier\n    Circle(200, 200, hugeRadius, fill='purple')", "Which call causes an OverflowError?", ["`drawMegaCircle(400)`", "`drawMegaCircle(3)`", "`drawMegaCircle(100)`", "`drawMegaCircle(300)`"], ["The largest decimal Python can store is about 1.8 × 10³⁰⁸.", "Only `10.0 ** 400` goes past that."]);
+    code("e4", AP, "def drawLevel(level):\n    r = 10.0 ** level\n    Circle(200, 200, r, fill='purple')", "Which call causes an OverflowError?", ["`drawLevel(400)`", "`drawLevel(3)`", "`drawLevel(100)`", "`drawLevel(300)`"], ["The largest decimal Python can store is about 1.8 × 10³⁰⁸.", "Only `10.0 ** 400` goes past that."]);
     mc("e4", AP, "On the AP exam, an overflow error is defined as an error that happens when", ["a number is outside the range that a fixed number of bits can represent", "a program is missing a symbol that the language's grammar requires", "a program runs without crashing but gives an unexpected result", "a decimal number gets rounded because it can't be stored exactly in binary"], ["The last choice describes a roundoff error, a different AP term."]);
     k.ask(["e4"], AP, "A language stores whole numbers in 8 bits. What is the largest number it can store?", [{l:"Largest", t:"num", a:"255", ph:"number"}], ["8 bits give 2⁸ = 256 values: 0 to 255."]);
     mc("e4", AP, "A language stores whole numbers in 8 bits. What happens when a program computes 255 + 1?", ["An overflow error, because 256 can't fit in 8 bits", "A syntax error, because 256 isn't a valid number in that language", "A logic error, because + should have been -", "Nothing: 8 bits can store any whole number"], ["256 needs 9 bits."]);
@@ -117,34 +119,38 @@ Study.addUnit("apcsp", {
     mc("e5", SL, "A program draws half the scene, then stops with a TypeError. What kind of error is it?", ["Runtime error", "Syntax error", "Logic error", "Overflow error"], ["It started running and crashed partway through."]);
     mc("e5", SL, "A program runs to the end with no message, but the sun is drawn under the ground. What kind of error is it?", ["Logic error", "Runtime error", "Syntax error", "Overflow error"], ["No crash and no message, just the wrong result."]);
     mc("e5", SL, "Which kind of error produces no error message at all?", ["Logic error", "Syntax error", "Runtime error", "Overflow error"], ["The program does exactly what it was told; it was told the wrong thing."]);
-    kind("e5", AP, "for i in range(5)\n    Circle(50 + i * 75, 200, 30)", "Syntax error", ["The for line is missing its colon."]);
-    kind("e5", AP, "# INTENT: five circles in a row across the canvas\nfor i in range(5):\n    Circle(50, 200, 30)", "Logic error", ["It runs, but all five circles are drawn in the same spot. The x should change with i."]);
-    kind("e5", AP, "radius = input('Radius? ')\nCircle(200, 200, radius - 5)", "Runtime error", ["input gives back a string. Subtracting 5 from a string crashes when the line runs (TypeError)."]);
-    kind("e5", AP, "import math\nbig = math.exp(1000)\nCircle(200, 200, big)", "Overflow error", ["e¹⁰⁰⁰ is far too large for a decimal: OverflowError: math range error."]);
+    kind("e5", AP, "five circles in a row across the canvas", "for i in range(5)\n    Circle(50 + i * 75, 200, 30)", "Syntax error", ["The for line is missing its colon."]);
+    kind("e5", AP, "five circles in a row across the canvas", "for i in range(5):\n    Circle(50, 200, 30)", "Logic error", ["It runs, but all five circles are drawn in the same spot. The x should change with i."]);
+    kind("e5", AP, "a circle a little smaller than the size the user types", "radius = input('Radius? ')\nCircle(200, 200, radius - 5)", "Runtime error", ["input gives back a string. Subtracting 5 from a string crashes when the line runs (TypeError)."]);
+    kind("e5", AP, "a circle whose radius is e to the power of the level", "import math\nlevel = 1000\nr = math.exp(level)\nCircle(200, 200, r)", "Overflow error", ["e¹⁰⁰⁰ is far too large for a decimal: OverflowError: math range error."]);
   },
   drills: {
     // name the error in a generated snippet
     e5: k => {
       const col = pick(["red", "blue", "gold", "green", "purple", "orange"]), x = ri(5, 35) * 10, y = ri(5, 35) * 10, r = ri(2, 8) * 10;
       const t = pick(TYPES);
-      let c, why;
+      let c, why, g;
       if (t === "Syntax error"){
         const v = pick([0, 1, 2]);
         c = v === 0 ? `Circle(${x}, ${y}, ${r}, fill='${col}'` : v === 1 ? `def drawDot()\n    Circle(${x}, ${y}, ${r}, fill='${col}')` : `Circle(${x}, ${y}, ${r}, fill='${col})`;
+        g = v === 1 ? `a function that draws a ${col} dot` : `a ${col} dot`;
         why = v === 0 ? "The parenthesis is never closed." : v === 1 ? "The def line is missing its colon." : "The string for the color is never closed.";
       } else if (t === "Logic error"){
-        c = `# INTENT: a small ${col} dot on top of a big white circle\nCircle(${x}, ${y}, ${Math.max(10, r - 20)}, fill='${col}')\nCircle(${x}, ${y}, ${r + 30}, fill='white')`;
+        c = `Circle(${x}, ${y}, ${Math.max(10, r - 20)}, fill='${col}')\nCircle(${x}, ${y}, ${r + 30}, fill='white')`;
+        g = `a small ${col} dot on top of a bigger white circle`;
         why = "It runs, but the big circle is drawn second and covers the dot.";
       } else if (t === "Runtime error"){
         const v = pick([0, 1]);
         c = v ? `import math\nsize = math.sqrt(${-r})\nCircle(${x}, ${y}, size, fill='${col}')` : `def drawRing(radius):\n    Circle(${x}, ${y}, radius, fill='${col}')\n    Circle(${x}, ${y}, radius - 10, fill='white')\n\ndrawRing('${r}')`;
+        g = v ? `a ${col} circle sized by a square root` : `a ${col} ring with a white center`;
         why = v ? "The square root of a negative number crashes when the line runs." : "The radius is a string, so radius - 10 crashes when it runs.";
       } else {
         const p = ri(4, 9) * 100;
-        c = `def drawHuge(power):\n    radius = 10.0 ** power\n    Circle(${x}, ${y}, radius, fill='${col}')\n\ndrawHuge(${p})`;
+        c = `def drawShape(n):\n    radius = 10.0 ** n\n    Circle(${x}, ${y}, radius, fill='${col}')\n\ndrawShape(${p})`;
+        g = `a ${col} circle that grows with n`;
         why = `\`10.0 ** ${p}\` is a decimal too large to store.`;
       }
-      return {src:"Random drill", kind:"choice", code:c, text:WHICH, fields:[k.F.choice("Answer", TYPES, t, false)], steps:[why]};
+      return {src:"Random drill", kind:"choice", code:c, text:GOAL(g), fields:[k.F.choice("Answer", TYPES, t, false)], steps:[why]};
     }
   }
 });

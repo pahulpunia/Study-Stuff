@@ -232,13 +232,19 @@ function renderHome(){
   renderSubjBar();
   $("pageHead").innerHTML = `<span class="phico">${ic(subj.icon)}</span><span>${escHTML(subj.name)}</span>`;
   const box = isTerms ? $("modes") : $("mmodes");
-  if (!Study.loaded[subj.id] || !(isTerms ? Study.terms[subj.id] : Study.problems[subj.id])) box.innerHTML = `<div class="small">Loading ${escHTML(subj.name)}…</div>`;
+  // a subject that isn't loaded yet gets a loading screen, so the last subject's units and modes don't linger
+  const ready = Study.loaded[subj.id] && (isTerms ? Study.terms[subj.id] : Study.problems[subj.id]);
+  const loading = on => { $("home").classList.toggle("loadingsubj", on); $("subjLoad").classList.toggle("hidden", !on); };
+  if (!ready){ $("subjLoadTxt").textContent = `Loading ${subj.name}`; loading(true); }
   Study.load(subj).then(() => {
     if (ST.subject !== subj.id) return;
+    loading(false);
     Study.engines[subj.type].home(subj);
     Shell.update();
   }).catch(err => {
-    box.innerHTML = `<div class="small">Couldn't load ${escHTML(subj.name)}. Check your connection.</div>`;
+    if (ST.subject !== subj.id) return;
+    $("subjLoadTxt").textContent = `Couldn't load ${subj.name}. Check your connection.`;
+    $("subjLoad").querySelector(".spin").classList.add("hidden");
   });
 }
 
