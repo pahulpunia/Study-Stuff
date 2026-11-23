@@ -114,7 +114,7 @@ window.SUBJECTS = [
   },
   {
     id: "actr", name: "ACT Reading", short: "ACT Reading", group: "prep", icon: "glasses", type: "problems",
-    files: ["subjects/testprep/act-reading.js", "subjects/testprep/act-reading2.js"],
+    files: ["subjects/testprep/act-reading.js", "subjects/testprep/act-reading2.js", "subjects/testprep/act-reading3.js"],
     blurb: "The real section is 36 questions in 40 minutes: four passages, nine questions each",
     practiceDesc: "Test-style questions, shuffled",
     passageSets: true,
@@ -123,7 +123,7 @@ window.SUBJECTS = [
   },
   {
     id: "acts", name: "ACT Science", short: "ACT Science", group: "prep", icon: "scope", type: "problems",
-    files: ["subjects/testprep/act-science.js", "subjects/testprep/act-science2.js"],
+    files: ["subjects/testprep/act-science.js", "subjects/testprep/act-science2.js", "subjects/testprep/act-science3.js"],
     blurb: "The real section is 40 questions in 40 minutes and is optional",
     practiceDesc: "Test-style questions, shuffled",
     passageSets: true,
