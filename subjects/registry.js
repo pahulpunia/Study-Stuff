@@ -69,7 +69,7 @@ window.SUBJECTS = [
   },
   {
     id: "apcsp", name: "AP Computer Science Principles", short: "AP CSP", group: "science", icon: "code", type: "problems", tools: ["pad", "calc"],
-    files: ["subjects/apcsp/unit2.js", "subjects/apcsp/errors.js", "subjects/apcsp/pseudo.js"],
+    files: ["subjects/apcsp/unit2.js", "subjects/apcsp/errors.js", "subjects/apcsp/pseudo.js", "subjects/apcsp/more.js"],
     passageSets: true,
     defaultSection: "u2:2.1"
   },
