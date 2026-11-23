@@ -58,7 +58,7 @@ window.SUBJECTS = [
   },
   {
     id: "hchem", name: "Honors Chemistry", short: "Chem", group: "science", icon: "flask", type: "problems", tools: ["pad", "calc", "pt"],
-    files: ["subjects/chem/unit4.js"],
+    files: ["subjects/chem/unit4.js", "subjects/chem/more.js"],
     defaultSection: "u4:4.1"
   },
   {
