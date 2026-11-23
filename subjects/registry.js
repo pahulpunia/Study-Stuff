@@ -46,7 +46,7 @@ window.SUBJECTS = [
   },
   {
     id: "calcab", name: "AP Calculus AB", short: "Calc AB", group: "math", icon: "fx", type: "problems", tools: ["pad", "calc"],
-    files: ["subjects/calc/kit.js", "subjects/calcab/unit1.js", "subjects/calcab/unit2.js", "subjects/calcab/unit3.js", "subjects/calcab/unit4.js"],
+    files: ["subjects/calc/kit.js", "subjects/calcab/unit1.js", "subjects/calcab/unit2.js", "subjects/calcab/unit3.js", "subjects/calcab/unit4.js", "subjects/calcab/more.js"],
     blurb: "Exact answers work, like 1/4, 5/(2π), or ln(7) + 3/7",
     defaultSection: "u1:1.1"
   },
